@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CCS Sit‑in | Login</title>
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+
+<body>
+  <div class="page-shell">
+    <header class="nav">
+      <div class="nav-inner">
+        <a href="index.html" class="nav-brand">
+          College of Computer Studies Sit‑in Monitoring System
+        </a>
+        <nav class="nav-links">
+          <a href="index.html" class="nav-link">Home</a>
+          <a href="#" class="nav-link">Community</a>
+          <a href="#" class="nav-link">About</a>
+          <a href="login.html" class="nav-link nav-link--active">Login</a>
+          <a href="register.html" class="nav-link">Register</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="main">
+      <div class="auth-layout">
+        <section class="card">
+          <button type="button" class="btn btn-outline" onclick="history.back()" style="margin-bottom: 1rem; padding-inline: 1rem; background:#e11d48; border-color:#e11d48;">
+            Back
+          </button>
+          <h2 class="card-title" style="text-align: center; margin-bottom: 1.4rem;">Login</h2>
+
+          <div id="loginStatus"></div>
+
+          <form id="loginForm" class="form" novalidate>
+            <div class="form-grid form-grid--single">
+              <div class="field">
+                <label for="email">Email</label>
+                <input class="input" type="email" id="email" name="email" required />
+              </div>
+              <div class="field">
+                <label for="password">Password</label>
+                <input class="input" type="password" id="password" name="password" required />
+              </div>
+            </div>
+
+            <div class="form-footer">
+              <button type="submit" class="btn btn-primary btn-lg">Log in</button>
+              <p class="muted-link">
+                New here?
+                <a href="register.html">Create a student account</a>
+              </p>
+            </div>
+          </form>
+        </section>
+
+        <aside class="side-panel">
+          <div class="side-panel-inner">
+            <div class="side-tag">
+              <span class="side-tag-dot"></span>
+              Faculty &amp; lab mentors
+            </div>
+            <h2 class="side-title">See your labs light up in real time.</h2>
+            <p class="side-body">
+              Once you connect this login to your own PHP authentication logic,
+              you will be able to jump straight into dashboards that show who is
+              seated, how long they have stayed, and which PCs are free.
+            </p>
+            <ul class="side-list">
+              <li>
+                <span class="side-list-bullet"></span>
+                Minimal clicks, maximal visibility.
+              </li>
+              <li>
+                <span class="side-list-bullet"></span>
+                Designed for projection on big screens.
+              </li>
+              <li>
+                <span class="side-list-bullet"></span>
+                Smooth gradients that keep the UI radiant even at night.
+              </li>
+            </ul>
+            <p class="side-footer">
+              Next step: POST this form to your `login.php` controller and start a session from there.
+            </p>
+          </div>
+        </aside>
+      </div>
+    </main>
+
+    <footer class="footer">
+      &copy; <span data-year></span> College of Computer Studies · Sit‑in Monitoring System.
+    </footer>
+  </div>
+
+  <script src="assets/app.js"></script>
+</body>
+
+</html>
+

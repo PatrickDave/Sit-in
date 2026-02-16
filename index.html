@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CCS Sit‑in | Radiant Landing</title>
+  <link rel="stylesheet" href="Sit-in/styles.css" />
+</head>
+
+<body>
+  <div class="page-shell">
+    <!-- Top navigation -->
+    <header class="nav">
+      <div class="nav-inner">
+        <a href="index.html" class="nav-brand">
+          College of Computer Studies Sit‑in Monitoring System
+        </a>
+        <nav class="nav-links">
+          <a href="index.html" class="nav-link nav-link">Home</a>
+          <a href="#community" class="nav-link">Community</a>
+          <a href="#about" class="nav-link">About</a>
+          <a href="login.html" class="nav-link">Login</a>
+          <a href="#register" class="nav-link">Register</a>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Hero + Registration form -->
+    <main class="main">
+      <div class="container">
+        <section class="hero">  
+          <aside class="hero-visual" id="register">
+            <div class="card card--centered">
+              <button type="button" class="btn btn-back" onclick="history.back()">
+                Back
+              </button>
+              <h2 class="card-title">Sign Up</h2>
+          
+              <div class="card-content">
+              <form id="registration-form" class="form-grid form-grid--single form--labels-below" novalidate>
+                <div class="field">
+                  <label for="studentId">ID Number</label>
+                  <input
+                    id="studentId"
+                    name="studentId"
+                    type="text"
+                    class="input"
+                    required
+                  />
+                </div>
+
+                <div class="field">
+                  <label for="fullName">Last Name</label>
+                  <input
+                    id="lastName"
+                    name="lastName"
+                    type="text"
+                    class="input"
+                    required
+                  />
+                </div>
+
+                <div class="field">
+                  <label for="fullName">First Name</label>
+                  <input
+                    id="firstName"
+                    name="firstName"
+                    type="text"
+                    class="input"
+                    required
+                  />
+                </div>
+
+                <div class="field">
+                  <label for="fullName">Middle Name</label>
+                  <input
+                    id="middleName"
+                    name="middleName"
+                    type="text"
+                    class="input"
+                    required
+                  />
+                </div>
+
+                <div class="field">
+                  <label for="course">Course level</label>
+                  <input
+                    id="course"
+                    name="course"
+                    type="text"
+                    class="input"
+                    required
+                  />
+                </div>
+
+                <div class="field">
+                  <label for="course">Password</label>
+                  <input
+                    id="password"
+                    name="password"
+                    type="password"
+                    class="input"
+                    required
+                  />
+                </div>
+
+                <div class="field">
+                  <label for="course">Repeat your password</label>
+                  <input
+                    id="password"
+                    name="password"
+                    type="text"
+                    class="input"
+                    required
+                  />
+                </div>
+
+                <div class="field">
+                  <label for="email">Email</label>
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    class="input"
+                    required
+                  />
+                </div>
+
+                <div class="field">
+                  <label for="password">Course</label>
+                  <input
+                    id="password"
+                    name="password"
+                    type="password"
+                    class="input"
+                    minlength="6"
+                    placeholder="e.g BSIT"
+                    required
+                  />
+                </div>
+
+                <div class="field">
+                  <label for="confirmPassword">Address</label>
+                  <input
+                    id="addreess"
+                    name="address"
+                    type="password"
+                    class="input"
+                    required
+                  />
+                </div>
+
+                <div class="form-footer">
+                  <button type="submit" class="btn btn-primary btn-lg">
+                    Register
+                  </button>
+                </div>
+              </form>
+              <div class="card-visual" aria-hidden="true">
+                <img src="image/vector image.jpg" alt="Registration illustration" />
+              </div>
+              </div>
+            </div>
+          </aside>
+        </section>
+
+        <!-- Simple anchor targets for nav links -->
+        <section id="community" aria-label="Community information" hidden></section>
+        <section id="about" aria-label="About CCS Sit‑in Monitoring System" hidden></section>
+      </div>
+    </main>
+
+    <footer class="footer">
+      &copy; <span data-year></span> College of Computer Studies · Sit‑in Monitoring System.
+    </footer>
+  </div>
+
+  <script src="assets/app.js"></script>
+</body>
+
+</html>
+
