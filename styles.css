@@ -36,8 +36,7 @@ a {
 }
 
 .nav-inner {
-  max-width: 1120px;
-  margin: 0 auto;
+  width: 100%;
   padding: 0.9rem 1.5rem;
   display: flex;
   align-items: center;
@@ -48,6 +47,7 @@ a {
 .nav-brand {
   font-weight: 600;
   font-size: 1.05rem;
+  flex-shrink: 0;
 }
 
 .nav-brand span {
