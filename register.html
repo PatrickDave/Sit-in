@@ -5,6 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CCS Sit‑in | Register</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/styles.css" />
 </head>
 
@@ -75,17 +76,6 @@
                 </div>
 
                 <div class="field">
-                  <label for="middleName">Middle Name</label>
-                  <input
-                    id="middleName"
-                    name="middleName"
-                    type="text"
-                    class="input"
-                    required
-                  />
-                </div>
-
-                <div class="field">
                   <label for="email">Email</label>
                   <input
                     id="email"
@@ -97,16 +87,41 @@
                 </div>
 
                 <div class="field">
+                  <label for="yearlevel">Year Level</label>
+                  <select
+                    id="yearlevel"
+                    name="yearlevel"
+                    class="input"
+                    required
+                  >
+                    <option value="">Select Year</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                  </select>
+                </div>
+
+
+                <div class="field">
                   <label for="course">Course</label>
-                  <input
+                  <select
                     id="course"
                     name="course"
-                    type="text"
                     class="input"
-                    minlength="6"
-                    placeholder="e.g BSIT"
                     required
-                  />
+                  >
+                    <option value="">Select Course</option>
+                    <option value="College of Computer Studies">College of Arts and Sciences</option>
+                    <option value="College of Criminal Justice">College of Business and Accountancy</option>
+                    <option value="College of Criminal Justice">College of Computer Studies</option>
+                    <option value="College of Criminal Justice">College of Criminal Justice</option>
+                    <option value="College of Criminal Justice">College of Customs Administration</option>
+                    <option value="College of Criminal Justice">College of Hospitality Management</option>
+                    <option value="College of Criminal Justice">College of Nursing</option>
+                    <option value="College of Criminal Justice">College of Social Work</option>
+                    <option value="College of Criminal Justice">College of Teacher Education</option>
+                  </select>
                 </div>
 
                 <div class="field">
