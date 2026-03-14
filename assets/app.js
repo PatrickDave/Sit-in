@@ -40,8 +40,8 @@ function handleRegistration(event) {
   const studentId = document.getElementById('studentId')?.value.trim();
   const lastName = document.getElementById('lastName')?.value.trim();
   const firstName = document.getElementById('firstName')?.value.trim();
-  const middleName = document.getElementById('middleName')?.value.trim();
   const email = document.getElementById('email')?.value.trim();
+  const yearlevel = document.getElementById('yearlevel')?.value.trim();
   const course = document.getElementById('course')?.value.trim();
   const address = document.getElementById('addreess')?.value.trim();
   const password = document.getElementById('password')?.value;
@@ -53,13 +53,13 @@ function handleRegistration(event) {
   if (!studentId) errors.push('ID Number is required');
   if (!lastName) errors.push('Last Name is required');
   if (!firstName) errors.push('First Name is required');
-  if (!middleName) errors.push('Middle Name is required');
   if (!email) errors.push('Email is required');
+  if (!yearlevel) errors.push('Year Level is required');
   if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) errors.push('Valid email is required');
   if (!course) errors.push('Course is required');
   if (!address) errors.push('Address is required');
   if (!password) errors.push('Password is required');
-  if (password.length < 6) errors.push('Password must be at least 6 characters');
+  if (password.length < 6) errors.push('Password must be at least 8 characters');
   if (password !== confirmPassword) errors.push('Passwords do not match');
 
   // Check if student ID already exists
@@ -78,8 +78,8 @@ function handleRegistration(event) {
     studentId,
     lastName,
     firstName,
-    middleName,
     email,
+    yearlevel,
     course,
     address,
     password, // In production, this should be hashed
@@ -184,3 +184,4 @@ function logout() {
   localStorage.removeItem('currentUser');
   window.location.href = 'index.html';
 }
+
