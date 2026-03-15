@@ -172,6 +172,18 @@ a {
   border: 1px solid rgba(148, 163, 184, 0.65);
   position: relative;
   overflow: hidden;
+  width: 100%;
+  max-width: 900px;
+}
+
+/* Larger login form variant */
+.card--login {
+  padding: 3rem 3rem;
+  max-width: 550px;
+}
+
+.card--login .input {
+  padding: 0.75rem 1.1rem;
 }
 
 .card::before {
@@ -257,6 +269,40 @@ a {
 select.input:focus {
   border-color: #2563eb;
   box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.9), 0 14px 26px rgba(37, 99, 235, 0.32);
+}
+
+/* Password toggle wrapper */
+.password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 0.9rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem 0.7rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  color: #6b7280;
+  transition: color 0.15s ease;
+  z-index: 10;
+  pointer-events: auto;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.password-toggle:hover {
+  color: #374151;
+}
+
+.password-wrapper .input {
+  padding-right: 2.8rem;
 }
 
 .form-footer {
@@ -406,4 +452,264 @@ select.input:focus {
 .CCSlogo {
   width: 40px;
   height: 40px;;
+}
+
+/* Profile Page Styles */
+.profile-container {
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.profile-card {
+  padding: 2.5rem;
+}
+
+/* Session Timer */
+.session-timer {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 12px;
+  padding: 1.5rem 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+  color: white;
+}
+
+.session-timer-content {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.session-timer-icon {
+  font-size: 2.5rem;
+}
+
+.session-label {
+  font-size: 0.85rem;
+  opacity: 0.9;
+  margin-bottom: 0.5rem;
+}
+
+.session-time {
+  font-size: 1.8rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  font-family: 'Courier New', monospace;
+}
+
+/* Profile Header with Photo */
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  margin-bottom: 2.5rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.3);
+}
+
+.profile-photo-container {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.profile-photo {
+  width: 120px;
+  height: 120px;
+  border-radius: 16px;
+  object-fit: cover;
+  border: 3px solid #2563eb;
+  display: block;
+}
+
+.profile-photo-fallback {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  color: white;
+  font-weight: 700;
+  border: none;
+}
+
+.profile-info-header {
+  flex: 1;
+}
+
+.profile-name {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #020617;
+  margin-bottom: 0.5rem;
+}
+
+.profile-email {
+  font-size: 0.95rem;
+  color: #6b7280;
+}
+
+/* Profile Info Grid */
+.profile-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.profile-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-field label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #6b7280;
+  margin-bottom: 0.5rem;
+}
+
+.profile-value {
+  font-size: 0.95rem;
+  color: #0f172a;
+  font-weight: 500;
+}
+
+/* Profile Actions */
+.profile-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.profile-actions .btn {
+  flex: 1;
+}
+
+/* Edit Mode */
+.profile-edit-mode {
+  animation: fadeIn 0.3s ease;
+}
+
+.profile-edit-photo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.profile-edit-photo .profile-photo-container {
+  margin: 0;
+}
+
+.photo-upload-btn {
+  display: inline-block;
+  padding: 0.7rem 1.5rem;
+  background: #2563eb;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.photo-upload-btn:hover {
+  background: #1d4ed8;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.3);
+}
+
+.photo-note {
+  font-size: 0.8rem;
+  color: #9ca3af;
+}
+
+.profile-edit-form {
+  animation: fadeIn 0.3s ease;
+}
+
+.profile-edit-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.profile-edit-actions .btn {
+  flex: 1;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive Profile */
+@media (max-width: 600px) {
+  .profile-container {
+    padding: 0;
+  }
+
+  .profile-card {
+    padding: 1.5rem;
+    border-radius: 12px;
+  }
+
+  .profile-header {
+    flex-direction: column;
+    text-align: center;
+    gap: 1.5rem;
+  }
+
+  .profile-photo {
+    width: 100px;
+    height: 100px;
+  }
+
+  .profile-info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-actions,
+  .profile-edit-actions {
+    flex-direction: column;
+  }
+
+  .profile-actions .btn,
+  .profile-edit-actions .btn {
+    width: 100%;
+  }
+
+  .session-timer {
+    padding: 1rem 1.5rem;
+  }
+
+  .session-timer-content {
+    gap: 1rem;
+  }
+
+  .session-timer-icon {
+    font-size: 2rem;
+  }
+
+  .session-time {
+    font-size: 1.4rem;
+  }
 }

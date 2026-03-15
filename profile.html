@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CCS Sit‑in | User Profile</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+
+<body>
+  <div class="page-shell">
+    <header class="nav">
+      <div class="nav-inner">
+        <a href="index.html" class="nav-brand">
+          <img class="nav-brand-logo" src="image/CCSlogo.png" alt="College of Computer Studies Logo" />
+          <span>College of Computer Studies Sit‑in Monitoring System</span>
+        </a>
+        <nav class="nav-links">
+          <a href="index.html" class="nav-link">Home</a>
+          <a href="#" class="nav-link">Community</a>
+          <a href="#" class="nav-link">About</a>
+          <a href="login.html" class="nav-link">Login</a>
+          <a href="register.html" class="nav-link">Register</a>
+          <a href="profile.html" class="nav-link nav-link--active">Profile</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="main">
+      <div class="profile-container">
+        <!-- Back Button -->
+        <button type="button" class="btn btn-outline" onclick="history.back()" style="margin-bottom: 2rem; padding-inline: 1rem; background:#e11d48; border-color:#e11d48;">
+          Back
+        </button>
+
+        <!-- Session Timer -->
+        <div class="session-timer">
+          <div class="session-timer-content">
+            <div class="session-timer-icon">⏱️</div>
+            <div class="session-timer-text">
+              <p class="session-label">Session Time Remaining</p>
+              <p class="session-time" id="sessionTime">--:--:--</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Profile Card -->
+        <div class="card profile-card">
+          <!-- View Mode -->
+          <div id="viewMode" class="profile-view-mode">
+            <!-- Profile Header with Photo -->
+            <div class="profile-header">
+              <div class="profile-photo-container">
+                <img id="profilePhotoDisplay" class="profile-photo" src="" alt="Profile Photo" />
+                <div id="profilePhotoFallback" class="profile-photo profile-photo-fallback"></div>
+              </div>
+              <div class="profile-info-header">
+                <h2 id="profileName" class="profile-name">--</h2>
+                <p id="profileEmail" class="profile-email">--</p>
+              </div>
+            </div>
+
+            <!-- Profile Information -->
+            <div class="profile-info-grid">
+              <div class="profile-field">
+                <label>Student ID</label>
+                <p id="viewStudentId" class="profile-value">--</p>
+              </div>
+              <div class="profile-field">
+                <label>Email</label>
+                <p id="viewEmail" class="profile-value">--</p>
+              </div>
+              <div class="profile-field">
+                <label>Year Level</label>
+                <p id="viewYearLevel" class="profile-value">--</p>
+              </div>
+              <div class="profile-field">
+                <label>Course</label>
+                <p id="viewCourse" class="profile-value">--</p>
+              </div>
+              <div class="profile-field">
+                <label>Address</label>
+                <p id="viewAddress" class="profile-value">--</p>
+              </div>
+              <div class="profile-field">
+                <label>Member Since</label>
+                <p id="viewMemberSince" class="profile-value">--</p>
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="profile-actions">
+              <button type="button" class="btn btn-primary" onclick="toggleEditMode()">Edit Profile</button>
+              <button type="button" class="btn btn-outline" onclick="logout()" style="background:#e11d48; border-color:#e11d48; color: white;">Logout</button>
+            </div>
+          </div>
+
+          <!-- Edit Mode -->
+          <div id="editMode" class="profile-edit-mode" style="display:none;">
+            <h2 style="margin-bottom: 1.5rem; color: #020617;">Edit Profile</h2>
+
+            <!-- Edit Photo Section -->
+            <div class="profile-edit-photo">
+              <div class="profile-photo-container">
+                <img id="profilePhotoEdit" class="profile-photo" src="" alt="Profile Photo" />
+                <div id="profilePhotoFallbackEdit" class="profile-photo profile-photo-fallback"></div>
+              </div>
+              <label class="photo-upload-btn">
+                Change Photo
+                <input type="file" id="photoInput" accept="image/jpeg,image/png,image/gif" style="display:none;" />
+              </label>
+              <p class="photo-note">JPG, PNG, or GIF • Max 5MB</p>
+            </div>
+
+            <!-- Edit Form -->
+            <form id="editProfileForm" class="profile-edit-form" onsubmit="saveProfile(event)">
+              <div class="form-grid form-grid--single">
+                <div class="field">
+                  <label for="editStudentId">Student ID (Read-only)</label>
+                  <input class="input" type="text" id="editStudentId" disabled />
+                </div>
+
+                <div class="field">
+                  <label for="editFirstName">First Name</label>
+                  <input class="input" type="text" id="editFirstName" required />
+                </div>
+
+                <div class="field">
+                  <label for="editLastName">Last Name</label>
+                  <input class="input" type="text" id="editLastName" required />
+                </div>
+
+                <div class="field">
+                  <label for="editEmail">Email</label>
+                  <input class="input" type="email" id="editEmail" required />
+                </div>
+
+                <div class="field">
+                  <label for="editYearLevel">Year Level</label>
+                  <select class="input" id="editYearLevel" required>
+                    <option value="">Select Year</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                  </select>
+                </div>
+
+                <div class="field">
+                  <label for="editCourse">Course</label>
+                  <select class="input" id="editCourse" required>
+                    <option value="">Select Course</option>
+                    <option value="College of Arts and Sciences">College of Arts and Sciences</option>
+                    <option value="College of Business and Accountancy">College of Business and Accountancy</option>
+                    <option value="College of Computer Studies">College of Computer Studies</option>
+                    <option value="College of Criminal Justice">College of Criminal Justice</option>
+                    <option value="College of Customs Administration">College of Customs Administration</option>
+                    <option value="College of Hospitality Management">College of Hospitality Management</option>
+                    <option value="College of Nursing">College of Nursing</option>
+                    <option value="College of Social Work">College of Social Work</option>
+                    <option value="College of Teacher Education">College of Teacher Education</option>
+                  </select>
+                </div>
+
+                <div class="field">
+                  <label for="editAddress">Address</label>
+                  <input class="input" type="text" id="editAddress" required />
+                </div>
+              </div>
+
+              <!-- Status Message -->
+              <div id="editStatus" style="margin-top: 1.5rem;"></div>
+
+              <!-- Form Buttons -->
+              <div class="profile-edit-actions">
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+                <button type="button" class="btn btn-outline" onclick="toggleEditMode()">Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="footer">
+      &copy; <span data-year></span> College of Computer Studies · Sit‑in Monitoring System.
+    </footer>
+  </div>
+
+  <script src="assets/app.js"></script>
+  <script>
+    // Initialize profile when page loads
+    document.addEventListener('DOMContentLoaded', () => {
+      checkLoginStatus();
+      loadUserProfile();
+      initSessionTimer();
+      setupActivityTracking();
+      setupPhotoUpload();
+    });
+  </script>
+</body>
+
+</html>
