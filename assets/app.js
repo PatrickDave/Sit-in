@@ -44,7 +44,7 @@ function handleRegistration(event) {
   const lastName = document.getElementById('lastName')?.value.trim();
   const firstName = document.getElementById('firstName')?.value.trim();
   const email = document.getElementById('email')?.value.trim();
-  const yearlevel = document.getElementById('yearlevel')?.value.trim();
+  const yearLevel = document.getElementById('yearlevel')?.value.trim();
   const course = document.getElementById('course')?.value.trim();
   const address = document.getElementById('addreess')?.value.trim();
   const password = document.getElementById('password')?.value;
@@ -57,47 +57,52 @@ function handleRegistration(event) {
   if (!lastName) errors.push('Last Name is required');
   if (!firstName) errors.push('First Name is required');
   if (!email) errors.push('Email is required');
-  if (!yearlevel) errors.push('Year Level is required');
+  if (!yearLevel) errors.push('Year Level is required');
   if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) errors.push('Valid email is required');
   if (!course) errors.push('Course is required');
   if (!address) errors.push('Address is required');
   if (!password) errors.push('Password is required');
-  if (password.length < 6) errors.push('Password must be at least 8 characters');
+  if (password.length < 6) errors.push('Password must be at least 6 characters');
   if (password !== confirmPassword) errors.push('Passwords do not match');
-
-  // Check if student ID already exists
-  const users = JSON.parse(localStorage.getItem('sitInUsers') || '[]');
-  if (users.some(user => user.studentId === studentId)) {
-    errors.push('Student ID already registered');
-  }
 
   if (errors.length > 0) {
     showStatus('register', errors.join('<br>'), 'error');
     return;
   }
 
-  // Create user object
-  const newUser = {
-    studentId,
-    lastName,
-    firstName,
-    email,
-    yearlevel,
-    course,
-    address,
-    password, // In production, this should be hashed
-    registeredAt: new Date().toISOString()
-  };
-
-  // Store user
-  users.push(newUser);
-  localStorage.setItem('sitInUsers', JSON.stringify(users));
-
-  // Show success message and redirect
-  showStatus('register', 'Registration successful! Redirecting to login...', 'success');
-  setTimeout(() => {
-    window.location.href = 'login.html';
-  }, 2000);
+  // Send data to PHP API
+  fetch('api/register.php', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      studentId,
+      firstName,
+      lastName,
+      email,
+      yearLevel: parseInt(yearLevel),
+      course,
+      address,
+      password,
+      confirmPassword
+    })
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      showStatus('register', 'Registration successful! Redirecting to login...', 'success');
+      setTimeout(() => {
+        window.location.href = 'login.html';
+      }, 2000);
+    } else {
+      showStatus('register', data.error || 'Registration failed', 'error');
+    }
+  })
+  .catch(error => {
+    console.error('Registration error:', error);
+    showStatus('register', 'Registration failed. Please try again.', 'error');
+  });
 }
 
 // Handle Login Form Submission
@@ -113,29 +118,44 @@ function handleLogin(event) {
     return;
   }
 
-  // Get registered user
-  const users = JSON.parse(localStorage.getItem('sitInUsers') || '[]');
-  const user = users.find(u => u.email === email && u.password === password);
+  // Send login request to PHP API
+  fetch('api/login.php', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      email,
+      password
+    })
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      // Store user session data
+      localStorage.setItem('currentUser', JSON.stringify({
+        studentId: data.data.user.studentId,
+        firstName: data.data.user.firstName,
+        lastName: data.data.user.lastName,
+        email: data.data.user.email,
+        loginAt: new Date().toISOString(),
+        lastActivityAt: Date.now()
+        
+      }));
 
-  if (!user) {
-    showStatus('login', 'Invalid email or password', 'error');
-    return;
-  }
-
-  // Create session
-  localStorage.setItem('currentUser', JSON.stringify({
-    studentId: user.studentId,
-    firstName: user.firstName,
-    lastName: user.lastName,
-    email: user.email,
-    loginAt: new Date().toISOString()
-  }));
-
-  // Show success and redirect
-  showStatus('login', 'Login successful! Redirecting...', 'success');
-  setTimeout(() => {
-    window.location.href = 'index.html';
-  }, 1500);
+      // Show success and redirect
+      showStatus('login', 'Login successful! Redirecting...', 'success');
+      setTimeout(() => {
+        window.location.href = 'profile.html';
+      }, 1500);
+    } else {
+      showStatus('login', data.error || 'Invalid email or password', 'error');
+    }
+  })
+  .catch(error => {
+    console.error('Login error:', error);
+    showStatus('login', 'Login failed. Please try again.', 'error');
+  });
 }
 
 // Display status messages
@@ -198,8 +218,22 @@ function updateProfileNavLink() {
 
 // Logout function (you can call this from a logout button)
 function logout() {
-  localStorage.removeItem('currentUser');
-  window.location.href = 'index.html';
+  // Call logout API to destroy session in database
+  fetch('api/logout.php', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  .then(() => {
+    localStorage.removeItem('currentUser');
+    window.location.href = 'index.html';
+  })
+  .catch(() => {
+    // Still clear local storage and redirect even if API fails
+    localStorage.removeItem('currentUser');
+    window.location.href = 'index.html';
+  });
 }
 
 // Toggle password visibility
@@ -221,64 +255,75 @@ function loadUserProfile() {
     return;
   }
 
-  // Get full user data from sitInUsers for additional fields
-  const users = JSON.parse(localStorage.getItem('sitInUsers') || '[]');
-  const fullUser = users.find(u => u.email === currentUser.email);
+  // Fetch user profile from database API
+  fetch('api/profile.php', {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      const user = data.data;
 
-  if (!fullUser) {
-    console.error('User data not found');
-    return;
-  }
+      // Display profile data
+      const fullName = `${user.firstName} ${user.lastName}`;
 
-  // Display profile data
-  const fullName = `${fullUser.firstName} ${fullUser.lastName}`;
+      // View Mode
+      document.getElementById('profileName').textContent = fullName;
+      document.getElementById('profileEmail').textContent = user.email;
+      document.getElementById('viewStudentId').textContent = user.studentId;
+      document.getElementById('viewEmail').textContent = user.email;
+      document.getElementById('viewYearLevel').textContent = user.yearLevel;
+      document.getElementById('viewCourse').textContent = user.course;
+      document.getElementById('viewAddress').textContent = user.address;
 
-  // View Mode
-  document.getElementById('profileName').textContent = fullName;
-  document.getElementById('profileEmail').textContent = fullUser.email;
-  document.getElementById('viewStudentId').textContent = fullUser.studentId;
-  document.getElementById('viewEmail').textContent = fullUser.email;
-  document.getElementById('viewYearLevel').textContent = fullUser.yearlevel;
-  document.getElementById('viewCourse').textContent = fullUser.course;
-  document.getElementById('viewAddress').textContent = fullUser.address;
+      // Format registration date
+      const regDate = new Date(user.createdAt).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+      document.getElementById('viewMemberSince').textContent = regDate;
 
-  // Format registration date
-  const regDate = new Date(fullUser.registeredAt).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
+      // Load profile photo if exists
+      if (user.profilePhoto) {
+        const photoUrl = user.profilePhoto.startsWith('http') ? user.profilePhoto : '/' + user.profilePhoto;
+        document.getElementById('profilePhotoDisplay').style.display = 'block';
+        document.getElementById('profilePhotoDisplay').src = photoUrl;
+        document.getElementById('profilePhotoFallback').style.display = 'none';
+
+        document.getElementById('profilePhotoEdit').style.display = 'block';
+        document.getElementById('profilePhotoEdit').src = photoUrl;
+        document.getElementById('profilePhotoFallbackEdit').style.display = 'none';
+      } else {
+        // Show fallback with initials
+        const initials = `${user.firstName[0]}${user.lastName[0]}`.toUpperCase();
+        document.getElementById('profilePhotoFallback').textContent = initials;
+        document.getElementById('profilePhotoFallback').style.display = 'flex';
+        document.getElementById('profilePhotoDisplay').style.display = 'none';
+
+        document.getElementById('profilePhotoFallbackEdit').textContent = initials;
+        document.getElementById('profilePhotoFallbackEdit').style.display = 'flex';
+        document.getElementById('profilePhotoEdit').style.display = 'none';
+      }
+
+      // Populate edit form
+      document.getElementById('editStudentId').value = user.studentId;
+      document.getElementById('editFirstName').value = user.firstName;
+      document.getElementById('editLastName').value = user.lastName;
+      document.getElementById('editEmail').value = user.email;
+      document.getElementById('editYearLevel').value = user.yearLevel;
+      document.getElementById('editCourse').value = user.course;
+      document.getElementById('editAddress').value = user.address;
+    } else {
+      console.error('Failed to load profile:', data.error);
+    }
+  })
+  .catch(error => {
+    console.error('Profile loading error:', error);
   });
-  document.getElementById('viewMemberSince').textContent = regDate;
-
-  // Load profile photo if exists
-  if (fullUser.profilePhoto) {
-    document.getElementById('profilePhotoDisplay').style.display = 'block';
-    document.getElementById('profilePhotoDisplay').src = fullUser.profilePhoto;
-    document.getElementById('profilePhotoFallback').style.display = 'none';
-
-    document.getElementById('profilePhotoEdit').style.display = 'block';
-    document.getElementById('profilePhotoEdit').src = fullUser.profilePhoto;
-    document.getElementById('profilePhotoFallbackEdit').style.display = 'none';
-  } else {
-    // Show fallback with initials
-    const initials = `${fullUser.firstName[0]}${fullUser.lastName[0]}`.toUpperCase();
-    document.getElementById('profilePhotoFallback').textContent = initials;
-    document.getElementById('profilePhotoFallback').style.display = 'flex';
-    document.getElementById('profilePhotoDisplay').style.display = 'none';
-
-    document.getElementById('profilePhotoFallbackEdit').textContent = initials;
-    document.getElementById('profilePhotoFallbackEdit').style.display = 'flex';
-    document.getElementById('profilePhotoEdit').style.display = 'none';
-  }
-
-  // Fill edit form
-  document.getElementById('editStudentId').value = fullUser.studentId;
-  document.getElementById('editFirstName').value = fullUser.firstName;
-  document.getElementById('editLastName').value = fullUser.lastName;
-  document.getElementById('editEmail').value = fullUser.email;
-  document.getElementById('editYearLevel').value = fullUser.yearlevel;
-  document.getElementById('editCourse').value = fullUser.course;
-  document.getElementById('editAddress').value = fullUser.address;
 }
 
 // Toggle between view and edit mode
@@ -319,48 +364,57 @@ function saveProfile(event) {
     return;
   }
 
-  // Get current user data
+    // Get current user from localStorage for session info
   const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-  const users = JSON.parse(localStorage.getItem('sitInUsers') || '[]');
+  
+  if (!currentUser) {
+    showProfileStatus('Session expired. Please login again.', 'error');
+    window.location.href = 'login.html';
+    return;
+  }
 
-  // Find and update user
-  const userIndex = users.findIndex(u => u.email === currentUser.email);
-  if (userIndex !== -1) {
-    // Preserve existing photo if not changed
-    const profilePhoto = document.getElementById('profilePhotoEdit').src ||
-                        (users[userIndex].profilePhoto || '');
-
-    users[userIndex] = {
-      ...users[userIndex],
+  // Send update to PHP API
+  fetch('api/update-profile.php', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
       firstName,
       lastName,
       email,
-      yearlevel,
+      yearLevel: parseInt(yearlevel),
       course,
-      address,
-      profilePhoto
-    };
-
-    // Update localStorage
-    localStorage.setItem('sitInUsers', JSON.stringify(users));
-
-    // Update current user session
-    const updatedCurrentUser = {
-      ...currentUser,
-      firstName,
-      lastName,
-      email
-    };
-    localStorage.setItem('currentUser', JSON.stringify(updatedCurrentUser));
-
-    // Show success and reload
-    showProfileStatus('Profile updated successfully!', 'success');
-    setTimeout(() => {
-      loadUserProfile();
-      toggleEditMode();
-    }, 1500);
-  }
+      address
+    })
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      // Update localStorage session
+      const updatedCurrentUser = {
+        ...currentUser,
+        firstName,
+        lastName,
+        email
+      };
+      localStorage.setItem('currentUser', JSON.stringify(updatedCurrentUser));
+      
+      showProfileStatus('Profile updated successfully!', 'success');
+      setTimeout(() => {
+        loadUserProfile();
+        toggleEditMode();
+      }, 1500);
+    } else {
+      showProfileStatus(data.error || 'Update failed', 'error');
+    }
+  })
+  .catch(error => {
+    console.error('Update error:', error);
+    showProfileStatus('Update failed. Please try again.', 'error');
+  });
 }
+
 
 // Handle photo upload
 function setupPhotoUpload() {
@@ -488,15 +542,6 @@ function handleSessionExpiry() {
 
 // Track user activity to reset inactivity timer
 function setupActivityTracking() {
-  const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
-
-  if (!currentUser) return;
-
-  const events = ['mousedown', 'keydown', 'scroll', 'touchstart', 'click'];
-
-  events.forEach(event => {
-    document.addEventListener(event, updateActivityTimestamp, true);
-  });
 }
 
 // Update last activity timestamp
