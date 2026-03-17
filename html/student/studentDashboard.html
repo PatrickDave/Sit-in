@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Student</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="../../css/styles.css">
+    <style>
+        /* MATCHING LOGIN/REGISTER THEME */
+        body {
+            font-family: 'Roboto', sans-serif;
+            min-height: 100vh;
+            background: radial-gradient(circle at top, #0b4da2 0, #020617 55%, #020617 100%) !important;
+            background-attachment: fixed !important;
+            color: #0f172a;
+            padding-top: 70px;
+        }
+
+        .custom-navbar {
+            background: rgba(11, 77, 162, 0.95) !important;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .main-card {
+            background: radial-gradient(circle at top left, #ffffff, #f8fafc) !important;
+            box-shadow: 0 24px 70px rgba(0, 0, 0, 0.6) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            border-radius: 20px !important;
+            overflow: hidden;
+        }
+
+        .btn-primary-custom {
+            background: linear-gradient(135deg, #2563eb, #4f46e5) !important;
+            color: #ffffff !important;
+            border: none !important;
+            border-radius: 10px !important;
+            font-weight: 600;
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 25px rgba(37, 99, 235, 0.6);
+            filter: brightness(1.1);
+        }
+
+        .rules-header {
+            background: linear-gradient(135deg, #0b4da2, #2563eb) !important;
+            color: white;
+            padding: 1.2rem;
+        }
+
+        .rules-container {
+            max-height: 550px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+        
+        .rules-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .rules-container::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar custom-navbar fixed-top">
+        <div class="container-fluid px-4">
+            <span class="navbar-brand-text text-white fw-bold fs-5">Student Dashboard</span>
+            <div class="d-flex align-items-center">
+                <div class="dropdown ms-3">
+                    <button class="btn text-white dropdown-toggle d-flex align-items-center border-0" type="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-person-circle fs-4 me-2"></i>
+                        <span class="d-none d-sm-inline" id="navStudentName">----</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
+                        <li><a class="dropdown-item" href="studentDashboard.html"><i class="bi bi-house me-2"></i>Home</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="bi bi-bell me-2"></i>Notifications</a></li>
+                        <li>
+                            <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                                <i class="bi bi-pencil me-2"></i>Edit Profile
+                            </a>
+                        </li>
+                        <li><a class="dropdown-item" href="#"><i class="bi bi-clock-history me-2"></i>History</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="bi bi-calendar-check me-2"></i>Reservation</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item text-danger" href="../../api/logout.php">
+                                <i class="bi bi-box-arrow-right me-2"></i>Logout
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid py-5 px-lg-5">
+        <div class="row g-4">
+            
+            <div class="col-lg-3 col-md-4">
+                <div class="card main-card shadow-sm border-0 h-100">
+                    <div class="py-4 text-center" style="background: linear-gradient(135deg, #0b4da2 0%, #2563eb 100%);">
+                        <div class="position-relative d-inline-block">
+                            <img src="" id="profilePic" class="rounded-circle border border-white border-4 shadow" width="110" height="110">
+                        </div>
+                        <h5 class="fw-bold mt-3 mb-0 text-white" id="cardName">---</h5>
+                        <span class="badge bg-white text-primary rounded-pill px-3 shadow-sm mt-2" style="color: #2563eb !important;">
+                            <span id="cardID">ID: ---</span>
+                        </span>
+                    </div>
+
+                    <div class="card-body px-4 pt-4">
+                        <div class="mb-4">
+                            <div class="d-flex align-items-center mb-3 p-2 rounded-3" style="background-color: #f8fafc; border: 1px solid #e2e8f0;">
+                                <i class="bi bi-book-half fs-5 text-primary me-3"></i>
+                                <div>
+                                    <small class="text-muted d-block" style="font-size: 0.7rem;">COURSE</small>
+                                    <span class="fw-bold text-dark small" id="cardCourse">---</span>
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex align-items-center p-2 rounded-3" style="background-color: #f8fafc; border: 1px solid #e2e8f0;">
+                                <i class="bi bi-mortarboard-fill fs-5 text-primary me-3"></i>
+                                <div>
+                                    <small class="text-muted d-block" style="font-size: 0.7rem;">YEAR LEVEL</small>
+                                    <span class="fw-bold text-dark" id="cardYear">---</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4 p-3 rounded-4" style="background-color: #f1f5f9;">
+                            <label class="text-muted d-block mb-2 text-uppercase fw-bold" style="font-size: 0.7rem; letter-spacing: 0.5px;">Contact & Address</label>
+                            <p class="mb-2 small text-dark text-truncate">
+                                <i class="bi bi-envelope-fill me-2 text-primary"></i>
+                                <span id="cardEmail">---</span>
+                            </p>
+                            <p class="mb-0 small text-dark">
+                                <i class="bi bi-geo-alt-fill me-2 text-primary"></i>
+                                <span id="cardAddress">---</span>
+                            </p>
+                        </div>
+
+                        <div class="p-3 text-center rounded-4 shadow-sm" style="background: linear-gradient(135deg, #2563eb, #4f46e5); border: 1px solid rgba(255,255,255,0.2);">
+                            <small class="text-white fw-bold text-uppercase opacity-75" style="font-size: 0.7rem; letter-spacing: 1px;">Remaining Sessions</small>
+                            <h1 class="display-5 fw-bold mb-0 mt-1 text-white" id="cardSessions">0</h1>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-8">
+                <div class="card main-card h-100">
+                    <div class="card-header bg-transparent py-4 border-0 px-4">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <h5 class="mb-0 fw-bold"><i class="bi bi-broadcast-pin me-2 text-primary"></i>Feed</h5>
+                            <span class="badge bg-soft-primary text-primary" style="background: #eef2ff;">Latest</span>
+                        </div>
+                    </div>
+                    <div class="card-body px-4 pt-0">
+                        <div class="announcement-timeline">
+                            <div class="mb-4 position-relative">
+                                <div class="p-3 rounded-4 shadow-sm" style="background: white; border: 1px solid #f1f5f9;">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span class="fw-bold small text-dark">System Admin</span>
+                                        <span class="text-muted" style="font-size: 0.7rem;">Today</span>
+                                    </div>
+                                    <p class="small text-secondary mb-0">The laboratory server will undergo maintenance at 5:00 PM. Please save your work.</p>
+                                </div>
+                            </div>
+                            <div class="mb-4 position-relative">
+                                <div class="p-3 rounded-4 shadow-sm" style="background: white; border: 1px solid #f1f5f9;">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span class="fw-bold small text-dark">Dean's Office</span>
+                                        <span class="text-muted" style="font-size: 0.7rem;">Feb 10</span>
+                                    </div>
+                                    <p class="small text-secondary mb-0">New schedule for Sit-in monitoring is now posted near the laboratory entrance.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-5 col-md-12">
+                <div class="card main-card h-100">
+                    <div class="rules-header text-center">
+                        <h5 class="mb-0 fw-bold">Laboratory Rules & Regulations</h5>
+                        <small class="opacity-75">College of Computer Studies</small>
+                    </div>
+                    <div class="card-body rules-container p-4">
+                        <p class="small text-secondary mb-4 italic">To avoid embarrassment and maintain camaraderie with your friends and superiors at our laboratories, students must observe the following rules and regulations.</p>
+
+                        <div class="rules-list small">
+                            <div class="mb-3">
+                                <h6 class="fw-bold small mb-1">1. Silence and Discipline</h6>
+                                <p class="mb-1 text-dark">Maintain silence, proper decorum, and discipline inside the laboratory. Mobile phones, walkmans and other personal pieces of equipment must be switched off.</p>
+                                <p class="text-muted" style="font-size: 0.8rem;"><strong>Explanation:</strong> Students must avoid unnecessary actions that interrupt class. Devices can be on silent/vibrate for emergencies; calls must be taken outside.</p>
+                            </div>
+
+                            <div class="mb-3">
+                                <h6 class="fw-bold small mb-1">2. No Games</h6>
+                                <p class="mb-1 text-dark">Games are not allowed inside the lab. This includes computer-related games, card games and other games.</p>
+                                <p class="text-muted" style="font-size: 0.8rem;"><strong>Explanation:</strong> Computers are for academic purposes only: research, keyboarding, and learning languages.</p>
+                            </div>
+
+                            <div class="mb-3">
+                                <h6 class="fw-bold small mb-1">3. Internet Usage</h6>
+                                <p class="mb-1 text-dark">Surfing the Internet is allowed only with permission. Downloading and installing software is prohibited.</p>
+                                <p class="text-muted" style="font-size: 0.8rem;"><strong>Explanation:</strong> Social networking and non-educational sites are strictly forbidden.</p>
+                            </div>
+
+                            <div class="mb-3">
+                                <h6 class="fw-bold small mb-1">4. Prohibited Content</h6>
+                                <p class="mb-1 text-dark">Accessing pornographic or illicit sites is strictly prohibited.</p>
+                                <p class="text-muted" style="font-size: 0.8rem;"><strong>Explanation:</strong> Violators will face a parent conference to discuss potential expulsion.</p>
+                            </div>
+
+                            <div class="mb-3">
+                                <h6 class="fw-bold small mb-1">5. System Integrity</h6>
+                                <p class="mb-1 text-dark">Deleting computer files and changing the set-up of the computer is a major offense.</p>
+                            </div>
+
+                            <div class="mb-3">
+                                <h6 class="fw-bold small mb-1">6. Time Usage</h6>
+                                <p class="mb-1 text-dark">Observe computer time usage carefully. A fifteen-minute allowance is given for each use before the unit is given to "sit-in" students.</p>
+                            </div>
+
+                            <div class="mb-3">
+                                <h6 class="fw-bold small mb-1">7. Proper Decorum</h6>
+                                <ul class="ps-3 mb-1 text-dark">
+                                    <li>Do not enter the lab unless the instructor is present.</li>
+                                    <li>All bags and knapsacks must be deposited at the counter.</li>
+                                    <li>Follow the assigned seating arrangement.</li>
+                                    <li>Close all software programs at the end of class.</li>
+                                    <li>Return all chairs to their proper places.</li>
+                                </ul>
+                            </div>
+
+                            <div class="mb-3">
+                                <h6 class="fw-bold small mb-1">8. Prohibited Items</h6>
+                                <p class="mb-1 text-dark">Chewing gum, eating, drinking, smoking, and vandalism are prohibited.</p>
+                            </div>
+
+                            <div class="mb-3">
+                                <h6 class="fw-bold small mb-1">9. Conduct</h6>
+                                <p class="mb-1 text-dark">Hostile behavior, yelling, swearing, or public displays of physical intimacy are not tolerated. Offensive individuals will be asked to leave.</p>
+                            </div>
+
+                            <div class="mb-3">
+                                <h6 class="fw-bold small mb-1">10. Technical Issues</h6>
+                                <p class="mb-1 text-dark">Report technical problems to the lab supervisor or instructor immediately.</p>
+                            </div>
+
+                            <div class="p-3 rounded-3 mt-4" style="background-color: #fff5f5; border: 1px solid #feb2b2;">
+                                <h6 class="fw-bold text-danger small mb-2">DISCIPLINARY ACTION</h6>
+                                <p class="mb-1 small"><strong>First Offense:</strong> Suspension from classes recommended to the Guidance Center.</p>
+                                <p class="mb-0 small"><strong>Subsequent Offenses:</strong> Recommendation for heavier sanctions.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div> 
+    </div> 
+    
+    <div class="modal fade" id="editProfileModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg"> <div class="modal-content border-0 shadow-lg" style="border-radius: 24px; overflow: hidden;">
+                
+                <div class="modal-header text-white border-0 py-4" style="background: linear-gradient(135deg, #2563eb 0%, #6f42c1 100%);">
+                    <div class="ms-2">
+                        <h5 class="modal-title fw-bold mb-0">Update Profile</h5>
+                        <small class="opacity-75">Modify your account information below</small>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body p-4 p-md-5">
+                    <form id="editProfileForm" action="../../api/update_profile.php" method="POST" enctype="multipart/form-data">
+                        
+                        <div class="text-center mb-5">
+                            <div class="position-relative d-inline-block">
+                                <img src="<?php echo !empty($profilePicPath) ? $profilePicPath : '../../image/default.png'; ?>" 
+                                    class="rounded-circle border border-4 border-white shadow" 
+                                    width="120" height="120" id="modalPreview" 
+                                    style="object-fit: cover; transition: transform 0.3s ease;">
+                                
+                                <input type="file" name="profile_picture" id="profileInput" style="display: none;" accept="image/*">
+                                
+                                <button type="button" onclick="document.getElementById('profileInput').click();" 
+                                        class="btn btn-dark position-absolute bottom-0 end-0 rounded-circle shadow" 
+                                        style="width: 38px; height: 38px; border: 3px solid white;">
+                                    <i class="bi bi-camera-fill"></i>
+                                </button>
+                            </div>
+                            <p class="text-muted small mt-2">Click the camera icon to change photo</p>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold text-uppercase text-muted">First Name</label>
+                                <input type="text" name="first_name" id="editFirstName" class="form-control form-control-lg bg-light border-0" required style="border-radius: 12px;">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold text-uppercase text-muted">Middle Name</label>
+                                <input type="text" name="middle_name" id="editMiddleName" class="form-control form-control-lg bg-light border-0" placeholder="" style="border-radius: 12px;">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold text-uppercase text-muted">Last Name</label>
+                                <input type="text" name="last_name" id="editLastName" class="form-control form-control-lg bg-light border-0" required style="border-radius: 12px;">
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-uppercase text-muted">Email Address</label>
+                                <input type="email" name="email" id="editEmail" class="form-control form-control-lg bg-light border-0" required style="border-radius: 12px;">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-uppercase text-muted">Home Address</label>
+                                <input type="text" name="address" id="editAddress" class="form-control form-control-lg bg-light border-0" required style="border-radius: 12px;">
+                            </div>
+                        </div>
+
+                        <div class="modal-footer border-0 px-0 pb-0 mt-5">
+                            <button type="button" class="btn btn-link text-muted fw-bold text-decoration-none px-4" data-bs-dismiss="modal">Discard</button>
+                            <button type="submit" class="btn text-white px-5 py-2 fw-bold shadow-sm" 
+                                    style="background: #2563eb; border-radius: 12px; transition: all 0.3s ease;">
+                                Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../../js/studentDashboard.js"></script>
+</body>
+</html>

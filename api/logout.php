@@ -1,35 +1,24 @@
 <?php
-// Logout API Endpoint
-// POST /api/logout.php
+// 1. Start the session to gain access to it
+session_start();
 
-header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: POST');
+// 2. Unset all of the session variables
+$_SESSION = array();
 
-include 'db-config.php';
-
-try {
-    // Check if user has a session
-    if (isset($_SESSION['user_id'])) {
-        $userId = $_SESSION['user_id'];
-
-        // Delete all sessions for this user from database
-        $stmt = $pdo->prepare("DELETE FROM sessions WHERE user_id = ?");
-        $stmt->execute([$userId]);
-    }
-
-    // Destroy PHP session
-    $_SESSION = [];
-    if (ini_get('session.use_cookies') && isset($_COOKIE[session_name()])) {
-        setcookie(session_name(), '', time() - 86400 * 30, '/');
-    }
-    session_destroy();
-
-    sendSuccess('Logged out successfully');
-
-} catch (Exception $e) {
-    error_log('Logout error: ' . $e->getMessage());
-    sendError('Logout failed', 500);
+// 3. If it's desired to kill the session, also delete the session cookie.
+// Note: This will completely destroy the session, not just the session data!
+if (ini_get("session.use_cookies")) {
+    $params = session_get_cookie_params();
+    setcookie(session_name(), '', time() - 42000,
+        $params["path"], $params["domain"],
+        $params["secure"], $params["httponly"]
+    );
 }
 
+// 4. Finally, destroy the session.
+session_destroy();
+
+// 5. Redirect to the login page (adjust the path if your login is named differently)
+header("Location: ../html/login.html"); 
+exit;
 ?>
