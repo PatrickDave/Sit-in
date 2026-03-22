@@ -1,0 +1,1566 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CCS Sit‑in | Admin Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="../../css/styles.css" />
+  <style>
+    :root {
+      --sidebar-dark: #1a1f2e;
+      --sidebar-hover: #252b3d;
+      --sidebar-active: #2563eb;
+      --text-light: #e2e8f0;
+      --text-muted: #94a3b8;
+      --card-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: #f1f5f9;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+    }
+
+    .admin-wrapper {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      width: 260px;
+      background: var(--sidebar-dark);
+      color: var(--text-light);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      height: 100vh;
+      overflow-y: auto;
+      z-index: 100;
+    }
+
+    .sidebar-brand {
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .sidebar-brand img {
+      height: 36px;
+      width: auto;
+    }
+
+    .sidebar-brand span {
+      font-size: 0.85rem;
+      font-weight: 600;
+      line-height: 1.2;
+    }
+
+    .sidebar-menu {
+      padding: 1rem 0;
+      flex: 1;
+    }
+
+    .menu-section {
+      padding: 0.5rem 1rem;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      margin-top: 1rem;
+    }
+
+    .menu-item {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      padding: 0.75rem 1.5rem;
+      color: var(--text-light);
+      text-decoration: none;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    .menu-item:hover {
+      background: var(--sidebar-hover);
+    }
+
+    .menu-item.active {
+      background: var(--sidebar-active);
+    }
+
+    .menu-item i {
+      width: 20px;
+      text-align: center;
+    }
+
+    .sidebar-footer {
+      padding: 1rem 1.5rem;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .logout-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.6rem 1rem;
+      color: #f87171;
+      text-decoration: none;
+      border-radius: 8px;
+      transition: background 0.2s;
+      cursor: pointer;
+    }
+
+    .logout-btn:hover {
+      background: rgba(248, 113, 113, 0.1);
+    }
+
+    .main-content {
+      flex: 1;
+      margin-left: 260px;
+      min-height: 100vh;
+    }
+
+    .header {
+      background: white;
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .search-box {
+      position: relative;
+      width: 320px;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 0.6rem 1rem 0.6rem 2.5rem;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      transition: border-color 0.2s;
+    }
+
+    .search-box input:focus {
+      outline: none;
+      border-color: #2563eb;
+    }
+
+    .search-box i {
+      position: absolute;
+      left: 0.85rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #94a3b8;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+    }
+
+    .header-icon {
+      position: relative;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .header-icon:hover {
+      background: #f1f5f9;
+    }
+
+    .header-icon i {
+      color: #64748b;
+      font-size: 1.1rem;
+    }
+
+    .notification-badge {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      width: 18px;
+      height: 18px;
+      background: #ef4444;
+      color: white;
+      font-size: 0.65rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .user-profile {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.4rem 0.75rem;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.2s;
+      position: relative;
+    }
+
+    .user-profile:hover {
+      background: #f1f5f9;
+    }
+
+    .user-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #2563eb, #4f46e5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 600;
+      font-size: 0.85rem;
+      overflow: hidden;
+    }
+
+    .user-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .user-info {
+      line-height: 1.3;
+    }
+
+    .user-name {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #1e293b;
+    }
+
+    .user-role {
+      font-size: 0.75rem;
+      color: #64748b;
+    }
+
+    .dropdown-menu {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      margin-top: 0.5rem;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+      min-width: 180px;
+      display: none;
+      z-index: 100;
+    }
+
+    .dropdown-menu.show {
+      display: block;
+    }
+
+    .dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      color: #475569;
+      text-decoration: none;
+      font-size: 0.875rem;
+      transition: background 0.2s;
+      cursor: pointer;
+    }
+
+    .dropdown-item:hover {
+      background: #f8fafc;
+    }
+
+    .dropdown-item:first-child {
+      border-radius: 10px 10px 0 0;
+    }
+
+    .dropdown-item:last-child {
+      border-radius: 0 0 10px 10px;
+    }
+
+    .dashboard-content {
+      padding: 2rem;
+    }
+
+    .page-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #1e293b;
+      margin-bottom: 0.5rem;
+    }
+
+    .page-subtitle {
+      font-size: 0.875rem;
+      color: #64748b;
+      margin-bottom: 1.75rem;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: white;
+      border-radius: 16px;
+      padding: 1.5rem;
+      box-shadow: var(--card-shadow);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .stat-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
+    .stat-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+    }
+
+    .stat-icon.blue { background: rgba(37, 99, 235, 0.1); color: #2563eb; }
+    .stat-icon.green { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+    .stat-icon.purple { background: rgba(139, 92, 246, 0.1); color: #8b5cf6; }
+    .stat-icon.orange { background: rgba(249, 115, 22, 0.1); color: #f97316; }
+
+    .stat-change {
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.25rem 0.5rem;
+      border-radius: 20px;
+    }
+
+    .stat-change.positive { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+    .stat-change.negative { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+
+    .stat-value {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 0.25rem;
+    }
+
+    .stat-label {
+      font-size: 0.85rem;
+      color: #64748b;
+    }
+
+    .charts-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .chart-card {
+      background: white;
+      border-radius: 16px;
+      padding: 1.5rem;
+      box-shadow: var(--card-shadow);
+    }
+
+    .chart-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+    }
+
+    .chart-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #1e293b;
+    }
+
+    .chart-filter {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .filter-btn {
+      padding: 0.4rem 0.85rem;
+      border: 1px solid #e2e8f0;
+      background: white;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      color: #64748b;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .filter-btn:hover, .filter-btn.active {
+      background: #2563eb;
+      color: white;
+      border-color: #2563eb;
+    }
+
+    .chart-container {
+      height: 280px;
+    }
+
+    .quick-stats {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .quick-stat-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem;
+      background: #f8fafc;
+      border-radius: 10px;
+    }
+
+    .quick-stat-info {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .quick-stat-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+    }
+
+    .quick-stat-label {
+      font-size: 0.85rem;
+      color: #64748b;
+    }
+
+    .quick-stat-value {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #1e293b;
+    }
+
+    .table-card {
+      background: white;
+      border-radius: 16px;
+      padding: 1.5rem;
+      box-shadow: var(--card-shadow);
+    }
+
+    .table-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.25rem;
+    }
+
+    .table-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #1e293b;
+    }
+
+    .view-all {
+      font-size: 0.85rem;
+      color: #2563eb;
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .view-all:hover {
+      color: #1d4ed8;
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .data-table th {
+      text-align: left;
+      padding: 0.85rem 1rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .data-table td {
+      padding: 1rem;
+      font-size: 0.875rem;
+      color: #475569;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .data-table tr:hover td {
+      background: #f8fafc;
+    }
+
+    .data-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .customer-cell {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .customer-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 0.8rem;
+      color: white;
+      overflow: hidden;
+    }
+
+    .customer-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .status-badge {
+      padding: 0.35rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .status-badge.approved { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+    .status-badge.pending { background: rgba(251, 191, 36, 0.1); color: #d97706; }
+    .status-badge.rejected { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+    .status-badge.active { background: rgba(37, 99, 235, 0.1); color: #2563eb; }
+    .status-badge.completed { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+
+    .quick-actions {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+
+    .action-card {
+      background: white;
+      border-radius: 12px;
+      padding: 1.25rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 1px solid transparent;
+    }
+
+    .action-card:hover {
+      border-color: #2563eb;
+      transform: translateY(-2px);
+    }
+
+    .action-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 0.75rem;
+      font-size: 1.25rem;
+    }
+
+    .action-label {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: #1e293b;
+    }
+
+    /* Profile */
+    .profile-card {
+      background: white;
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: var(--card-shadow);
+      text-align: center;
+      max-width: 450px;
+      margin: 0 auto;
+    }
+
+    .profile-avatar-large {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      margin: 0 auto 1.5rem;
+      background: linear-gradient(135deg, #2563eb, #4f46e5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 2.5rem;
+      font-weight: 600;
+      overflow: hidden;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .profile-avatar-large img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .profile-avatar-large .edit-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(0,0,0,0.6);
+      padding: 0.5rem;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .profile-avatar-large:hover .edit-overlay {
+      opacity: 1;
+    }
+
+    .profile-name {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #1e293b;
+      margin-bottom: 0.25rem;
+    }
+
+    .profile-role {
+      font-size: 0.9rem;
+      color: #64748b;
+      margin-bottom: 1.5rem;
+    }
+
+    .profile-info {
+      text-align: left;
+      margin-bottom: 1.5rem;
+    }
+
+    .profile-info-item {
+      display: flex;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .profile-info-item:last-child {
+      border-bottom: none;
+    }
+
+    .profile-info-label {
+      width: 100px;
+      font-size: 0.85rem;
+      color: #64748b;
+    }
+
+    .profile-info-value {
+      flex: 1;
+      font-size: 0.85rem;
+      color: #1e293b;
+      font-weight: 500;
+    }
+
+    .profile-edit-btn {
+      width: 100%;
+      padding: 0.75rem;
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .profile-edit-btn:hover {
+      background: #1d4ed8;
+    }
+
+    .profile-info-item input {
+      flex: 1;
+      padding: 0.25rem 0.5rem;
+      font-size: 0.85rem;
+      border: 1px solid #e2e8f0;
+      border-radius: 4px;
+    }
+
+    /* Content sections */
+    .content-section {
+      display: none;
+    }
+
+    .content-section.active {
+      display: block;
+    }
+
+    @media (max-width: 1200px) {
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .charts-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 992px) {
+      .sidebar { width: 80px; }
+      .sidebar-brand span, .menu-item span, .menu-section, .sidebar-footer span { display: none; }
+      .menu-item { justify-content: center; padding: 0.75rem; }
+      .sidebar-brand { justify-content: center; }
+      .main-content { margin-left: 80px; }
+    }
+
+    @media (max-width: 768px) {
+      .stats-grid { grid-template-columns: 1fr; }
+      .quick-actions { grid-template-columns: repeat(2, 1fr); }
+      .search-box { display: none; }
+      .user-info { display: none; }
+      .header { padding: 1rem; }
+      .dashboard-content { padding: 1rem; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="admin-wrapper">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <img src="../../image/CCSlogo.png" alt="CCS Logo">
+        <span>Sit-in<br>Monitoring</span>
+      </div>
+
+      <nav class="sidebar-menu">
+        <div class="menu-section">Main</div>
+        <a class="menu-item active" onclick="showPage('dashboard', this)">
+          <i class="fas fa-th-large"></i><span>Dashboard</span>
+        </a>
+        <a class="menu-item" onclick="showPage('sessions', this)">
+          <i class="fas fa-user-clock"></i><span>Student Sessions</span>
+        </a>
+        <a class="menu-item" onclick="showPage('requests', this)">
+          <i class="fas fa-file-signature"></i><span>Student Requests</span>
+        </a>
+        <a class="menu-item" onclick="showPage('students', this)">
+          <i class="fas fa-users"></i><span>Students</span>
+        </a>
+        <a class="menu-item" onclick="showPage('labs', this)">
+          <i class="fas fa-desktop"></i><span>Computer Labs</span>
+        </a>
+
+        <div class="menu-section">Account</div>
+        <a class="menu-item" onclick="showPage('profile', this)">
+          <i class="fas fa-user-cog"></i><span>Admin Profile</span>
+        </a>
+        <a class="menu-item" onclick="showPage('settings', this)">
+          <i class="fas fa-cog"></i><span>Settings</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <a class="logout-btn" onclick="logout()">
+          <i class="fas fa-sign-out-alt"></i><span>Logout</span>
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <header class="header">
+        <div class="header-left">
+          <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="Search students, sessions, requests...">
+          </div>
+        </div>
+
+        <div class="header-right">
+          <div class="header-icon" onclick="toggleNotifications()">
+            <i class="fas fa-bell"></i>
+            <span class="notification-badge">5</span>
+          </div>
+
+          <div class="user-profile" onclick="toggleDropdown()">
+            <div class="user-avatar" id="headerAvatar">
+              <span style="color: white; font-weight: 600;">AD</span>
+            </div>
+            <div class="user-info">
+              <div class="user-name">Admin</div>
+              <div class="user-role">Administrator</div>
+            </div>
+            <i class="fas fa-chevron-down" style="color: #94a3b8; font-size: 0.75rem;"></i>
+
+            <div class="dropdown-menu" id="userDropdown">
+              <a class="dropdown-item" onclick="showPage('profile', document.querySelectorAll('.menu-item')[6])">
+                <i class="fas fa-user"></i> Profile
+              </a>
+              <a class="dropdown-item" onclick="showPage('settings', document.querySelectorAll('.menu-item')[7])">
+                <i class="fas fa-cog"></i> Settings
+              </a>
+              <a class="dropdown-item" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i> Logout
+              </a>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div class="dashboard-content">
+        
+        <!-- Dashboard Overview -->
+        <div id="dashboard" class="content-section active">
+          <h1 class="page-title">Dashboard Overview</h1>
+          <p class="page-subtitle">Welcome back! Here's what's happening with your Sit-in Monitoring System today.</p>
+
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-header">
+                <div class="stat-icon blue"><i class="fas fa-users"></i></div>
+                <span class="stat-change positive">+12.5%</span>
+              </div>
+              <div class="stat-value">1,327</div>
+              <div class="stat-label">Total Students</div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-header">
+                <div class="stat-icon green"><i class="fas fa-user-clock"></i></div>
+                <span class="stat-change positive">+8.2%</span>
+              </div>
+              <div class="stat-value">18</div>
+              <div class="stat-label">Active Sessions</div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-header">
+                <div class="stat-icon purple"><i class="fas fa-file-signature"></i></div>
+                <span class="stat-change positive">+15.3%</span>
+              </div>
+              <div class="stat-value">9</div>
+              <div class="stat-label">Pending Requests</div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-header">
+                <div class="stat-icon orange"><i class="fas fa-desktop"></i></div>
+                <span class="stat-change negative">-3.2%</span>
+              </div>
+              <div class="stat-value">45</div>
+              <div class="stat-label">Available PCs</div>
+            </div>
+          </div>
+
+          <div class="charts-grid">
+            <div class="chart-card">
+              <div class="chart-header">
+                <h3 class="chart-title">Monthly Sit-in Sessions</h3>
+                <div class="chart-filter">
+                  <button class="filter-btn">Weekly</button>
+                  <button class="filter-btn active">Monthly</button>
+                  <button class="filter-btn">Yearly</button>
+                </div>
+              </div>
+              <div class="chart-container">
+                <canvas id="sessionsChart"></canvas>
+              </div>
+            </div>
+
+            <div class="chart-card">
+              <div class="chart-header">
+                <h3 class="chart-title">Quick Stats</h3>
+              </div>
+              <div class="quick-stats">
+                <div class="quick-stat-item">
+                  <div class="quick-stat-info">
+                    <div class="quick-stat-icon" style="background: rgba(37, 99, 235, 0.1); color: #2563eb;">
+                      <i class="fas fa-clock"></i>
+                    </div>
+                    <div>
+                      <div class="quick-stat-label">Avg. Session</div>
+                      <div class="quick-stat-value">1h 15m</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="quick-stat-item">
+                  <div class="quick-stat-info">
+                    <div class="quick-stat-icon" style="background: rgba(16, 185, 129, 0.1); color: #10b981;">
+                      <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div>
+                      <div class="quick-stat-label">Completed</div>
+                      <div class="quick-stat-value">159</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="quick-stat-item">
+                  <div class="quick-stat-info">
+                    <div class="quick-stat-icon" style="background: rgba(139, 92, 246, 0.1); color: #8b5cf6;">
+                      <i class="fas fa-star"></i>
+                    </div>
+                    <div>
+                      <div class="quick-stat-label">Top Lab</div>
+                      <div class="quick-stat-value">Lab 1</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="quick-stat-item">
+                  <div class="quick-stat-info">
+                    <div class="quick-stat-icon" style="background: rgba(249, 115, 22, 0.1); color: #f97316;">
+                      <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div>
+                      <div class="quick-stat-label">Violations</div>
+                      <div class="quick-stat-value">7</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="table-card">
+            <div class="table-header">
+              <h3 class="table-title">Recent Sit-in Sessions</h3>
+              <a href="#" class="view-all">View All <i class="fas fa-arrow-right"></i></a>
+            </div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Session ID</th>
+                  <th>Student</th>
+                  <th>Lab</th>
+                  <th>Time In</th>
+                  <th>Purpose</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>#23833353</td>
+                  <td><div class="customer-cell"><div class="customer-avatar" style="background: linear-gradient(135deg, #667eea, #764ba2);">AM</div><span>Sergio Neri</span></div></td>
+                  <td>Lab 1</td>
+                  <td>Mar 23, 11:25 AM</td>
+                  <td>Coding Practice</td>
+                  <td><span class="status-badge active">Active</span></td>
+                </tr>
+                <tr>
+                  <td>#23844954</td>
+                  <td><div class="customer-cell"><div class="customer-avatar" style="background: linear-gradient(135deg, #f093fb, #f5576c);">JC</div><span>Christian Exequeil</span></div></td>
+                  <td>Lab 2</td>
+                  <td>Mar 23, 11:45 AM</td>
+                  <td>Research</td>
+                  <td><span class="status-badge active">Active</span></td>
+                </tr>
+                <tr>
+                  <td>#23821150</td>
+                  <td><div class="customer-cell"><div class="customer-avatar" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">SR</div><span>Revo Espinosa II</span></div></td>
+                  <td>Lab 3</td>
+                  <td>Mar 23, 11:36 AM</td>
+                  <td>Web Development</td>
+                  <td><span class="status-badge completed">Completed</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="quick-actions">
+            <div class="action-card">
+              <div class="action-icon" style="background: rgba(37, 99, 235, 0.1); color: #2563eb;"><i class="fas fa-plus"></i></div>
+              <div class="action-label">New Session</div>
+            </div>
+            <div class="action-card">
+              <div class="action-icon" style="background: rgba(16, 185, 129, 0.1); color: #10b981;"><i class="fas fa-check"></i></div>
+              <div class="action-label">Approve Request</div>
+            </div>
+            <div class="action-card">
+              <div class="action-icon" style="background: rgba(139, 92, 246, 0.1); color: #8b5cf6;"><i class="fas fa-user-plus"></i></div>
+              <div class="action-label">Add Student</div>
+            </div>
+            <div class="action-card">
+              <div class="action-icon" style="background: rgba(249, 115, 22, 0.1); color: #f97316;"><i class="fas fa-download"></i></div>
+              <div class="action-label">Export Report</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Student Sessions -->
+        <div id="sessions" class="content-section">
+          <h1 class="page-title">Student Sessions</h1>
+          <p class="page-subtitle">Manage all active and past sit-in sessions.</p>
+
+          <div class="table-card">
+            <div class="table-header">
+              <h3 class="table-title">All Sessions</h3>
+              <a href="#" class="view-all">Export <i class="fas fa-download"></i></a>
+            </div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Session ID</th>
+                  <th>Student ID</th>
+                  <th>Student Name</th>
+                  <th>Lab</th>
+                  <th>PC</th>
+                  <th>Time In</th>
+                  <th>Time Out</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>#SES-7829</td>
+                  <td>23821150</td>
+                  <td>Revo Espinosa II</td>
+                  <td>Lab 1</td>
+                  <td>PC-015</td>
+                  <td>08:30 AM</td>
+                  <td>--</td>
+                  <td><span class="status-badge active">Active</span></td>
+                  <td><i class="fas fa-stop-circle" style="color: #ef4444; cursor: pointer;"></i></td>
+                </tr>
+                <tr>
+                  <td>#SES-7828</td>
+                  <td>23833353</td>
+                  <td>Sergio Neri</td>
+                  <td>Lab 2</td>
+                  <td>PC-022</td>
+                  <td>09:15 AM</td>
+                  <td>--</td>
+                  <td><span class="status-badge active">Active</span></td>
+                  <td><i class="fas fa-stop-circle" style="color: #ef4444; cursor: pointer;"></i></td>
+                </tr>
+                <tr>
+                  <td>#SES-7827</td>
+                  <td>23768351</td>
+                  <td>Gabriel Andrew</td>
+                  <td>Lab 3</td>
+                  <td>PC-008</td>
+                  <td>07:45 AM</td>
+                  <td>11:30 AM</td>
+                  <td><span class="status-badge completed">Completed</span></td>
+                  <td><i class="fas fa-eye" style="color: #2563eb; cursor: pointer;"></i></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Student Requests -->
+        <div id="requests" class="content-section">
+          <h1 class="page-title">Student Requests</h1>
+          <p class="page-subtitle">View and manage sit-in reservation requests.</p>
+
+          <div class="table-card">
+            <div class="table-header">
+              <h3 class="table-title">Pending Requests</h3>
+            </div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Request ID</th>
+                  <th>Student</th>
+                  <th>Lab</th>
+                  <th>Date</th>
+                  <th>Time</th>
+                  <th>Purpose</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>#REQ-1024</td>
+                  <td><div class="customer-cell"><div class="customer-avatar" style="background: linear-gradient(135deg, #667eea, #764ba2);">JD</div><span>Robert Brownie</span></div></td>
+                  <td>Lab 1</td>
+                  <td>Mar 23</td>
+                  <td>08:00 AM</td>
+                  <td>Coding Practice</td>
+                  <td><span class="status-badge pending">Pending</span></td>
+                  <td><i class="fas fa-check" style="color: #10b981; margin-right: 8px; cursor: pointer;"></i><i class="fas fa-times" style="color: #ef4444; cursor: pointer;"></i></td>
+                </tr>
+                <tr>
+                  <td>#REQ-1023</td>
+                  <td><div class="customer-cell"><div class="customer-avatar" style="background: linear-gradient(135deg, #f093fb, #f5576c);">EM</div><span>Christian Exekoy</span></div></td>
+                  <td>Lab 2</td>
+                  <td>Mar 23</td>
+                  <td>10:00 AM</td>
+                  <td>Research</td>
+                  <td><span class="status-badge pending">Pending</span></td>
+                  <td><i class="fas fa-check" style="color: #10b981; margin-right: 8px; cursor: pointer;"></i><i class="fas fa-times" style="color: #ef4444; cursor: pointer;"></i></td>
+                </tr>
+                <tr>
+                  <td>#REQ-1022</td>
+                  <td><div class="customer-cell"><div class="customer-avatar" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">RB</div><span>Emilito Kondisyonis</span></div></td>
+                  <td>Lab 3</td>
+                  <td>Mar 22</td>
+                  <td>02:00 PM</td>
+                  <td>Database Work</td>
+                  <td><span class="status-badge approved">Approved</span></td>
+                  <td><i class="fas fa-eye" style="color: #2563eb; cursor: pointer;"></i></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Students -->
+        <div id="students" class="content-section">
+          <h1 class="page-title">Students</h1>
+          <p class="page-subtitle">Manage registered students in the system.</p>
+
+          <div class="table-card">
+            <div class="table-header">
+              <h3 class="table-title">All Students</h3>
+              <a href="#" class="view-all">Add Student <i class="fas fa-plus"></i></a>
+            </div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Student ID</th>
+                  <th>Name</th>
+                  <th>Course</th>
+                  <th>Year</th>
+                  <th>Email</th>
+                  <th>Total Sessions</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>#23826514</td>
+                  <td><div class="customer-cell"><div class="customer-avatar" style="background: linear-gradient(135deg, #667eea, #764ba2);">AM</div><span>Patrick Cagas</span></div></td>
+                  <td>BSIT</td>
+                  <td>3rd Year</td>
+                  <td>patrickcagas@gmail.com</td>
+                  <td>8</td>
+                  <td><span class="status-badge active">Active</span></td>
+                </tr>
+                <tr>
+                  <td>#23833353</td>
+                  <td><div class="customer-cell"><div class="customer-avatar" style="background: linear-gradient(135deg, #f093fb, #f5576c);">JC</div><span>Sergio Neri</span></div></td>
+                  <td>BSIT</td>
+                  <td>3rd Year</td>
+                  <td>gioneri@gmail.com</td>
+                  <td>6</td>
+                  <td><span class="status-badge active">Active</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Labs -->
+        <div id="labs" class="content-section">
+          <h1 class="page-title">Computer Labs</h1>
+          <p class="page-subtitle">Manage computer laboratory rooms and availability.</p>
+
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-header"><div class="stat-icon blue"><i class="fas fa-desktop"></i></div></div>
+              <div class="stat-value">Lab 1 (CCS)</div>
+              <div class="stat-label">46 PCs - 4 Available</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-header"><div class="stat-icon green"><i class="fas fa-desktop"></i></div></div>
+              <div class="stat-value">Lab 2 (MAC)</div>
+              <div class="stat-label">50 PCs - 3 Available</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-header"><div class="stat-icon purple"><i class="fas fa-desktop"></i></div></div>
+              <div class="stat-value">Lab 3</div>
+              <div class="stat-label">45 PCs - 5 Available</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-header"><div class="stat-icon orange"><i class="fas fa-desktop"></i></div></div>
+              <div class="stat-value">Lab 4</div>
+              <div class="stat-label">48 PCs - 6 Available</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Profile -->
+        <div id="profile" class="content-section">
+          <h1 class="page-title">Admin Profile</h1>
+          <p class="page-subtitle">Manage your admin account settings.</p>
+
+          <div class="profile-card">
+            <div class="profile-avatar-large" onclick="document.getElementById('photoInput').click()">
+              <span style="color: white; font-weight: 600;" id="profileInitials">AD</span>
+              <div class="edit-overlay"><i class="fas fa-camera" style="color: white;"></i></div>
+              <input type="file" id="photoInput" accept="image/*" style="display: none;" onchange="updateProfilePhoto(event)">
+            </div>
+            
+            <div class="profile-name" id="profileNameDisplay">Admin User</div>
+            <input type="text" id="profileNameInput" class="form-control text-center mb-2" value="Admin User" style="display:none; max-width: 200px; margin: 0 auto 0.5rem;">
+            
+            <div class="profile-role">System Administrator</div>
+
+            <div class="profile-info">
+              <div class="profile-info-item">
+                <span class="profile-info-label">Admin ID</span>
+                <span class="profile-info-value">ADMIN-001</span>
+              </div>
+              <div class="profile-info-item">
+                <span class="profile-info-label">Email</span>
+                <span class="profile-info-value" id="profileEmailDisplay">admin@ccs.edu</span>
+                <input type="email" id="profileEmailInput" class="form-control" value="admin@ccs.edu" style="display:none; flex:1; padding: 0.25rem 0.5rem; font-size: 0.85rem;">
+              </div>
+              <div class="profile-info-item">
+                <span class="profile-info-label">Role</span>
+                <span class="profile-info-value">Admin</span>
+              </div>
+              <div class="profile-info-item">
+                <span class="profile-info-label">Last Login</span>
+                <span class="profile-info-value">Mar 22, 2026 08:00 AM</span>
+              </div>
+            </div>
+
+            <button class="profile-edit-btn" id="editProfileBtn" onclick="editProfile()">
+              <i class="fas fa-edit"></i> Edit Profile
+            </button>
+          </div>
+        </div>
+
+        <!-- Settings -->
+        <div id="settings" class="content-section">
+          <h1 class="page-title">Settings</h1>
+          <p class="page-subtitle">Configure system settings.</p>
+
+          <div class="table-card">
+            <table class="data-table">
+              <tbody>
+                <tr>
+                  <td style="width: 200px;">Session Timeout</td>
+                  <td>
+                    <select id="sessionTimeout" class="form-control" style="max-width: 150px;">
+                      <option value="1">1 hour</option>
+                      <option value="2">2 hours</option>
+                      <option value="3">3 hours</option>
+                      <option value="4">4 hours</option>
+                      <option value="5">5 hours</option>
+                      <option value="6">6 hours</option>
+                    </select>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Max Daily Sessions</td>
+                  <td>
+                    <select id="maxDailySessions" class="form-control" style="max-width: 150px;">
+                      <option value="1">1 per student</option>
+                      <option value="2">2 per student</option>
+                      <option value="3">3 per student</option>
+                      <option value="4">4 per student</option>
+                      <option value="5">5 per student</option>
+                      <option value="6">6 per student</option>
+                    </select>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Lab Operating Hours</td>
+                  <td>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                      <input type="time" id="labOpenTime" class="form-control" style="max-width: 150px;">
+                      <span>to</span>
+                      <input type="time" id="labCloseTime" class="form-control" style="max-width: 150px;">
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <button class="profile-edit-btn mt-3" onclick="saveSettings()" style="max-width: 200px;">
+              <i class="fas fa-save"></i> Save Settings
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    // Sessions Chart
+    const ctx = document.getElementById('sessionsChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+        datasets: [{
+          label: 'Sessions',
+          data: [450, 520, 480, 610, 550, 670, 720, 690, 780, 850, 920, 980],
+          backgroundColor: 'rgba(37, 99, 235, 0.8)',
+          borderRadius: 6,
+          barThickness: 28,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid: { display: false } },
+          y: { beginAtZero: true, grid: { color: 'rgba(0, 0, 0, 0.05)' } }
+        }
+      }
+    });
+
+    function showPage(page, element) {
+      document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+      document.getElementById(page).classList.add('active');
+      document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
+      if (element) element.classList.add('active');
+    }
+
+    function toggleDropdown() {
+      document.getElementById('userDropdown').classList.toggle('show');
+    }
+
+    function toggleNotifications() {
+      alert('You have 5 new notifications');
+    }
+
+    function logout() {
+      if (confirm('Are you sure you want to logout?')) {
+        window.location.href = '../../api/admin_logout.php';
+      }
+    }
+
+    document.addEventListener('click', function(e) {
+      const dropdown = document.getElementById('userDropdown');
+      const profile = document.querySelector('.user-profile');
+      if (!profile.contains(e.target)) dropdown.classList.remove('show');
+    });
+
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+      });
+    });
+
+    // Load profile on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      loadProfileFromDB();
+    });
+
+    function loadProfileFromDB() {
+      fetch('../../api/admin_profile_process.php')
+        .then(response => response.json())
+        .then(data => {
+          if (data.success && data.data) {
+            const profile = data.data;
+            
+            if (profile.name) {
+              document.getElementById('profileNameDisplay').textContent = profile.name;
+              document.getElementById('profileNameInput').value = profile.name;
+              
+              const initials = profile.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0,2);
+              document.getElementById('profileInitials').textContent = initials || 'AD';
+            }
+            
+            if (profile.email) {
+              document.getElementById('profileEmailDisplay').textContent = profile.email;
+              document.getElementById('profileEmailInput').value = profile.email;
+            }
+            
+            if (profile.profile_image) {
+              const initials = document.getElementById('profileInitials');
+              if (initials) {
+                initials.outerHTML = '<img src="' + profile.profile_image + '" style="width:100%;height:100%;object-fit:cover;">';
+              }
+              const headerAvatar = document.getElementById('headerAvatar');
+              if (headerAvatar) {
+                headerAvatar.innerHTML = '<img src="' + profile.profile_image + '" style="width:100%;height:100%;object-fit:cover;">';
+              }
+            }
+          }
+        })
+        .catch(error => console.error('Error loading profile:', error));
+    }
+
+    function updateProfilePhoto(event) {
+      const file = event.target.files[0];
+      if (file) {
+        // Preview immediately
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const initials = document.getElementById('profileInitials');
+          if (initials) {
+            initials.outerHTML = '<img src="' + e.target.result + '" style="width:100%;height:100%;object-fit:cover;">';
+          }
+          const headerAvatar = document.getElementById('headerAvatar');
+          if (headerAvatar) {
+            headerAvatar.innerHTML = '<img src="' + e.target.result + '" style="width:100%;height:100%;object-fit:cover;">';
+          }
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function editProfile() {
+      const nameDisplay = document.getElementById('profileNameDisplay');
+      const nameInput = document.getElementById('profileNameInput');
+      const emailDisplay = document.getElementById('profileEmailDisplay');
+      const emailInput = document.getElementById('profileEmailInput');
+      const btn = document.getElementById('editProfileBtn');
+      const photoInput = document.getElementById('photoInput');
+      
+      if (nameInput.style.display === 'none') {
+        // Switch to edit mode
+        nameDisplay.style.display = 'none';
+        nameInput.style.display = 'block';
+        emailDisplay.style.display = 'none';
+        emailInput.style.display = 'block';
+        btn.innerHTML = '<i class="fas fa-save"></i> Save Changes';
+        btn.style.background = '#10b981';
+      } else {
+        // Save changes to database
+        const formData = new FormData();
+        formData.append('name', nameInput.value.trim() || 'Admin User');
+        formData.append('email', emailInput.value.trim() || 'admin@ccs.edu');
+        
+        if (photoInput && photoInput.files[0]) {
+          formData.append('profile_image', photoInput.files[0]);
+        }
+        
+        fetch('../../api/admin_profile_process.php', {
+          method: 'POST',
+          body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            const newName = nameInput.value.trim();
+            nameDisplay.textContent = newName || 'Admin User';
+            emailDisplay.textContent = emailInput.value.trim() || 'admin@ccs.edu';
+            
+            // Update initials
+            const initials = newName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0,2);
+            const initialsEl = document.getElementById('profileInitials');
+            if (initialsEl) initialsEl.textContent = initials || 'AD';
+            
+            // Reset to display mode
+            nameDisplay.style.display = 'block';
+            nameInput.style.display = 'none';
+            emailDisplay.style.display = 'block';
+            emailInput.style.display = 'none';
+            btn.innerHTML = '<i class="fas fa-edit"></i> Edit Profile';
+            btn.style.background = '#2563eb';
+            
+            alert('Profile updated successfully!');
+          } else {
+            alert('Error: ' + data.message);
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('Error saving profile');
+        });
+      }
+    }
+
+    // Load settings on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      loadProfileFromDB();
+      loadSettings();
+    });
+
+    function loadSettings() {
+      fetch('../../api/settings_process.php')
+        .then(response => response.json())
+        .then(data => {
+          if (data.success && data.data) {
+            document.getElementById('sessionTimeout').value = data.data.session_timeout || '4';
+            document.getElementById('maxDailySessions').value = data.data.max_daily_sessions || '3';
+            document.getElementById('labOpenTime').value = data.data.lab_open_time || '07:00';
+            document.getElementById('labCloseTime').value = data.data.lab_close_time || '18:00';
+          }
+        })
+        .catch(error => console.error('Error loading settings:', error));
+    }
+
+    function saveSettings() {
+      const formData = new FormData();
+      formData.append('session_timeout', document.getElementById('sessionTimeout').value);
+      formData.append('max_daily_sessions', document.getElementById('maxDailySessions').value);
+      formData.append('lab_open_time', document.getElementById('labOpenTime').value);
+      formData.append('lab_close_time', document.getElementById('labCloseTime').value);
+      
+      fetch('../../api/settings_process.php', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          alert('Settings saved successfully!');
+        } else {
+          alert('Error: ' + data.message);
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Error saving settings');
+      });
+    }
+  </script>
+</body>
+
+</html>
