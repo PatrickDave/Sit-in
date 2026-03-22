@@ -12,7 +12,6 @@ body {
   min-height: 100vh;
   color: #0f172a;
   background: radial-gradient(circle at top, #0b4da2 0, #020617 55%, #020617 100%);
-  display: flex;
 }
 
 a {
@@ -91,6 +90,7 @@ a {
   align-items: center;
   justify-content: center;
   padding: 2rem 1.5rem 2.4rem;
+  min-height: 1px;
 }
 
 .auth-layout {
@@ -212,6 +212,12 @@ a {
   font-size: 0.78rem;
   color: #9ca3af;
   text-align: center;
+  margin-top: auto;
+  width: 100%;
+}
+
+body {
+  min-height: 100vh;
 }
 
 /* DASHBOARD THEME OVERRIDES */

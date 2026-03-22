@@ -16,7 +16,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if (password_verify($password, $user['password'])) {
             $_SESSION['user_id'] = $user['id'];
             // Path: out of api, into html/student/
-            header("Location: ../html/student/studentDashboard.html");
+            header("Location: ../html/login.html?login=success");
             exit();
         } else {
             header("Location: ../html/login.html?error=invalid_password");

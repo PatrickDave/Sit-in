@@ -40,134 +40,91 @@
                 <div>
                   <h2 class="card-title" style="text-align: center; margin-bottom: 1.4rem;">Sign Up</h2>
               
-              <form id="registration-form" action="../api/register_process.php" method="POST" class="form form-grid form-grid--single">
+              <form id="registration-form" action="../api/register_process.php" method="POST" class="form">
                 <div id="registerStatus"></div>
                 
-                <div class="field">
-                  <label for="studentId">ID Number</label>
-                  <input
-                    id="studentId"
-                    name="studentId"
-                    type="text"
-                    class="input"
-                    required
-                  />
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <div class="field">
+                      <label for="studentId">ID Number</label>
+                      <input id="studentId" name="studentId" type="text" class="input" required />
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="field">
+                      <label for="email">Email</label>
+                      <input id="email" name="email" type="email" class="input" required />
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="field">
+                      <label for="lastName">Last Name</label>
+                      <input id="lastName" name="lastName" type="text" class="input" required />
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="field">
+                      <label for="firstName">First Name</label>
+                      <input id="firstName" name="firstName" type="text" class="input" required />
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="field">
+                      <label for="middleName">Middle Name</label>
+                      <input id="middleName" name="middleName" type="text" class="input" placeholder="(Optional)" />
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="field">
+                      <label for="address">Address</label>
+                      <input id="address" name="address" type="text" class="input" required />
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="field">
+                      <label for="yearlevel">Year Level</label>
+                      <select id="yearlevel" name="yearlevel" class="input" required>
+                        <option value="">Select Year</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="field">
+                      <label for="course">Course</label>
+                      <select id="course" name="course" class="input" required>
+                        <option value="">Select Course</option>
+                        <option value="College of Arts and Sciences">College of Arts and Sciences</option>
+                        <option value="College of Business and Accountancy">College of Business and Accountancy</option>
+                        <option value="College of Computer Studies">College of Computer Studies</option>
+                        <option value="College of Criminal Justice">College of Criminal Justice</option>
+                        <option value="College of Customs Administration">College of Customs Administration</option>
+                        <option value="College of Hospitality Management">College of Hospitality Management</option>
+                        <option value="College of Nursing">College of Nursing</option>
+                        <option value="College of Social Work">College of Social Work</option>
+                        <option value="College of Teacher Education">College of Teacher Education</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="field">
+                      <label for="password">Password</label>
+                      <input id="password" name="password" type="password" class="input" required />
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="field">
+                      <label for="confirmPassword">Repeat your password</label>
+                      <input id="confirmPassword" name="confirmPassword" type="password" class="input" required />
+                    </div>
+                  </div>
                 </div>
 
-                <div class="field">
-                  <label for="lastName">Last Name</label>
-                  <input
-                    id="lastName"
-                    name="lastName"
-                    type="text"
-                    class="input"
-                    required
-                  />
-                </div>
-
-                <div class="field">
-                  <label for="firstName">First Name</label>
-                  <input
-                    id="firstName"
-                    name="firstName"
-                    type="text"
-                    class="input"
-                    required
-                  />
-                </div>
-
-                <div class="field">
-                  <label for="middleName">Middle Name</label>
-                  <input
-                    id="middleName"
-                    name="middleName"
-                    type="text"
-                    class="input"
-                    placeholder="(Optional)"
-                  />
-                </div>
-
-                <div class="field">
-                  <label for="email">Email</label>
-                  <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    class="input"
-                    required
-                  />
-                </div>
-
-                <div class="field">
-                  <label for="yearlevel">Year Level</label>
-                  <select
-                    id="yearlevel"
-                    name="yearlevel"
-                    class="input"
-                    required
-                  >
-                    <option value="">Select Year</option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                  </select>
-                </div>
-
-
-                <div class="field">
-                  <label for="course">Course</label>
-                  <select id="course" name="course" class="input" required>
-                      <option value="">Select Course</option>
-                      <option value="College of Arts and Sciences">College of Arts and Sciences</option>
-                      <option value="College of Business and Accountancy">College of Business and Accountancy</option>
-                      <option value="College of Computer Studies">College of Computer Studies</option>
-                      <option value="College of Criminal Justice">College of Criminal Justice</option>
-                      <option value="College of Customs Administration">College of Customs Administration</option>
-                      <option value="College of Hospitality Management">College of Hospitality Management</option>
-                      <option value="College of Nursing">College of Nursing</option>
-                      <option value="College of Social Work">College of Social Work</option>
-                      <option value="College of Teacher Education">College of Teacher Education</option>
-                  </select>
-                </div>
-
-                <div class="field">
-                  <label for="password">Password</label>
-                  <input
-                    id="password"
-                    name="password"
-                    type="password"
-                    class="input"
-                    required
-                  />
-                </div>
-
-                <div class="field">
-                  <label for="confirmPassword">Repeat your password</label>
-                  <input
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    type="password"
-                    class="input"
-                    required
-                  />
-                </div>
-
-                <div class="field">
-                  <label for="address">Address</label>
-                  <input
-                    id="address"
-                    name="address"
-                    type="text"
-                    class="input"
-                    required
-                  />
-                </div>
-
-                <div class="form-footer">
-                  <button type="submit" class="btn btn-primary btn-lg">
-                    Register
-                  </button>
+                <div class="form-footer mt-4">
+                  <button type="submit" class="btn btn-primary btn-lg">Register Now!</button>
                 </div>
               </form>
                 </div>
