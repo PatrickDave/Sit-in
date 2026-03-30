@@ -1,6 +1,6 @@
 <?php
 session_start();
 session_destroy();
-header("Location: ../html/admin/adminLogin.html");
+header("Location: ../html/login.html?userType=admin");
 exit();
 ?>

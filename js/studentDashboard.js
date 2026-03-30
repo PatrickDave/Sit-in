@@ -6,6 +6,76 @@
 document.addEventListener('DOMContentLoaded', function() {
     console.log("Dashboard JS Loaded. Fetching data...");
 
+    // --- A. SIT-IN HISTORY RENDER HELPERS ---
+    const historyTableBody = document.getElementById('historyTableBody');
+    const historyEmptyState = document.getElementById('historyEmptyState');
+    const successfulHistoryCount = document.getElementById('successfulHistoryCount');
+
+    function renderHistoryRows(records) {
+        if (!historyTableBody || !historyEmptyState || !successfulHistoryCount) return;
+
+        const successfulRecords = (records || []).filter((record) => {
+            const status = String(record.status || '').toLowerCase();
+            return status === 'success' || status === 'successful' || status === 'completed';
+        });
+
+        successfulHistoryCount.textContent = `${successfulRecords.length} Successful`;
+
+        if (successfulRecords.length === 0) {
+            historyTableBody.innerHTML = '';
+            historyEmptyState.style.display = 'block';
+            return;
+        }
+
+        historyEmptyState.style.display = 'none';
+        historyTableBody.innerHTML = successfulRecords.map((record) => {
+            const idNumber = record.id_number || '--';
+            const name = record.name || '--';
+            const purpose = record.purpose || '--';
+            const laboratory = record.laboratory || '--';
+            const timeIn = record.time_in || '--';
+            const timeOut = record.time_out || '--';
+            const date = record.date || '--';
+
+            return `
+                <tr>
+                    <td>${idNumber}</td>
+                    <td>${name}</td>
+                    <td>${purpose}</td>
+                    <td>${laboratory}</td>
+                    <td>${timeIn}</td>
+                    <td>${timeOut}</td>
+                    <td>${date}</td>
+                    <td><button type="button" class="btn btn-success btn-sm">Feedback</button></td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    function loadSitInHistory() {
+        fetch('../../api/student_sitin_history.php')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('HTTP error! status: ' + response.status);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (!data.success) {
+                    console.error('History Error:', data.message || 'Unable to load sit-in history');
+                    renderHistoryRows([]);
+                    return;
+                }
+                renderHistoryRows(data.data || []);
+            })
+            .catch(error => {
+                console.error('Sit-in history fetch error:', error);
+                renderHistoryRows([]);
+            });
+    }
+
+    loadSitInHistory();
+
     // 1. FETCH USER DATA FROM API
     fetch('../../api/studentDashboard.php')
         .then(response => {

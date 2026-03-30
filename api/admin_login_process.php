@@ -18,11 +18,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             header("Location: ../html/admin/adminDashboard.html");
             exit();
         } else {
-            header("Location: ../html/admin/adminLogin.html?error=invalid_password");
+            header("Location: ../html/login.html?error=invalid_password&userType=admin");
             exit();
         }
     }
-    header("Location: ../html/admin/adminLogin.html?error=invalid_credentials");
+    header("Location: ../html/login.html?error=invalid_credentials&userType=admin");
     exit();
 }
 ?>
