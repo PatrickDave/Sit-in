@@ -6,29 +6,48 @@
 document.addEventListener('DOMContentLoaded', function() {
     console.log("Dashboard JS Loaded. Fetching data...");
 
+    function escapeHtml(value) {
+        return String(value ?? '')
+            .replaceAll('&', '&amp;')
+            .replaceAll('<', '&lt;')
+            .replaceAll('>', '&gt;')
+            .replaceAll('"', '&quot;')
+            .replaceAll("'", '&#039;');
+    }
+
     // --- A. SIT-IN HISTORY RENDER HELPERS ---
     const historyTableBody = document.getElementById('historyTableBody');
     const historyEmptyState = document.getElementById('historyEmptyState');
     const successfulHistoryCount = document.getElementById('successfulHistoryCount');
+    const feedbackModalElement = document.getElementById('feedbackModal');
+    const feedbackModal = feedbackModalElement ? new bootstrap.Modal(feedbackModalElement) : null;
+    const feedbackSitInIdInput = document.getElementById('feedbackSitInId');
+    const feedbackMessageInput = document.getElementById('feedbackMessage');
+    const feedbackStatus = document.getElementById('feedbackStatus');
+    const submitFeedbackBtn = document.getElementById('submitFeedbackBtn');
+
+    window.openFeedbackModal = function(sitInId) {
+        if (!feedbackModal || !feedbackSitInIdInput || !feedbackMessageInput || !feedbackStatus) return;
+        feedbackSitInIdInput.value = sitInId;
+        feedbackMessageInput.value = '';
+        feedbackStatus.textContent = '';
+        feedbackModal.show();
+    };
 
     function renderHistoryRows(records) {
         if (!historyTableBody || !historyEmptyState || !successfulHistoryCount) return;
 
-        const successfulRecords = (records || []).filter((record) => {
-            const status = String(record.status || '').toLowerCase();
-            return status === 'success' || status === 'successful' || status === 'completed';
-        });
+        const historyRecords = records || [];
+        successfulHistoryCount.textContent = `${historyRecords.length} Records`;
 
-        successfulHistoryCount.textContent = `${successfulRecords.length} Successful`;
-
-        if (successfulRecords.length === 0) {
+        if (historyRecords.length === 0) {
             historyTableBody.innerHTML = '';
             historyEmptyState.style.display = 'block';
             return;
         }
 
         historyEmptyState.style.display = 'none';
-        historyTableBody.innerHTML = successfulRecords.map((record) => {
+        historyTableBody.innerHTML = historyRecords.map((record) => {
             const idNumber = record.id_number || '--';
             const name = record.name || '--';
             const purpose = record.purpose || '--';
@@ -36,6 +55,11 @@ document.addEventListener('DOMContentLoaded', function() {
             const timeIn = record.time_in || '--';
             const timeOut = record.time_out || '--';
             const date = record.date || '--';
+            const sitInId = record.sit_in_id || 0;
+            const feedbackSubmitted = Number(record.feedback_submitted || 0) === 1;
+            const feedbackAction = feedbackSubmitted
+                ? '<button type="button" class="btn btn-secondary btn-sm" disabled>Submitted</button>'
+                : `<button type="button" class="btn btn-success btn-sm feedback-action-btn" data-sit-in-id="${sitInId}">Feedback</button>`;
 
             return `
                 <tr>
@@ -46,7 +70,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <td>${timeIn}</td>
                     <td>${timeOut}</td>
                     <td>${date}</td>
-                    <td><button type="button" class="btn btn-success btn-sm">Feedback</button></td>
+                    <td>${feedbackAction}</td>
                 </tr>
             `;
         }).join('');
@@ -75,6 +99,113 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     loadSitInHistory();
+
+    function renderAnnouncements(records) {
+        const container = document.getElementById('studentAnnouncementList');
+        const empty = document.getElementById('studentAnnouncementEmpty');
+        if (!container || !empty) return;
+
+        if (!records || records.length === 0) {
+            container.innerHTML = '';
+            empty.style.display = 'block';
+            return;
+        }
+
+        empty.style.display = 'none';
+        container.innerHTML = records.map((row) => `
+            <div class="announcement-item">
+                <div class="announcement-head">
+                    <span class="fw-bold">CCS Admin</span>
+                    <span>${escapeHtml(row.created_at || '')}</span>
+                </div>
+                <p class="announcement-msg">${escapeHtml(row.message || '')}</p>
+            </div>
+        `).join('');
+    }
+
+    function loadAnnouncements() {
+        fetch('../../api/admin_announcements.php?action=list&limit=6')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('HTTP error! status: ' + response.status);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (!data.success) {
+                    renderAnnouncements([]);
+                    return;
+                }
+                renderAnnouncements(data.data || []);
+            })
+            .catch(error => {
+                console.error('Announcement fetch error:', error);
+                renderAnnouncements([]);
+            });
+    }
+
+    loadAnnouncements();
+
+    if (historyTableBody) {
+        historyTableBody.addEventListener('click', function(e) {
+            const btn = e.target.closest('.feedback-action-btn');
+            if (!btn) return;
+
+            const sitInId = Number(btn.getAttribute('data-sit-in-id') || 0);
+            if (!sitInId) {
+                alert('Unable to open feedback form for this row.');
+                return;
+            }
+            window.openFeedbackModal(sitInId);
+        });
+    }
+
+    if (submitFeedbackBtn) {
+        submitFeedbackBtn.addEventListener('click', function() {
+            if (!feedbackSitInIdInput || !feedbackMessageInput || !feedbackStatus) return;
+
+            const sitInId = feedbackSitInIdInput.value.trim();
+            const message = feedbackMessageInput.value.trim();
+            if (!sitInId || !message) {
+                feedbackStatus.textContent = 'Please enter your feedback message.';
+                feedbackStatus.className = 'small text-danger mb-0';
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('sit_in_id', sitInId);
+            formData.append('message', message);
+
+            submitFeedbackBtn.disabled = true;
+            fetch('../../api/student_feedback_submit.php', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.success) {
+                        feedbackStatus.textContent = data.message || 'Failed to submit feedback.';
+                        feedbackStatus.className = 'small text-danger mb-0';
+                        return;
+                    }
+
+                    feedbackStatus.textContent = 'Feedback submitted successfully.';
+                    feedbackStatus.className = 'small text-success mb-0';
+                    setTimeout(() => {
+                        if (feedbackModal) feedbackModal.hide();
+                        loadSitInHistory();
+                    }, 600);
+                })
+                .catch(error => {
+                    console.error('Feedback submit error:', error);
+                    feedbackStatus.textContent = 'Error submitting feedback.';
+                    feedbackStatus.className = 'small text-danger mb-0';
+                })
+                .finally(() => {
+                    submitFeedbackBtn.disabled = false;
+                });
+        });
+    }
 
     // 1. FETCH USER DATA FROM API
     fetch('../../api/studentDashboard.php')

@@ -179,10 +179,76 @@
       color: #94a3b8;
     }
 
+    .global-search-results {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      width: 100%;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      box-shadow: 0 14px 30px rgba(2, 6, 23, 0.18);
+      max-height: 320px;
+      overflow-y: auto;
+      z-index: 90;
+      display: none;
+    }
+
+    .global-search-results.show {
+      display: block;
+    }
+
+    .global-search-item {
+      padding: 0.65rem 0.75rem;
+      border-bottom: 1px solid #f1f5f9;
+      cursor: pointer;
+      font-size: 0.83rem;
+      color: #334155;
+    }
+
+    .global-search-item:last-child {
+      border-bottom: none;
+    }
+
+    .global-search-item:hover {
+      background: #eff6ff;
+    }
+
+    .global-search-meta {
+      display: block;
+      color: #64748b;
+      font-size: 0.74rem;
+      margin-top: 0.15rem;
+    }
+
+    .student-row-highlight td {
+      background: #ecfeff !important;
+      transition: background 0.35s ease;
+    }
+
     .header-right {
       display: flex;
       align-items: center;
       gap: 1.25rem;
+    }
+
+    .reservation-pill {
+      border: none;
+      padding: 0.55rem 1rem;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #2563eb, #4f46e5);
+      color: #ffffff;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 6px 16px rgba(37, 99, 235, 0.28);
+    }
+
+    .reservation-pill:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 20px rgba(37, 99, 235, 0.35);
     }
 
     .header-icon {
@@ -520,6 +586,144 @@
       color: #1d4ed8;
     }
 
+    .student-info-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 0.75rem;
+      flex: 1;
+      flex-wrap: wrap;
+    }
+
+    .student-info-btn {
+      border: none;
+      padding: 0.55rem 1rem;
+      border-radius: 999px;
+      color: #ffffff;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 6px 16px rgba(37, 99, 235, 0.28);
+    }
+
+    .student-info-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .student-info-btn:focus {
+      outline: none;
+    }
+
+    .student-info-btn.add {
+      background: linear-gradient(135deg, #2563eb, #4f46e5);
+    }
+
+    .student-info-btn.add:hover {
+      box-shadow: 0 10px 20px rgba(37, 99, 235, 0.35);
+    }
+
+    .student-info-btn.reset {
+      background: linear-gradient(135deg, #ef4444, #e11d48);
+      box-shadow: 0 6px 16px rgba(239, 68, 68, 0.3);
+    }
+
+    .student-info-btn.reset:hover {
+      box-shadow: 0 10px 20px rgba(239, 68, 68, 0.38);
+    }
+
+    .student-info-btn.compact {
+      padding: 0.4rem 0.85rem;
+      font-size: 0.75rem;
+    }
+
+    .student-info-btn.row-action {
+      padding: 0.35rem 0.85rem;
+      font-size: 0.75rem;
+    }
+
+    .student-info-btn.row-action.muted {
+      opacity: 0.8;
+    }
+
+    #studentInfoSearch,
+    #sitinRecordSearch {
+      min-width: 230px;
+      max-width: 320px;
+      border-radius: 999px;
+      border: 1px solid #e2e8f0;
+      padding: 0.55rem 1rem;
+      font-size: 0.9rem;
+    }
+
+    #studentInfoSearch:focus,
+    #sitinRecordSearch:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+
+    #sitinRecordSearch {
+      min-width: 160px;
+      max-width: 210px;
+    }
+
+    #sitinReportFilter,
+    #feedbackReportFilter {
+      max-width: 240px;
+      border-radius: 999px;
+    }
+
+    #sitinReportDate {
+      max-width: 180px;
+      border-radius: 10px;
+      border: 1px solid #e2e8f0;
+      padding: 0.47rem 0.75rem;
+      font-size: 0.88rem;
+    }
+
+    #sitinReportDate:focus,
+    #sitinReportFilter:focus,
+    #feedbackReportFilter:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+
+    .report-export-row {
+      display: flex;
+      gap: 0.65rem;
+      align-items: center;
+    }
+
+    .feedback-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.65rem;
+      width: 100%;
+    }
+
+    .feedback-export-group {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+
+    .feedback-filter-group {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+    }
+
+    .feedback-filter-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #64748b;
+      margin: 0;
+    }
+
     .data-table {
       width: 100%;
       border-collapse: collapse;
@@ -577,17 +781,18 @@
     }
 
     .status-badge {
-      padding: 0.35rem 0.75rem;
-      border-radius: 20px;
+      padding: 0.4rem 0.85rem;
+      border-radius: 999px;
       font-size: 0.75rem;
-      font-weight: 600;
+      font-weight: 700;
     }
 
     .status-badge.approved { background: rgba(16, 185, 129, 0.1); color: #10b981; }
     .status-badge.pending { background: rgba(251, 191, 36, 0.1); color: #d97706; }
     .status-badge.rejected { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
-    .status-badge.active { background: rgba(37, 99, 235, 0.1); color: #2563eb; }
+    .status-badge.active { background: #dcfce7; color: #166534; }
     .status-badge.completed { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+    .status-badge.not-active { background: rgba(239, 68, 68, 0.12); color: #ef4444; }
 
     .quick-actions {
       display: grid;
@@ -780,35 +985,32 @@
   <div class="admin-wrapper">
     <!-- Sidebar -->
     <aside class="sidebar">
-      <div class="sidebar-brand">
+      <div class="sidebar-brand" onclick="showDashboardHome()" role="button" title="Go to Home">
         <img src="../../image/CCSlogo.png" alt="CCS Logo">
-        <span>Sit-in<br>Monitoring</span>
+        <span>CCS Admin <br>Sit-in Monitoring</span>
       </div>
 
       <nav class="sidebar-menu">
         <div class="menu-section">Main</div>
         <a class="menu-item active" onclick="showPage('dashboard', this)">
-          <i class="fas fa-th-large"></i><span>Dashboard</span>
+          <i class="fas fa-th-large"></i><span>Home</span>
         </a>
         <a class="menu-item" onclick="showPage('sessions', this)">
-          <i class="fas fa-user-clock"></i><span>Student Sessions</span>
+          <i class="fas fa-user-clock"></i><span>Student Information</span>
         </a>
         <a class="menu-item" onclick="showPage('requests', this)">
-          <i class="fas fa-file-signature"></i><span>Student Requests</span>
-        </a>
-        <a class="menu-item" onclick="showPage('students', this)">
-          <i class="fas fa-users"></i><span>Students</span>
+          <i class="fas fa-file-signature"></i><span>Sit-in</span>
         </a>
         <a class="menu-item" onclick="showPage('labs', this)">
-          <i class="fas fa-desktop"></i><span>Computer Labs</span>
+          <i class="fas fa-desktop"></i><span>View Sit-in Records</span>
         </a>
 
-        <div class="menu-section">Account</div>
-        <a class="menu-item" onclick="showPage('profile', this)">
-          <i class="fas fa-user-cog"></i><span>Admin Profile</span>
+        <div class="menu-section">Reports</div>
+        <a class="menu-item" onclick="showPage('sitinReports', this)">
+          <i class="fas fa-chart-line"></i><span>Sit-in Reports</span>
         </a>
-        <a class="menu-item" onclick="showPage('settings', this)">
-          <i class="fas fa-cog"></i><span>Settings</span>
+        <a class="menu-item" onclick="showPage('feedbackReports', this)">
+          <i class="fas fa-comments"></i><span>Feedback Reports</span>
         </a>
       </nav>
 
@@ -825,38 +1027,15 @@
         <div class="header-left">
           <div class="search-box">
             <i class="fas fa-search"></i>
-            <input type="text" placeholder="Search students, sessions, requests...">
+            <input type="text" id="globalSearchInput" placeholder="Search students, sessions, requests...">
+            <div id="globalSearchResults" class="global-search-results"></div>
           </div>
         </div>
 
         <div class="header-right">
-          <div class="header-icon" onclick="toggleNotifications()">
-            <i class="fas fa-bell"></i>
-            <span class="notification-badge">5</span>
-          </div>
-
-          <div class="user-profile" onclick="toggleDropdown()">
-            <div class="user-avatar" id="headerAvatar">
-              <span style="color: white; font-weight: 600;">AD</span>
-            </div>
-            <div class="user-info">
-              <div class="user-name">Admin</div>
-              <div class="user-role">Administrator</div>
-            </div>
-            <i class="fas fa-chevron-down" style="color: #94a3b8; font-size: 0.75rem;"></i>
-
-            <div class="dropdown-menu" id="userDropdown">
-              <a class="dropdown-item" onclick="showPage('profile', document.querySelectorAll('.menu-item')[6])">
-                <i class="fas fa-user"></i> Profile
-              </a>
-              <a class="dropdown-item" onclick="showPage('settings', document.querySelectorAll('.menu-item')[7])">
-                <i class="fas fa-cog"></i> Settings
-              </a>
-              <a class="dropdown-item" onclick="logout()">
-                <i class="fas fa-sign-out-alt"></i> Logout
-              </a>
-            </div>
-          </div>
+          <button class="reservation-pill" onclick="reservationNotice()">
+            Reservation
+          </button>
         </div>
       </header>
 
@@ -864,44 +1043,44 @@
         
         <!-- Dashboard Overview -->
         <div id="dashboard" class="content-section active">
-          <h1 class="page-title">Dashboard Overview</h1>
+          <h1 class="page-title">Home</h1>
           <p class="page-subtitle">Welcome back! Here's what's happening with your Sit-in Monitoring System today.</p>
 
           <div class="stats-grid">
             <div class="stat-card">
               <div class="stat-header">
                 <div class="stat-icon blue"><i class="fas fa-users"></i></div>
-                <span class="stat-change positive">+12.5%</span>
+                <span class="stat-change positive">Live</span>
               </div>
-              <div class="stat-value">1,327</div>
+              <div class="stat-value" id="homeTotalStudents">0</div>
               <div class="stat-label">Total Students</div>
             </div>
 
             <div class="stat-card">
               <div class="stat-header">
                 <div class="stat-icon green"><i class="fas fa-user-clock"></i></div>
-                <span class="stat-change positive">+8.2%</span>
+                <span class="stat-change positive">Live</span>
               </div>
-              <div class="stat-value">18</div>
+              <div class="stat-value" id="homeActiveSessions">0</div>
               <div class="stat-label">Active Sessions</div>
             </div>
 
             <div class="stat-card">
               <div class="stat-header">
-                <div class="stat-icon purple"><i class="fas fa-file-signature"></i></div>
-                <span class="stat-change positive">+15.3%</span>
+                <div class="stat-icon purple"><i class="fas fa-calendar-day"></i></div>
+                <span class="stat-change positive">Today</span>
               </div>
-              <div class="stat-value">9</div>
-              <div class="stat-label">Pending Requests</div>
+              <div class="stat-value" id="homeTodaySitins">0</div>
+              <div class="stat-label">Today's Sit-ins</div>
             </div>
 
             <div class="stat-card">
               <div class="stat-header">
-                <div class="stat-icon orange"><i class="fas fa-desktop"></i></div>
-                <span class="stat-change negative">-3.2%</span>
+                <div class="stat-icon orange"><i class="fas fa-comments"></i></div>
+                <span class="stat-change positive">Live</span>
               </div>
-              <div class="stat-value">45</div>
-              <div class="stat-label">Available PCs</div>
+              <div class="stat-value" id="homeFeedbackCount">0</div>
+              <div class="stat-label">Feedback Reports</div>
             </div>
           </div>
 
@@ -930,45 +1109,45 @@
                     <div class="quick-stat-icon" style="background: rgba(37, 99, 235, 0.1); color: #2563eb;">
                       <i class="fas fa-clock"></i>
                     </div>
-                    <div>
-                      <div class="quick-stat-label">Avg. Session</div>
-                      <div class="quick-stat-value">1h 15m</div>
+                      <div>
+                        <div class="quick-stat-label">Avg. Session</div>
+                        <div class="quick-stat-value" id="homeAvgSession">0m</div>
+                      </div>
                     </div>
                   </div>
-                </div>
                 <div class="quick-stat-item">
                   <div class="quick-stat-info">
                     <div class="quick-stat-icon" style="background: rgba(16, 185, 129, 0.1); color: #10b981;">
                       <i class="fas fa-check-circle"></i>
                     </div>
-                    <div>
-                      <div class="quick-stat-label">Completed</div>
-                      <div class="quick-stat-value">159</div>
+                      <div>
+                        <div class="quick-stat-label">Completed</div>
+                        <div class="quick-stat-value" id="homeCompletedCount">0</div>
+                      </div>
                     </div>
                   </div>
-                </div>
                 <div class="quick-stat-item">
                   <div class="quick-stat-info">
                     <div class="quick-stat-icon" style="background: rgba(139, 92, 246, 0.1); color: #8b5cf6;">
                       <i class="fas fa-star"></i>
                     </div>
-                    <div>
-                      <div class="quick-stat-label">Top Lab</div>
-                      <div class="quick-stat-value">Lab 1</div>
+                      <div>
+                        <div class="quick-stat-label">Top Lab</div>
+                        <div class="quick-stat-value" id="homeTopLab">--</div>
+                      </div>
                     </div>
                   </div>
-                </div>
                 <div class="quick-stat-item">
                   <div class="quick-stat-info">
                     <div class="quick-stat-icon" style="background: rgba(249, 115, 22, 0.1); color: #f97316;">
                       <i class="fas fa-exclamation-triangle"></i>
                     </div>
-                    <div>
-                      <div class="quick-stat-label">Violations</div>
-                      <div class="quick-stat-value">7</div>
+                      <div>
+                        <div class="quick-stat-label">Violations</div>
+                        <div class="quick-stat-value" id="homeViolations">0</div>
+                      </div>
                     </div>
                   </div>
-                </div>
               </div>
             </div>
           </div>
@@ -976,7 +1155,7 @@
           <div class="table-card">
             <div class="table-header">
               <h3 class="table-title">Recent Sit-in Sessions</h3>
-              <a href="#" class="view-all">View All <i class="fas fa-arrow-right"></i></a>
+              <a href="#" class="view-all" onclick="event.preventDefault(); showPage('labs', document.querySelectorAll('.menu-item')[3]);">View All <i class="fas fa-arrow-right"></i></a>
             </div>
             <table class="data-table">
               <thead>
@@ -989,121 +1168,63 @@
                   <th>Status</th>
                 </tr>
               </thead>
-              <tbody>
-                <tr>
-                  <td>#23833353</td>
-                  <td><div class="customer-cell"><div class="customer-avatar" style="background: linear-gradient(135deg, #667eea, #764ba2);">AM</div><span>Sergio Neri</span></div></td>
-                  <td>Lab 1</td>
-                  <td>Mar 23, 11:25 AM</td>
-                  <td>Coding Practice</td>
-                  <td><span class="status-badge active">Active</span></td>
-                </tr>
-                <tr>
-                  <td>#23844954</td>
-                  <td><div class="customer-cell"><div class="customer-avatar" style="background: linear-gradient(135deg, #f093fb, #f5576c);">JC</div><span>Christian Exequeil</span></div></td>
-                  <td>Lab 2</td>
-                  <td>Mar 23, 11:45 AM</td>
-                  <td>Research</td>
-                  <td><span class="status-badge active">Active</span></td>
-                </tr>
-                <tr>
-                  <td>#23821150</td>
-                  <td><div class="customer-cell"><div class="customer-avatar" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">SR</div><span>Revo Espinosa II</span></div></td>
-                  <td>Lab 3</td>
-                  <td>Mar 23, 11:36 AM</td>
-                  <td>Web Development</td>
-                  <td><span class="status-badge completed">Completed</span></td>
-                </tr>
-              </tbody>
+              <tbody id="homeRecentSessionsBody"></tbody>
             </table>
+            <p id="homeRecentSessionsEmpty" style="margin: 1rem 0 0; color: #64748b; display:none;">No recent sit-in sessions found.</p>
           </div>
 
-          <div class="quick-actions">
-            <div class="action-card">
-              <div class="action-icon" style="background: rgba(37, 99, 235, 0.1); color: #2563eb;"><i class="fas fa-plus"></i></div>
-              <div class="action-label">New Session</div>
+          <div class="table-card">
+            <div class="table-header">
+              <h3 class="table-title">Announcements</h3>
             </div>
-            <div class="action-card">
-              <div class="action-icon" style="background: rgba(16, 185, 129, 0.1); color: #10b981;"><i class="fas fa-check"></i></div>
-              <div class="action-label">Approve Request</div>
+            <div style="display:flex; gap:10px; align-items:flex-start; margin-bottom: 1rem;">
+              <input type="hidden" id="adminAnnouncementId" value="">
+              <textarea id="adminAnnouncementMessage" class="form-control" rows="2" maxlength="1000" placeholder="Write an announcement for students..."></textarea>
+              <button type="button" class="student-info-btn add" onclick="saveAnnouncement()">Save</button>
+              <button type="button" class="student-info-btn reset" onclick="cancelAnnouncementEdit()" style="display:none;" id="adminAnnouncementCancelBtn">Cancel</button>
             </div>
-            <div class="action-card">
-              <div class="action-icon" style="background: rgba(139, 92, 246, 0.1); color: #8b5cf6;"><i class="fas fa-user-plus"></i></div>
-              <div class="action-label">Add Student</div>
-            </div>
-            <div class="action-card">
-              <div class="action-icon" style="background: rgba(249, 115, 22, 0.1); color: #f97316;"><i class="fas fa-download"></i></div>
-              <div class="action-label">Export Report</div>
-            </div>
+            <div id="adminAnnouncementStatus" style="font-size: 13px; color: #64748b; margin-bottom: 0.75rem;"></div>
+            <div id="adminAnnouncementList"></div>
           </div>
         </div>
 
         <!-- Student Sessions -->
         <div id="sessions" class="content-section">
-          <h1 class="page-title">Student Sessions</h1>
-          <p class="page-subtitle">Manage all active and past sit-in sessions.</p>
+          <h1 class="page-title">Student Information</h1>
+          <p class="page-subtitle">Manage student records, add students, and reset all sessions.</p>
 
           <div class="table-card">
             <div class="table-header">
-              <h3 class="table-title">All Sessions</h3>
-              <a href="#" class="view-all">Export <i class="fas fa-download"></i></a>
+              <h3 class="table-title">Students Information</h3>
+              <div class="student-info-toolbar">
+                <button type="button" class="student-info-btn add" onclick="openStudentModal()">
+                  Add Students <i class="fas fa-user-plus"></i>
+                </button>
+                <button type="button" class="student-info-btn reset" onclick="resetAllSessions()">
+                  Reset All Sessions <i class="fas fa-rotate-left"></i>
+                </button>
+                <input type="text" id="studentInfoSearch" class="form-control" placeholder="Search student...">
+              </div>
             </div>
             <table class="data-table">
               <thead>
                 <tr>
-                  <th>Session ID</th>
-                  <th>Student ID</th>
-                  <th>Student Name</th>
-                  <th>Lab</th>
-                  <th>PC</th>
-                  <th>Time In</th>
-                  <th>Time Out</th>
-                  <th>Status</th>
-                  <th>Action</th>
+                  <th>ID Number</th>
+                  <th>Name</th>
+                  <th>Year Level</th>
+                  <th>Remaining Sessions</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
-              <tbody>
-                <tr>
-                  <td>#SES-7829</td>
-                  <td>23821150</td>
-                  <td>Revo Espinosa II</td>
-                  <td>Lab 1</td>
-                  <td>PC-015</td>
-                  <td>08:30 AM</td>
-                  <td>--</td>
-                  <td><span class="status-badge active">Active</span></td>
-                  <td><i class="fas fa-stop-circle" style="color: #ef4444; cursor: pointer;"></i></td>
-                </tr>
-                <tr>
-                  <td>#SES-7828</td>
-                  <td>23833353</td>
-                  <td>Sergio Neri</td>
-                  <td>Lab 2</td>
-                  <td>PC-022</td>
-                  <td>09:15 AM</td>
-                  <td>--</td>
-                  <td><span class="status-badge active">Active</span></td>
-                  <td><i class="fas fa-stop-circle" style="color: #ef4444; cursor: pointer;"></i></td>
-                </tr>
-                <tr>
-                  <td>#SES-7827</td>
-                  <td>23768351</td>
-                  <td>Gabriel Andrew</td>
-                  <td>Lab 3</td>
-                  <td>PC-008</td>
-                  <td>07:45 AM</td>
-                  <td>11:30 AM</td>
-                  <td><span class="status-badge completed">Completed</span></td>
-                  <td><i class="fas fa-eye" style="color: #2563eb; cursor: pointer;"></i></td>
-                </tr>
-              </tbody>
+              <tbody id="studentInfoTableBody"></tbody>
             </table>
+            <p id="studentInfoEmpty" style="margin: 1rem 0 0; color: #64748b; display:none;">No student records found.</p>
           </div>
         </div>
 
         <!-- Student Requests -->
         <div id="requests" class="content-section">
-          <h1 class="page-title">Student Requests</h1>
+          <h1 class="page-title">Sit-in</h1>
           <p class="page-subtitle">View and manage sit-in reservation requests.</p>
 
           <div class="table-card">
@@ -1159,173 +1280,174 @@
           </div>
         </div>
 
-        <!-- Students -->
-        <div id="students" class="content-section">
-          <h1 class="page-title">Students</h1>
-          <p class="page-subtitle">Manage registered students in the system.</p>
+        <!-- Labs -->
+        <div id="labs" class="content-section">
+          <h1 class="page-title">View Sit-in Records</h1>
+          <p class="page-subtitle">Current sit-in records with active status and admin logout action.</p>
 
           <div class="table-card">
             <div class="table-header">
-              <h3 class="table-title">All Students</h3>
-              <a href="#" class="view-all">Add Student <i class="fas fa-plus"></i></a>
+              <h3 class="table-title">Current Sit in</h3>
+              <div class="student-info-toolbar">
+                <input type="text" id="sitinRecordSearch" class="form-control" placeholder="Search sit-in record...">
+              </div>
             </div>
             <table class="data-table">
               <thead>
                 <tr>
-                  <th>Student ID</th>
+                  <th>Sit-in ID</th>
+                  <th>ID Number</th>
                   <th>Name</th>
-                  <th>Course</th>
-                  <th>Year</th>
-                  <th>Email</th>
-                  <th>Total Sessions</th>
+                  <th>Purpose</th>
+                  <th>Sit Lab</th>
+                  <th>Session</th>
                   <th>Status</th>
+                  <th>Action</th>
                 </tr>
               </thead>
-              <tbody>
-                <tr>
-                  <td>#23826514</td>
-                  <td><div class="customer-cell"><div class="customer-avatar" style="background: linear-gradient(135deg, #667eea, #764ba2);">AM</div><span>Patrick Cagas</span></div></td>
-                  <td>BSIT</td>
-                  <td>3rd Year</td>
-                  <td>patrickcagas@gmail.com</td>
-                  <td>8</td>
-                  <td><span class="status-badge active">Active</span></td>
-                </tr>
-                <tr>
-                  <td>#23833353</td>
-                  <td><div class="customer-cell"><div class="customer-avatar" style="background: linear-gradient(135deg, #f093fb, #f5576c);">JC</div><span>Sergio Neri</span></div></td>
-                  <td>BSIT</td>
-                  <td>3rd Year</td>
-                  <td>gioneri@gmail.com</td>
-                  <td>6</td>
-                  <td><span class="status-badge active">Active</span></td>
-                </tr>
-              </tbody>
+              <tbody id="sitinRecordsTableBody"></tbody>
             </table>
+            <p id="sitinRecordsEmpty" style="margin: 1rem 0 0; color: #64748b; display:none;">No sit-in records found.</p>
           </div>
         </div>
 
-        <!-- Labs -->
-        <div id="labs" class="content-section">
-          <h1 class="page-title">Computer Labs</h1>
-          <p class="page-subtitle">Manage computer laboratory rooms and availability.</p>
-
-          <div class="stats-grid">
-            <div class="stat-card">
-              <div class="stat-header"><div class="stat-icon blue"><i class="fas fa-desktop"></i></div></div>
-              <div class="stat-value">Lab 1 (CCS)</div>
-              <div class="stat-label">46 PCs - 4 Available</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-header"><div class="stat-icon green"><i class="fas fa-desktop"></i></div></div>
-              <div class="stat-value">Lab 2 (MAC)</div>
-              <div class="stat-label">50 PCs - 3 Available</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-header"><div class="stat-icon purple"><i class="fas fa-desktop"></i></div></div>
-              <div class="stat-value">Lab 3</div>
-              <div class="stat-label">45 PCs - 5 Available</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-header"><div class="stat-icon orange"><i class="fas fa-desktop"></i></div></div>
-              <div class="stat-value">Lab 4</div>
-              <div class="stat-label">48 PCs - 6 Available</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Profile -->
-        <div id="profile" class="content-section">
-          <h1 class="page-title">Admin Profile</h1>
-          <p class="page-subtitle">Manage your admin account settings.</p>
-
-          <div class="profile-card">
-            <div class="profile-avatar-large" onclick="document.getElementById('photoInput').click()">
-              <span style="color: white; font-weight: 600;" id="profileInitials">AD</span>
-              <div class="edit-overlay"><i class="fas fa-camera" style="color: white;"></i></div>
-              <input type="file" id="photoInput" accept="image/*" style="display: none;" onchange="updateProfilePhoto(event)">
-            </div>
-            
-            <div class="profile-name" id="profileNameDisplay">Admin User</div>
-            <input type="text" id="profileNameInput" class="form-control text-center mb-2" value="Admin User" style="display:none; max-width: 200px; margin: 0 auto 0.5rem;">
-            
-            <div class="profile-role">System Administrator</div>
-
-            <div class="profile-info">
-              <div class="profile-info-item">
-                <span class="profile-info-label">Admin ID</span>
-                <span class="profile-info-value">ADMIN-001</span>
-              </div>
-              <div class="profile-info-item">
-                <span class="profile-info-label">Email</span>
-                <span class="profile-info-value" id="profileEmailDisplay">admin@ccs.edu</span>
-                <input type="email" id="profileEmailInput" class="form-control" value="admin@ccs.edu" style="display:none; flex:1; padding: 0.25rem 0.5rem; font-size: 0.85rem;">
-              </div>
-              <div class="profile-info-item">
-                <span class="profile-info-label">Role</span>
-                <span class="profile-info-value">Admin</span>
-              </div>
-              <div class="profile-info-item">
-                <span class="profile-info-label">Last Login</span>
-                <span class="profile-info-value">Mar 22, 2026 08:00 AM</span>
-              </div>
-            </div>
-
-            <button class="profile-edit-btn" id="editProfileBtn" onclick="editProfile()">
-              <i class="fas fa-edit"></i> Edit Profile
-            </button>
-          </div>
-        </div>
-
-        <!-- Settings -->
-        <div id="settings" class="content-section">
-          <h1 class="page-title">Settings</h1>
-          <p class="page-subtitle">Configure system settings.</p>
-
+        <!-- Sit-in Reports -->
+        <div id="sitinReports" class="content-section">
+          <h1 class="page-title">Generate Reports</h1>
+          <p class="page-subtitle">Generate and export sit-in reports by date and filter.</p>
           <div class="table-card">
+            <div class="table-header">
+              <h3 class="table-title">Sit-in Reports</h3>
+              <div class="student-info-toolbar">
+                <input type="date" id="sitinReportDate" class="form-control">
+                <button type="button" class="student-info-btn add" onclick="loadSitInReports()">Search</button>
+                <button type="button" class="student-info-btn reset" onclick="resetSitInReportsFilters()">Reset</button>
+              </div>
+            </div>
+            <div class="table-header" style="margin-top: -0.4rem;">
+              <div class="report-export-row">
+                <button type="button" class="student-info-btn add compact" onclick="exportSitInReportsExcel()">Excel</button>
+                <button type="button" class="student-info-btn add compact" onclick="exportSitInReportsPDF()">PDF</button>
+                <button type="button" class="student-info-btn add compact" onclick="printSitInReports()">Print</button>
+              </div>
+              <div class="feedback-filter-group">
+                <label for="sitinReportFilter" class="feedback-filter-label">Filter</label>
+                <input type="text" id="sitinReportFilter" class="form-control">
+              </div>
+            </div>
             <table class="data-table">
-              <tbody>
+              <thead>
                 <tr>
-                  <td style="width: 200px;">Session Timeout</td>
-                  <td>
-                    <select id="sessionTimeout" class="form-control" style="max-width: 150px;">
-                      <option value="1">1 hour</option>
-                      <option value="2">2 hours</option>
-                      <option value="3">3 hours</option>
-                      <option value="4">4 hours</option>
-                      <option value="5">5 hours</option>
-                      <option value="6">6 hours</option>
-                    </select>
-                  </td>
+                  <th>ID Number</th>
+                  <th>Name</th>
+                  <th>Purpose</th>
+                  <th>Laboratory</th>
+                  <th>Login</th>
+                  <th>Logout</th>
+                  <th>Date</th>
                 </tr>
-                <tr>
-                  <td>Max Daily Sessions</td>
-                  <td>
-                    <select id="maxDailySessions" class="form-control" style="max-width: 150px;">
-                      <option value="1">1 per student</option>
-                      <option value="2">2 per student</option>
-                      <option value="3">3 per student</option>
-                      <option value="4">4 per student</option>
-                      <option value="5">5 per student</option>
-                      <option value="6">6 per student</option>
-                    </select>
-                  </td>
-                </tr>
-                <tr>
-                  <td>Lab Operating Hours</td>
-                  <td>
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                      <input type="time" id="labOpenTime" class="form-control" style="max-width: 150px;">
-                      <span>to</span>
-                      <input type="time" id="labCloseTime" class="form-control" style="max-width: 150px;">
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
+              </thead>
+              <tbody id="sitinReportsTableBody"></tbody>
             </table>
-            <button class="profile-edit-btn mt-3" onclick="saveSettings()" style="max-width: 200px;">
-              <i class="fas fa-save"></i> Save Settings
-            </button>
+            <p id="sitinReportsEmpty" style="margin: 1rem 0 0; color: #64748b; display:none;">No sit-in reports found.</p>
+          </div>
+        </div>
+
+        <!-- Feedback Reports -->
+        <div id="feedbackReports" class="content-section">
+          <h1 class="page-title">Feedback Report</h1>
+          <p class="page-subtitle">Review and export feedback report entries.</p>
+          <div class="table-card">
+            <div class="table-header">
+              <div class="feedback-toolbar">
+                <div class="feedback-export-group">
+                  <button type="button" class="student-info-btn add compact" onclick="exportFeedbackReportsExcel()">Excel</button>
+                  <button type="button" class="student-info-btn add compact" onclick="exportFeedbackReportsPDF()">PDF</button>
+                </div>
+                <div class="feedback-filter-group">
+                  <label for="feedbackReportFilter" class="feedback-filter-label">Filter</label>
+                  <input type="text" id="feedbackReportFilter" class="form-control" style="max-width: 240px; border-radius: 999px;">
+                </div>
+              </div>
+            </div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>ID Number</th>
+                  <th>Laboratory</th>
+                  <th>Date</th>
+                  <th>Message</th>
+                </tr>
+              </thead>
+              <tbody id="feedbackReportsTableBody"></tbody>
+            </table>
+            <p id="feedbackReportsEmpty" style="margin: 1rem 0 0; color: #64748b; display:none;">No feedback report records found.</p>
+          </div>
+        </div>
+
+        <!-- Student Information Modal -->
+        <div class="modal fade" id="studentModal" tabindex="-1" aria-hidden="true">
+          <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+              <div class="modal-header">
+                <h5 class="modal-title" id="studentModalTitle">Add Student</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <form id="studentForm" class="row g-3">
+                  <input type="hidden" id="studentDbId">
+
+                  <div class="col-md-4">
+                    <label class="form-label">ID Number</label>
+                    <input type="text" class="form-control" id="studentIdNumber" required>
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label">First Name</label>
+                    <input type="text" class="form-control" id="studentFirstName" required>
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label">Last Name</label>
+                    <input type="text" class="form-control" id="studentLastName" required>
+                  </div>
+
+                  <div class="col-md-4">
+                    <label class="form-label">Middle Name</label>
+                    <input type="text" class="form-control" id="studentMiddleName">
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label">Year Level</label>
+                    <input type="number" min="1" max="6" class="form-control" id="studentYearLevel" required>
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label">Remaining Sessions</label>
+                    <input type="number" min="0" class="form-control" id="studentSessions" value="30" required>
+                  </div>
+
+                  <div class="col-md-6">
+                    <label class="form-label">Course</label>
+                    <input type="text" class="form-control" id="studentCourse" required>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control" id="studentEmail" required>
+                  </div>
+
+                  <div class="col-12">
+                    <label class="form-label">Address</label>
+                    <input type="text" class="form-control" id="studentAddress" required>
+                  </div>
+
+                  <div class="col-12">
+                    <label class="form-label">Password <small class="text-muted">(required for Add, optional for Edit)</small></label>
+                    <input type="password" class="form-control" id="studentPassword">
+                  </div>
+                </form>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveStudentBtn" onclick="saveStudent()">Save</button>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -1336,30 +1458,39 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
-    // Sessions Chart
-    const ctx = document.getElementById('sessionsChart').getContext('2d');
-    new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-        datasets: [{
-          label: 'Sessions',
-          data: [450, 520, 480, 610, 550, 670, 720, 690, 780, 850, 920, 980],
-          backgroundColor: 'rgba(37, 99, 235, 0.8)',
-          borderRadius: 6,
-          barThickness: 28,
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
-        scales: {
-          x: { grid: { display: false } },
-          y: { beginAtZero: true, grid: { color: 'rgba(0, 0, 0, 0.05)' } }
-        }
+    let sessionsChart = null;
+    function initializeSessionsChart(monthlyData = []) {
+      const canvas = document.getElementById('sessionsChart');
+      if (!canvas) return;
+
+      if (sessionsChart) {
+        sessionsChart.destroy();
       }
-    });
+
+      const ctx = canvas.getContext('2d');
+      sessionsChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+          datasets: [{
+            label: 'Sessions',
+            data: monthlyData.length === 12 ? monthlyData : new Array(12).fill(0),
+            backgroundColor: 'rgba(37, 99, 235, 0.8)',
+            borderRadius: 6,
+            barThickness: 28
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { grid: { display: false } },
+            y: { beginAtZero: true, grid: { color: 'rgba(0, 0, 0, 0.05)' } }
+          }
+        }
+      });
+    }
 
     function showPage(page, element) {
       document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
@@ -1368,198 +1499,989 @@
       if (element) element.classList.add('active');
     }
 
-    function toggleDropdown() {
-      document.getElementById('userDropdown').classList.toggle('show');
-    }
-
-    function toggleNotifications() {
-      alert('You have 5 new notifications');
-    }
-
     function logout() {
       if (confirm('Are you sure you want to logout?')) {
         window.location.href = '../../api/admin_logout.php';
       }
     }
 
-    document.addEventListener('click', function(e) {
-      const dropdown = document.getElementById('userDropdown');
-      const profile = document.querySelector('.user-profile');
-      if (!profile.contains(e.target)) dropdown.classList.remove('show');
-    });
+    function reservationNotice() {
+      alert('Reservation: To be announced.');
+    }
 
-    document.querySelectorAll('.filter-btn').forEach(btn => {
+    function showDashboardHome() {
+      const homeMenuItem = document.querySelectorAll('.menu-item')[0];
+      showPage('dashboard', homeMenuItem || null);
+    }
+
+    function buildAvatarInitials(name) {
+      const value = String(name || '').trim();
+      if (!value) return 'NA';
+      const parts = value.split(/\s+/).filter(Boolean);
+      if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+
+    function renderHomeRecentSessions(rows) {
+      const body = document.getElementById('homeRecentSessionsBody');
+      const empty = document.getElementById('homeRecentSessionsEmpty');
+      if (!body || !empty) return;
+
+      if (!rows || rows.length === 0) {
+        body.innerHTML = '';
+        empty.style.display = 'block';
+        return;
+      }
+
+      empty.style.display = 'none';
+      body.innerHTML = rows.map((row) => {
+        const statusText = String(row.status || 'Completed');
+        const statusClass = statusText.toLowerCase() === 'active' ? 'active' : 'completed';
+        const initials = buildAvatarInitials(row.name);
+        return `
+          <tr>
+            <td>#${escapeHtml(row.sit_in_id)}</td>
+            <td><div class="customer-cell"><div class="customer-avatar" style="background: linear-gradient(135deg, #4f46e5, #2563eb);">${escapeHtml(initials)}</div><span>${escapeHtml(row.name)}</span></div></td>
+            <td>${escapeHtml(row.laboratory)}</td>
+            <td>${escapeHtml(row.time_in)}</td>
+            <td>${escapeHtml(row.purpose)}</td>
+            <td><span class="status-badge ${statusClass}">${escapeHtml(statusText)}</span></td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    async function loadDashboardOverview() {
+      try {
+        const response = await fetch('../../api/admin_dashboard_overview.php');
+        const data = await response.json();
+        if (!data.success) return;
+
+        const overview = data.data || {};
+        const setText = (id, value) => {
+          const el = document.getElementById(id);
+          if (el) el.textContent = value;
+        };
+
+        setText('homeTotalStudents', overview.total_students ?? 0);
+        setText('homeActiveSessions', overview.active_sessions ?? 0);
+        setText('homeTodaySitins', overview.today_sitins ?? 0);
+        setText('homeFeedbackCount', overview.feedback_count ?? 0);
+        setText('homeAvgSession', overview.avg_session ?? '0m');
+        setText('homeCompletedCount', overview.completed_count ?? 0);
+        setText('homeTopLab', overview.top_lab ?? '--');
+        setText('homeViolations', overview.violations ?? 0);
+
+        initializeSessionsChart(Array.isArray(overview.monthly_sessions) ? overview.monthly_sessions : []);
+        renderHomeRecentSessions(Array.isArray(overview.recent_sessions) ? overview.recent_sessions : []);
+      } catch (error) {
+        console.error('Dashboard overview error:', error);
+        initializeSessionsChart([]);
+        renderHomeRecentSessions([]);
+      }
+    }
+
+    function renderAnnouncements(rows) {
+      const listEl = document.getElementById('adminAnnouncementList');
+      if (!listEl) return;
+      if (!rows || rows.length === 0) {
+        listEl.innerHTML = '<p style="margin: 0; color: #64748b;">No announcements yet.</p>';
+        return;
+      }
+
+      listEl.innerHTML = rows.map((row) => `
+        <div style="padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; margin-bottom: 8px; background:#fff;">
+          <div style="display:flex; justify-content:space-between; gap:8px; align-items:center; margin-bottom: 4px;">
+            <div style="font-size: 12px; color: #64748b;">CCS Admin | ${escapeHtml(row.created_at || '')}</div>
+            <div style="display:flex; gap:6px;">
+              <button type="button" class="btn btn-sm btn-primary" onclick="editAnnouncement(${Number(row.id)})">Edit</button>
+              <button type="button" class="btn btn-sm btn-danger" onclick="deleteAnnouncement(${Number(row.id)})">Delete</button>
+            </div>
+          </div>
+          <div style="color: #0f172a;">${escapeHtml(row.message || '')}</div>
+        </div>
+      `).join('');
+    }
+
+    async function loadAnnouncements() {
+      try {
+        const response = await fetch('../../api/admin_announcements.php?action=list&limit=8');
+        const data = await response.json();
+        if (!data.success) return;
+        renderAnnouncements(data.data || []);
+      } catch (error) {
+        console.error('Announcements load error:', error);
+      }
+    }
+
+    async function postAnnouncement() {
+      const input = document.getElementById('adminAnnouncementMessage');
+      const idInput = document.getElementById('adminAnnouncementId');
+      const cancelBtn = document.getElementById('adminAnnouncementCancelBtn');
+      const status = document.getElementById('adminAnnouncementStatus');
+      if (!input || !status || !idInput || !cancelBtn) return;
+
+      const message = input.value.trim();
+      if (!message) {
+        status.textContent = 'Please enter an announcement message.';
+        status.style.color = '#dc2626';
+        return;
+      }
+
+      const editingId = Number(idInput.value || 0);
+      const payload = new FormData();
+      payload.append('action', editingId > 0 ? 'update' : 'create');
+      payload.append('message', message);
+      if (editingId > 0) payload.append('id', String(editingId));
+
+      try {
+        const response = await fetch('../../api/admin_announcements.php', {
+          method: 'POST',
+          body: payload
+        });
+        const data = await response.json();
+        if (!data.success) {
+          status.textContent = data.message || 'Failed to save announcement.';
+          status.style.color = '#dc2626';
+          return;
+        }
+        input.value = '';
+        idInput.value = '';
+        cancelBtn.style.display = 'none';
+        status.textContent = data.message || (editingId > 0 ? 'Announcement updated.' : 'Announcement posted.');
+        status.style.color = '#16a34a';
+        await loadAnnouncements();
+      } catch (error) {
+        console.error('Announcement save error:', error);
+        status.textContent = 'Error saving announcement.';
+        status.style.color = '#dc2626';
+      }
+    }
+
+    function saveAnnouncement() {
+      postAnnouncement();
+    }
+
+    function cancelAnnouncementEdit() {
+      const idInput = document.getElementById('adminAnnouncementId');
+      const msgInput = document.getElementById('adminAnnouncementMessage');
+      const cancelBtn = document.getElementById('adminAnnouncementCancelBtn');
+      const status = document.getElementById('adminAnnouncementStatus');
+      if (idInput) idInput.value = '';
+      if (msgInput) msgInput.value = '';
+      if (cancelBtn) cancelBtn.style.display = 'none';
+      if (status) {
+        status.textContent = '';
+        status.style.color = '#64748b';
+      }
+    }
+
+    async function editAnnouncement(id) {
+      try {
+        const response = await fetch('../../api/admin_announcements.php?action=list&limit=30');
+        const data = await response.json();
+        if (!data.success) return;
+        const row = (data.data || []).find(item => Number(item.id) === Number(id));
+        if (!row) return;
+
+        const idInput = document.getElementById('adminAnnouncementId');
+        const msgInput = document.getElementById('adminAnnouncementMessage');
+        const cancelBtn = document.getElementById('adminAnnouncementCancelBtn');
+        const status = document.getElementById('adminAnnouncementStatus');
+        if (!idInput || !msgInput || !cancelBtn || !status) return;
+
+        idInput.value = String(id);
+        msgInput.value = row.message || '';
+        cancelBtn.style.display = '';
+        status.textContent = 'Editing announcement... Click Save to apply changes.';
+        status.style.color = '#2563eb';
+        msgInput.focus();
+      } catch (error) {
+        console.error('Edit announcement error:', error);
+      }
+    }
+
+    async function deleteAnnouncement(id) {
+      if (!confirm('Delete this announcement?')) return;
+      const payload = new FormData();
+      payload.append('action', 'delete');
+      payload.append('id', String(id));
+
+      const status = document.getElementById('adminAnnouncementStatus');
+      try {
+        const response = await fetch('../../api/admin_announcements.php', {
+          method: 'POST',
+          body: payload
+        });
+        const data = await response.json();
+        if (!data.success) {
+          if (status) {
+            status.textContent = data.message || 'Failed to delete announcement.';
+            status.style.color = '#dc2626';
+          }
+          return;
+        }
+        cancelAnnouncementEdit();
+        if (status) {
+          status.textContent = data.message || 'Announcement deleted.';
+          status.style.color = '#16a34a';
+        }
+        await loadAnnouncements();
+      } catch (error) {
+        console.error('Delete announcement error:', error);
+        if (status) {
+          status.textContent = 'Error deleting announcement.';
+          status.style.color = '#dc2626';
+        }
+      }
+    }
+
+document.querySelectorAll('.filter-btn').forEach(btn => {
       btn.addEventListener('click', function() {
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
         this.classList.add('active');
       });
     });
 
-    // Load profile on page load
-    document.addEventListener('DOMContentLoaded', function() {
-      loadProfileFromDB();
-    });
+    let studentInfoCache = [];
+    let studentModalInstance = null;
+    let sitInRecordsCache = [];
+    let sitInReportsCache = [];
+    let feedbackReportsCache = [];
+    let globalStudentResults = [];
 
-    function loadProfileFromDB() {
-      fetch('../../api/admin_profile_process.php')
-        .then(response => response.json())
-        .then(data => {
-          if (data.success && data.data) {
-            const profile = data.data;
-            
-            if (profile.name) {
-              document.getElementById('profileNameDisplay').textContent = profile.name;
-              document.getElementById('profileNameInput').value = profile.name;
-              
-              const initials = profile.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0,2);
-              document.getElementById('profileInitials').textContent = initials || 'AD';
-            }
-            
-            if (profile.email) {
-              document.getElementById('profileEmailDisplay').textContent = profile.email;
-              document.getElementById('profileEmailInput').value = profile.email;
-            }
-            
-            if (profile.profile_image) {
-              const initials = document.getElementById('profileInitials');
-              if (initials) {
-                initials.outerHTML = '<img src="' + profile.profile_image + '" style="width:100%;height:100%;object-fit:cover;">';
-              }
-              const headerAvatar = document.getElementById('headerAvatar');
-              if (headerAvatar) {
-                headerAvatar.innerHTML = '<img src="' + profile.profile_image + '" style="width:100%;height:100%;object-fit:cover;">';
-              }
-            }
-          }
-        })
-        .catch(error => console.error('Error loading profile:', error));
+    function escapeHtml(value) {
+      return String(value ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
     }
 
-    function updateProfilePhoto(event) {
-      const file = event.target.files[0];
-      if (file) {
-        // Preview immediately
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          const initials = document.getElementById('profileInitials');
-          if (initials) {
-            initials.outerHTML = '<img src="' + e.target.result + '" style="width:100%;height:100%;object-fit:cover;">';
-          }
-          const headerAvatar = document.getElementById('headerAvatar');
-          if (headerAvatar) {
-            headerAvatar.innerHTML = '<img src="' + e.target.result + '" style="width:100%;height:100%;object-fit:cover;">';
-          }
-        };
-        reader.readAsDataURL(file);
+    function renderStudentInfoTable(students) {
+      const tableBody = document.getElementById('studentInfoTableBody');
+      const empty = document.getElementById('studentInfoEmpty');
+      if (!tableBody || !empty) return;
+
+      if (!students.length) {
+        tableBody.innerHTML = '';
+        empty.style.display = 'block';
+        return;
+      }
+
+      empty.style.display = 'none';
+      tableBody.innerHTML = students.map(student => `
+        <tr id="student-row-${student.id}">
+          <td>${escapeHtml(student.student_id)}</td>
+          <td>${escapeHtml(student.name)}</td>
+          <td>${escapeHtml(student.year_level)}</td>
+          <td>${escapeHtml(student.sessions_remaining)}</td>
+          <td>
+            <button class="btn btn-sm btn-primary me-1" onclick="openStudentModal(${student.id})">Edit</button>
+            <button class="btn btn-sm btn-danger" onclick="deleteStudent(${student.id})">Delete</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    async function loadStudentInformation(search = '') {
+      try {
+        const response = await fetch(`../../api/admin_student_information.php?action=list&search=${encodeURIComponent(search)}`);
+        const data = await response.json();
+        if (!data.success) {
+          alert(data.message || 'Failed to load student information.');
+          return;
+        }
+        studentInfoCache = data.data || [];
+        renderStudentInfoTable(studentInfoCache);
+      } catch (error) {
+        console.error(error);
+        alert('Error loading student information.');
       }
     }
 
-    function editProfile() {
-      const nameDisplay = document.getElementById('profileNameDisplay');
-      const nameInput = document.getElementById('profileNameInput');
-      const emailDisplay = document.getElementById('profileEmailDisplay');
-      const emailInput = document.getElementById('profileEmailInput');
-      const btn = document.getElementById('editProfileBtn');
-      const photoInput = document.getElementById('photoInput');
-      
-      if (nameInput.style.display === 'none') {
-        // Switch to edit mode
-        nameDisplay.style.display = 'none';
-        nameInput.style.display = 'block';
-        emailDisplay.style.display = 'none';
-        emailInput.style.display = 'block';
-        btn.innerHTML = '<i class="fas fa-save"></i> Save Changes';
-        btn.style.background = '#10b981';
-      } else {
-        // Save changes to database
-        const formData = new FormData();
-        formData.append('name', nameInput.value.trim() || 'Admin User');
-        formData.append('email', emailInput.value.trim() || 'admin@ccs.edu');
-        
-        if (photoInput && photoInput.files[0]) {
-          formData.append('profile_image', photoInput.files[0]);
-        }
-        
-        fetch('../../api/admin_profile_process.php', {
+    function openStudentModal(studentId = null) {
+      if (!studentModalInstance) {
+        studentModalInstance = new bootstrap.Modal(document.getElementById('studentModal'));
+      }
+
+      const form = document.getElementById('studentForm');
+      form.reset();
+      document.getElementById('studentDbId').value = '';
+      document.getElementById('studentSessions').value = 30;
+      document.getElementById('studentModalTitle').textContent = 'Add Student';
+      document.getElementById('studentPassword').required = true;
+
+      if (studentId) {
+        const student = studentInfoCache.find(s => Number(s.id) === Number(studentId));
+        if (!student) return;
+
+        document.getElementById('studentModalTitle').textContent = 'Edit Student';
+        document.getElementById('studentDbId').value = student.id;
+        document.getElementById('studentIdNumber').value = student.student_id || '';
+        document.getElementById('studentFirstName').value = student.first_name || '';
+        document.getElementById('studentMiddleName').value = student.middle_name || '';
+        document.getElementById('studentLastName').value = student.last_name || '';
+        document.getElementById('studentYearLevel').value = student.year_level || '';
+        document.getElementById('studentSessions').value = student.sessions_remaining ?? 30;
+        document.getElementById('studentCourse').value = student.course || '';
+        document.getElementById('studentEmail').value = student.email || '';
+        document.getElementById('studentAddress').value = student.address || '';
+        document.getElementById('studentPassword').required = false;
+      }
+
+      studentModalInstance.show();
+    }
+
+    async function saveStudent() {
+      const id = document.getElementById('studentDbId').value.trim();
+      const payload = new FormData();
+      payload.append('action', id ? 'update' : 'create');
+      if (id) payload.append('id', id);
+
+      payload.append('student_id', document.getElementById('studentIdNumber').value.trim());
+      payload.append('first_name', document.getElementById('studentFirstName').value.trim());
+      payload.append('middle_name', document.getElementById('studentMiddleName').value.trim());
+      payload.append('last_name', document.getElementById('studentLastName').value.trim());
+      payload.append('year_level', document.getElementById('studentYearLevel').value.trim());
+      payload.append('sessions_remaining', document.getElementById('studentSessions').value.trim());
+      payload.append('course', document.getElementById('studentCourse').value.trim());
+      payload.append('email', document.getElementById('studentEmail').value.trim());
+      payload.append('address', document.getElementById('studentAddress').value.trim());
+      payload.append('password', document.getElementById('studentPassword').value);
+
+      try {
+        const response = await fetch('../../api/admin_student_information.php', {
           method: 'POST',
-          body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-          if (data.success) {
-            const newName = nameInput.value.trim();
-            nameDisplay.textContent = newName || 'Admin User';
-            emailDisplay.textContent = emailInput.value.trim() || 'admin@ccs.edu';
-            
-            // Update initials
-            const initials = newName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0,2);
-            const initialsEl = document.getElementById('profileInitials');
-            if (initialsEl) initialsEl.textContent = initials || 'AD';
-            
-            // Reset to display mode
-            nameDisplay.style.display = 'block';
-            nameInput.style.display = 'none';
-            emailDisplay.style.display = 'block';
-            emailInput.style.display = 'none';
-            btn.innerHTML = '<i class="fas fa-edit"></i> Edit Profile';
-            btn.style.background = '#2563eb';
-            
-            alert('Profile updated successfully!');
-          } else {
-            alert('Error: ' + data.message);
-          }
-        })
-        .catch(error => {
-          console.error('Error:', error);
-          alert('Error saving profile');
+          body: payload
         });
+        const data = await response.json();
+        if (!data.success) {
+          alert(data.message || 'Failed to save student.');
+          return;
+        }
+        if (studentModalInstance) studentModalInstance.hide();
+        await loadStudentInformation(document.getElementById('studentInfoSearch').value.trim());
+        await loadDashboardOverview();
+        alert(data.message || 'Student saved successfully.');
+      } catch (error) {
+        console.error(error);
+        alert('Error saving student.');
       }
     }
 
-    // Load settings on page load
-    document.addEventListener('DOMContentLoaded', function() {
-      loadProfileFromDB();
-      loadSettings();
-    });
+    async function deleteStudent(id) {
+      if (!confirm('Delete this student record?')) return;
 
-    function loadSettings() {
-      fetch('../../api/settings_process.php')
-        .then(response => response.json())
-        .then(data => {
-          if (data.success && data.data) {
-            document.getElementById('sessionTimeout').value = data.data.session_timeout || '4';
-            document.getElementById('maxDailySessions').value = data.data.max_daily_sessions || '3';
-            document.getElementById('labOpenTime').value = data.data.lab_open_time || '07:00';
-            document.getElementById('labCloseTime').value = data.data.lab_close_time || '18:00';
-          }
-        })
-        .catch(error => console.error('Error loading settings:', error));
+      const payload = new FormData();
+      payload.append('action', 'delete');
+      payload.append('id', id);
+
+      try {
+        const response = await fetch('../../api/admin_student_information.php', {
+          method: 'POST',
+          body: payload
+        });
+        const data = await response.json();
+        if (!data.success) {
+          alert(data.message || 'Failed to delete student.');
+          return;
+        }
+        await loadStudentInformation(document.getElementById('studentInfoSearch').value.trim());
+        await loadDashboardOverview();
+        alert(data.message || 'Student deleted successfully.');
+      } catch (error) {
+        console.error(error);
+        alert('Error deleting student.');
+      }
     }
 
-    function saveSettings() {
-      const formData = new FormData();
-      formData.append('session_timeout', document.getElementById('sessionTimeout').value);
-      formData.append('max_daily_sessions', document.getElementById('maxDailySessions').value);
-      formData.append('lab_open_time', document.getElementById('labOpenTime').value);
-      formData.append('lab_close_time', document.getElementById('labCloseTime').value);
-      
-      fetch('../../api/settings_process.php', {
-        method: 'POST',
-        body: formData
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          alert('Settings saved successfully!');
-        } else {
-          alert('Error: ' + data.message);
+    async function resetAllSessions() {
+      if (!confirm('Reset all student sessions to 30?')) return;
+
+      const payload = new FormData();
+      payload.append('action', 'reset_sessions');
+      payload.append('default_sessions', '30');
+
+      try {
+        const response = await fetch('../../api/admin_student_information.php', {
+          method: 'POST',
+          body: payload
+        });
+        const data = await response.json();
+        if (!data.success) {
+          alert(data.message || 'Failed to reset all sessions.');
+          return;
         }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        alert('Error saving settings');
+        await loadStudentInformation(document.getElementById('studentInfoSearch').value.trim());
+        await loadDashboardOverview();
+        alert(data.message || 'All sessions reset successfully.');
+      } catch (error) {
+        console.error(error);
+        alert('Error resetting sessions.');
+      }
+    }
+
+    function renderSitInRecordsTable(records) {
+      const tableBody = document.getElementById('sitinRecordsTableBody');
+      const empty = document.getElementById('sitinRecordsEmpty');
+      if (!tableBody || !empty) return;
+
+      if (!records.length) {
+        tableBody.innerHTML = '';
+        empty.style.display = 'block';
+        return;
+      }
+
+      empty.style.display = 'none';
+      tableBody.innerHTML = records.map(record => {
+        const isActive = String(record.status || '').toLowerCase() === 'active';
+        const actionButton = `<button class="student-info-btn reset row-action ${!isActive ? 'muted' : ''}" onclick="logoutSitInSession(${record.sit_in_id}, '${isActive ? 'Active' : 'Not Active'}')">Logout</button>`;
+
+        return `
+          <tr>
+            <td>${escapeHtml(record.sit_in_id)}</td>
+            <td>${escapeHtml(record.student_id)}</td>
+            <td>${escapeHtml(record.name)}</td>
+            <td>${escapeHtml(record.purpose)}</td>
+            <td>${escapeHtml(record.sit_lab)}</td>
+            <td>${escapeHtml(record.session)}</td>
+            <td><span class="status-badge ${isActive ? 'active' : 'not-active'}">${escapeHtml(record.status)}</span></td>
+            <td>${actionButton}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function clearGlobalSearchResults() {
+      const resultsBox = document.getElementById('globalSearchResults');
+      if (!resultsBox) return;
+      resultsBox.classList.remove('show');
+      resultsBox.innerHTML = '';
+      globalStudentResults = [];
+    }
+
+    function renderGlobalSearchResults(students, query) {
+      const resultsBox = document.getElementById('globalSearchResults');
+      if (!resultsBox) return;
+
+      if (!query || !students.length) {
+        resultsBox.innerHTML = '';
+        resultsBox.classList.remove('show');
+        return;
+      }
+
+      globalStudentResults = students;
+      resultsBox.innerHTML = students.map(student => `
+        <div class="global-search-item" onclick="openStudentFromGlobalSearch(${student.id})">
+          <strong>${escapeHtml(student.name)}</strong>
+          <span class="global-search-meta">ID: ${escapeHtml(student.student_id)} | Year ${escapeHtml(student.year_level)} | Sessions: ${escapeHtml(student.sessions_remaining)}</span>
+        </div>
+      `).join('');
+      resultsBox.classList.add('show');
+    }
+
+    async function searchStudentsGlobally(query) {
+      const q = String(query || '').trim();
+      if (q === '') {
+        clearGlobalSearchResults();
+        return;
+      }
+
+      try {
+        const response = await fetch(`../../api/admin_student_information.php?action=list&search=${encodeURIComponent(q)}`);
+        const data = await response.json();
+        if (!data.success) {
+          clearGlobalSearchResults();
+          return;
+        }
+        renderGlobalSearchResults(data.data || [], q);
+      } catch (error) {
+        console.error('Global student search error:', error);
+        clearGlobalSearchResults();
+      }
+    }
+
+    async function openStudentFromGlobalSearch(studentId) {
+      const student = globalStudentResults.find(s => Number(s.id) === Number(studentId));
+      if (!student) return;
+
+      const studentMenuItem = document.querySelectorAll('.menu-item')[1];
+      showPage('sessions', studentMenuItem || null);
+
+      const studentSearchInput = document.getElementById('studentInfoSearch');
+      if (studentSearchInput) {
+        studentSearchInput.value = student.student_id || '';
+      }
+      await loadStudentInformation(student.student_id || '');
+
+      clearGlobalSearchResults();
+
+      setTimeout(() => {
+        const row = document.getElementById(`student-row-${student.id}`);
+        if (!row) return;
+        row.classList.add('student-row-highlight');
+        row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        setTimeout(() => row.classList.remove('student-row-highlight'), 1800);
+      }, 120);
+    }
+    window.openStudentFromGlobalSearch = openStudentFromGlobalSearch;
+
+    async function loadSitInRecords(search = '') {
+      try {
+        const response = await fetch(`../../api/admin_sitin_records.php?action=list&search=${encodeURIComponent(search)}`);
+        const data = await response.json();
+        if (!data.success) {
+          alert(data.message || 'Failed to load sit-in records.');
+          return;
+        }
+        sitInRecordsCache = data.data || [];
+        renderSitInRecordsTable(sitInRecordsCache);
+      } catch (error) {
+        console.error(error);
+        alert('Error loading sit-in records.');
+      }
+    }
+
+    async function logoutSitInSession(sitInId, currentStatus = 'Active') {
+      if (String(currentStatus).toLowerCase() !== 'active') {
+        alert('This sit-in record is already not active.');
+        return;
+      }
+
+      if (!confirm('Logout this active sit-in session?')) return;
+
+      const payload = new FormData();
+      payload.append('action', 'logout');
+      payload.append('sit_in_id', sitInId);
+
+      try {
+        const response = await fetch('../../api/admin_sitin_records.php', {
+          method: 'POST',
+          body: payload
+        });
+        const data = await response.json();
+        if (!data.success) {
+          alert(data.message || 'Failed to logout sit-in session.');
+          return;
+        }
+        await loadSitInRecords(document.getElementById('sitinRecordSearch').value.trim());
+        await loadStudentInformation(document.getElementById('studentInfoSearch').value.trim());
+        await loadDashboardOverview();
+        alert(data.message || 'Sit-in session logged out.');
+      } catch (error) {
+        console.error(error);
+        alert('Error logging out sit-in session.');
+      }
+    }
+
+    function renderSitInReportsTable(rows) {
+      const tableBody = document.getElementById('sitinReportsTableBody');
+      const empty = document.getElementById('sitinReportsEmpty');
+      if (!tableBody || !empty) return;
+
+      if (!rows.length) {
+        tableBody.innerHTML = '';
+        empty.style.display = 'block';
+        return;
+      }
+
+      empty.style.display = 'none';
+      tableBody.innerHTML = rows.map(row => `
+        <tr>
+          <td>${escapeHtml(row.id_number)}</td>
+          <td>${escapeHtml(row.name)}</td>
+          <td>${escapeHtml(row.purpose)}</td>
+          <td>${escapeHtml(row.laboratory)}</td>
+          <td>${escapeHtml(row.login_time)}</td>
+          <td>${escapeHtml(row.logout_time)}</td>
+          <td>${escapeHtml(row.report_date)}</td>
+        </tr>
+      `).join('');
+    }
+
+    async function loadSitInReports() {
+      const reportDate = document.getElementById('sitinReportDate')?.value?.trim() || '';
+      const filter = document.getElementById('sitinReportFilter')?.value?.trim() || '';
+      const params = new URLSearchParams({
+        action: 'list',
+        report_date: reportDate,
+        search: filter
+      });
+
+      try {
+        const response = await fetch(`../../api/admin_sitin_reports.php?${params.toString()}`);
+        const data = await response.json();
+        if (!data.success) {
+          alert(data.message || 'Failed to load sit-in reports.');
+          return;
+        }
+        sitInReportsCache = data.data || [];
+        renderSitInReportsTable(sitInReportsCache);
+      } catch (error) {
+        console.error(error);
+        alert('Error loading sit-in reports.');
+      }
+    }
+
+    function resetSitInReportsFilters() {
+      const reportDateInput = document.getElementById('sitinReportDate');
+      const filterInput = document.getElementById('sitinReportFilter');
+      if (reportDateInput) reportDateInput.value = '';
+      if (filterInput) filterInput.value = '';
+      loadSitInReports();
+    }
+
+    function buildSitInReportsPrintableHtml(title = 'Sit-in Reports') {
+      const rowsHtml = (sitInReportsCache || []).map(row => `
+        <tr>
+          <td>${escapeHtml(row.id_number)}</td>
+          <td>${escapeHtml(row.name)}</td>
+          <td>${escapeHtml(row.purpose)}</td>
+          <td>${escapeHtml(row.laboratory)}</td>
+          <td>${escapeHtml(row.login_time)}</td>
+          <td>${escapeHtml(row.logout_time)}</td>
+          <td>${escapeHtml(row.report_date)}</td>
+        </tr>
+      `).join('');
+
+      return `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="UTF-8">
+          <title>${title}</title>
+          <style>
+            body { font-family: Arial, sans-serif; padding: 20px; color: #111827; }
+            h2 { margin: 0 0 6px; }
+            .meta { color: #6b7280; margin-bottom: 14px; font-size: 13px; }
+            table { width: 100%; border-collapse: collapse; font-size: 12px; }
+            th, td { border: 1px solid #d1d5db; padding: 7px 8px; text-align: left; }
+            th { background: #f3f4f6; font-weight: 700; }
+          </style>
+        </head>
+        <body>
+          <h2>${title}</h2>
+          <div class="meta">Generated: ${new Date().toLocaleString()}</div>
+          <table>
+            <thead>
+              <tr>
+                <th>ID Number</th><th>Name</th><th>Purpose</th><th>Laboratory</th><th>Login</th><th>Logout</th><th>Date</th>
+              </tr>
+            </thead>
+            <tbody>${rowsHtml}</tbody>
+          </table>
+        </body>
+        </html>
+      `;
+    }
+
+    function printSitInReports() {
+      const html = buildSitInReportsPrintableHtml('Sit-in Reports');
+      const win = window.open('', '_blank', 'width=1200,height=800');
+      if (!win) {
+        alert('Please allow popups to print reports.');
+        return;
+      }
+      win.document.open();
+      win.document.write(html);
+      win.document.close();
+      win.focus();
+      setTimeout(() => win.print(), 300);
+    }
+
+    function exportSitInReportsPDF() {
+      const html = buildSitInReportsPrintableHtml('Sit-in Reports (PDF)');
+      const win = window.open('', '_blank', 'width=1200,height=800');
+      if (!win) {
+        alert('Please allow popups to export PDF.');
+        return;
+      }
+      win.document.open();
+      win.document.write(html);
+      win.document.close();
+      win.focus();
+      // Browser print dialog allows Save as PDF.
+      setTimeout(() => win.print(), 300);
+    }
+
+    function exportSitInReportsExcel() {
+      const reportDate = document.getElementById('sitinReportDate')?.value?.trim() || '';
+      const filter = document.getElementById('sitinReportFilter')?.value?.trim() || '';
+      const params = new URLSearchParams({
+        action: 'excel',
+        report_date: reportDate,
+        search: filter
+      });
+      window.open(`../../api/admin_sitin_reports.php?${params.toString()}`, '_blank');
+    }
+
+    function renderFeedbackReportsTable(rows) {
+      const tableBody = document.getElementById('feedbackReportsTableBody');
+      const empty = document.getElementById('feedbackReportsEmpty');
+      if (!tableBody || !empty) return;
+
+      if (!rows.length) {
+        tableBody.innerHTML = '';
+        empty.style.display = 'block';
+        return;
+      }
+
+      empty.style.display = 'none';
+      tableBody.innerHTML = rows.map(row => `
+        <tr>
+          <td>${escapeHtml(row.id_number)}</td>
+          <td>${escapeHtml(row.laboratory)}</td>
+          <td>${escapeHtml(row.report_date)}</td>
+          <td>${escapeHtml(row.message)}</td>
+        </tr>
+      `).join('');
+    }
+
+    async function loadFeedbackReports() {
+      const filter = document.getElementById('feedbackReportFilter')?.value?.trim() || '';
+      const params = new URLSearchParams({
+        action: 'list',
+        search: filter
+      });
+
+      try {
+        const response = await fetch(`../../api/admin_feedback_reports.php?${params.toString()}`);
+        const data = await response.json();
+        if (!data.success) {
+          alert(data.message || 'Failed to load feedback reports.');
+          return;
+        }
+        feedbackReportsCache = data.data || [];
+        renderFeedbackReportsTable(feedbackReportsCache);
+      } catch (error) {
+        console.error(error);
+        alert('Error loading feedback reports.');
+      }
+    }
+
+    function buildFeedbackReportsPrintableHtml(title = 'Feedback Report') {
+      const rowsHtml = (feedbackReportsCache || []).map(row => `
+        <tr>
+          <td>${escapeHtml(row.id_number)}</td>
+          <td>${escapeHtml(row.laboratory)}</td>
+          <td>${escapeHtml(row.report_date)}</td>
+          <td>${escapeHtml(row.message)}</td>
+        </tr>
+      `).join('');
+
+      return `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="UTF-8">
+          <title>${title}</title>
+          <style>
+            body { font-family: Arial, sans-serif; padding: 20px; color: #111827; }
+            h2 { margin: 0 0 6px; }
+            .meta { color: #6b7280; margin-bottom: 14px; font-size: 13px; }
+            table { width: 100%; border-collapse: collapse; font-size: 12px; }
+            th, td { border: 1px solid #d1d5db; padding: 7px 8px; text-align: left; }
+            th { background: #f3f4f6; font-weight: 700; }
+          </style>
+        </head>
+        <body>
+          <h2>${title}</h2>
+          <div class="meta">Generated: ${new Date().toLocaleString()}</div>
+          <table>
+            <thead>
+              <tr><th>ID NUMBER</th><th>LABORATORY</th><th>DATE</th><th>MESSAGE</th></tr>
+            </thead>
+            <tbody>${rowsHtml}</tbody>
+          </table>
+        </body>
+        </html>
+      `;
+    }
+
+    function exportFeedbackReportsPDF() {
+      const html = buildFeedbackReportsPrintableHtml('Feedback Report (PDF)');
+      const win = window.open('', '_blank', 'width=1200,height=800');
+      if (!win) {
+        alert('Please allow popups to export PDF.');
+        return;
+      }
+      win.document.open();
+      win.document.write(html);
+      win.document.close();
+      win.focus();
+      setTimeout(() => win.print(), 300);
+    }
+
+    function exportFeedbackReportsExcel() {
+      const filter = document.getElementById('feedbackReportFilter')?.value?.trim() || '';
+      const params = new URLSearchParams({
+        action: 'excel',
+        search: filter
+      });
+      window.open(`../../api/admin_feedback_reports.php?${params.toString()}`, '_blank');
+    }
+
+    function filterStaticTable(sectionId, query) {
+      const section = document.getElementById(sectionId);
+      if (!section) return;
+      const rows = section.querySelectorAll('tbody tr');
+      const normalized = String(query || '').toLowerCase();
+      rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(normalized) ? '' : 'none';
       });
     }
+
+    function runGlobalSearch(query) {
+      const activeSection = document.querySelector('.content-section.active');
+      if (!activeSection) return;
+      const activeId = activeSection.id;
+      const q = String(query || '').trim();
+
+      if (activeId === 'dashboard') {
+        searchStudentsGlobally(q);
+        // Also allow simple filtering on any static tables visible in Home.
+        filterStaticTable(activeId, q);
+        return;
+      }
+
+      if (activeId === 'sessions') {
+        searchStudentsGlobally(q);
+        const input = document.getElementById('studentInfoSearch');
+        if (input) input.value = q;
+        loadStudentInformation(q);
+        return;
+      }
+
+      // For non-student sections, hide the student suggestion dropdown.
+      clearGlobalSearchResults();
+
+      if (activeId === 'labs') {
+        const input = document.getElementById('sitinRecordSearch');
+        if (input) input.value = q;
+        loadSitInRecords(q);
+        return;
+      }
+
+      if (activeId === 'sitinReports') {
+        const input = document.getElementById('sitinReportFilter');
+        if (input) input.value = q;
+        loadSitInReports();
+        return;
+      }
+
+      if (activeId === 'feedbackReports') {
+        const input = document.getElementById('feedbackReportFilter');
+        if (input) input.value = q;
+        loadFeedbackReports();
+        return;
+      }
+
+      // Fallback for sections still using static table rows.
+      filterStaticTable(activeId, q);
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      const globalSearchInput = document.getElementById('globalSearchInput');
+      if (globalSearchInput) {
+        let globalTimer = null;
+        globalSearchInput.addEventListener('input', function() {
+          clearTimeout(globalTimer);
+          globalTimer = setTimeout(() => runGlobalSearch(globalSearchInput.value), 250);
+        });
+        globalSearchInput.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            const activeSection = document.querySelector('.content-section.active');
+            const activeId = activeSection ? activeSection.id : '';
+            if ((activeId === 'sessions' || activeId === 'dashboard') && globalStudentResults.length > 0) {
+              openStudentFromGlobalSearch(globalStudentResults[0].id);
+            } else {
+              runGlobalSearch(globalSearchInput.value);
+            }
+          }
+          if (e.key === 'Escape') clearGlobalSearchResults();
+        });
+        globalSearchInput.addEventListener('blur', function() {
+          setTimeout(clearGlobalSearchResults, 180);
+        });
+      }
+
+      document.addEventListener('click', function(e) {
+        const searchBox = document.querySelector('.search-box');
+        if (!searchBox) return;
+        if (!searchBox.contains(e.target)) clearGlobalSearchResults();
+      });
+
+      const searchInput = document.getElementById('studentInfoSearch');
+      if (searchInput) {
+        let timer = null;
+        searchInput.addEventListener('input', function() {
+          clearTimeout(timer);
+          timer = setTimeout(() => loadStudentInformation(searchInput.value.trim()), 250);
+        });
+      }
+
+      const sitInSearchInput = document.getElementById('sitinRecordSearch');
+      if (sitInSearchInput) {
+        let sitInTimer = null;
+        sitInSearchInput.addEventListener('input', function() {
+          clearTimeout(sitInTimer);
+          sitInTimer = setTimeout(() => loadSitInRecords(sitInSearchInput.value.trim()), 250);
+        });
+        sitInSearchInput.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            loadSitInRecords(sitInSearchInput.value.trim());
+          }
+        });
+      }
+
+      const sitInReportDate = document.getElementById('sitinReportDate');
+      if (sitInReportDate) {
+        sitInReportDate.addEventListener('change', loadSitInReports);
+      }
+
+      const sitInReportFilter = document.getElementById('sitinReportFilter');
+      if (sitInReportFilter) {
+        let reportTimer = null;
+        sitInReportFilter.addEventListener('input', function() {
+          clearTimeout(reportTimer);
+          reportTimer = setTimeout(loadSitInReports, 250);
+        });
+        sitInReportFilter.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            loadSitInReports();
+          }
+        });
+      }
+
+      const feedbackReportFilter = document.getElementById('feedbackReportFilter');
+      if (feedbackReportFilter) {
+        let feedbackTimer = null;
+        feedbackReportFilter.addEventListener('input', function() {
+          clearTimeout(feedbackTimer);
+          feedbackTimer = setTimeout(loadFeedbackReports, 250);
+        });
+        feedbackReportFilter.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            loadFeedbackReports();
+          }
+        });
+      }
+
+      loadStudentInformation();
+      loadSitInRecords();
+      loadSitInReports();
+      loadFeedbackReports();
+      loadDashboardOverview();
+      loadAnnouncements();
+    });
+
   </script>
 </body>
 
