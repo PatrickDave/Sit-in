@@ -25,6 +25,89 @@ document.addEventListener('DOMContentLoaded', function() {
     const feedbackMessageInput = document.getElementById('feedbackMessage');
     const feedbackStatus = document.getElementById('feedbackStatus');
     const submitFeedbackBtn = document.getElementById('submitFeedbackBtn');
+    const reservationModalElement = document.getElementById('reservationModal');
+    const reservationModal = reservationModalElement ? new bootstrap.Modal(reservationModalElement) : null;
+    const reservationTableBody = document.getElementById('reservationTableBody');
+    const reservationEmptyState = document.getElementById('reservationEmptyState');
+    const reservationForm = document.getElementById('reservationForm');
+    const reservationStatus = document.getElementById('reservationStatus');
+    const submitReservationBtn = document.getElementById('submitReservationBtn');
+    const reservationDateInput = document.getElementById('reservationDate');
+    const reservationTimeInInput = document.getElementById('reservationTimeIn');
+    const reservationTimeOutInput = document.getElementById('reservationTimeOut');
+    const reservationPcNumberInput = document.getElementById('reservationPcNumber');
+
+    function reservationBadge(status) {
+        const normalized = String(status || 'pending').toLowerCase();
+        if (normalized === 'approved') {
+            return '<span class="badge rounded-pill text-bg-success">Approved</span>';
+        }
+        if (normalized === 'denied') {
+            return '<span class="badge rounded-pill text-bg-danger">Denied</span>';
+        }
+        return '<span class="badge rounded-pill text-bg-warning">Pending</span>';
+    }
+
+    function renderReservationRows(records) {
+        if (!reservationTableBody || !reservationEmptyState) return;
+
+        if (!records || records.length === 0) {
+            reservationTableBody.innerHTML = '';
+            reservationEmptyState.style.display = 'block';
+            return;
+        }
+
+        reservationEmptyState.style.display = 'none';
+        reservationTableBody.innerHTML = records.map((record) => `
+            <tr>
+                <td>${escapeHtml(record.student_id || '--')}</td>
+                <td>${escapeHtml(record.laboratory || '--')}</td>
+                <td>PC-${escapeHtml(record.pc_number || '--')}</td>
+                <td>${escapeHtml(record.reservation_date || '--')}</td>
+                <td>${escapeHtml(record.time_in || '--')}</td>
+                <td>${escapeHtml(record.time_out || '--')}</td>
+                <td>${escapeHtml(record.purpose || '--')}</td>
+                <td>${reservationBadge(record.status)}</td>
+            </tr>
+        `).join('');
+    }
+
+    function populatePcOptions() {
+        if (!reservationPcNumberInput) return;
+        let options = '<option value="">Select PC</option>';
+        for (let pc = 1; pc <= 50; pc += 1) {
+            options += `<option value="${pc}">PC-${pc}</option>`;
+        }
+        reservationPcNumberInput.innerHTML = options;
+    }
+
+    function toMinutes(timeValue) {
+        if (!timeValue || !timeValue.includes(':')) return null;
+        const [hours, minutes] = timeValue.split(':').map(Number);
+        if (Number.isNaN(hours) || Number.isNaN(minutes)) return null;
+        return (hours * 60) + minutes;
+    }
+
+    function loadMyReservations() {
+        fetch('../../api/reservations.php?action=my')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('HTTP error! status: ' + response.status);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (!data.success) {
+                    renderReservationRows([]);
+                    return;
+                }
+                renderReservationRows(data.data || []);
+            })
+            .catch(error => {
+                console.error('Reservation fetch error:', error);
+                renderReservationRows([]);
+            });
+    }
 
     window.openFeedbackModal = function(sitInId) {
         if (!feedbackModal || !feedbackSitInIdInput || !feedbackMessageInput || !feedbackStatus) return;
@@ -99,6 +182,33 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     loadSitInHistory();
+    loadMyReservations();
+    populatePcOptions();
+
+    if (reservationDateInput) {
+        reservationDateInput.min = new Date().toISOString().split('T')[0];
+    }
+
+    if (reservationModalElement) {
+        reservationModalElement.addEventListener('show.bs.modal', function() {
+            if (reservationStatus) {
+                reservationStatus.textContent = '';
+                reservationStatus.className = 'small mb-0 mt-3';
+            }
+        });
+
+        reservationModalElement.addEventListener('hidden.bs.modal', function() {
+            if (reservationForm) reservationForm.reset();
+            if (reservationDateInput) {
+                reservationDateInput.min = new Date().toISOString().split('T')[0];
+            }
+            populatePcOptions();
+            if (reservationStatus) {
+                reservationStatus.textContent = '';
+                reservationStatus.className = 'small mb-0 mt-3';
+            }
+        });
+    }
 
     function renderAnnouncements(records) {
         const container = document.getElementById('studentAnnouncementList');
@@ -203,6 +313,94 @@ document.addEventListener('DOMContentLoaded', function() {
                 })
                 .finally(() => {
                     submitFeedbackBtn.disabled = false;
+                });
+        });
+    }
+
+    if (submitReservationBtn) {
+        submitReservationBtn.addEventListener('click', function() {
+            const laboratory = document.getElementById('reservationLaboratory')?.value.trim() || '';
+            const reservationDate = document.getElementById('reservationDate')?.value.trim() || '';
+            const timeIn = reservationTimeInInput?.value.trim() || '';
+            const timeOut = reservationTimeOutInput?.value.trim() || '';
+            const pcNumber = reservationPcNumberInput?.value.trim() || '';
+            const purpose = document.getElementById('reservationPurpose')?.value.trim() || '';
+
+            if (!laboratory || !reservationDate || !timeIn || !timeOut || !pcNumber || !purpose) {
+                if (reservationStatus) {
+                    reservationStatus.textContent = 'Please complete all reservation fields.';
+                    reservationStatus.className = 'small text-danger mb-0 mt-3';
+                }
+                return;
+            }
+
+            const timeInMinutes = toMinutes(timeIn);
+            const timeOutMinutes = toMinutes(timeOut);
+            if (timeInMinutes === null || timeOutMinutes === null || timeOutMinutes <= timeInMinutes) {
+                if (reservationStatus) {
+                    reservationStatus.textContent = 'Time-out must be later than Time-in.';
+                    reservationStatus.className = 'small text-danger mb-0 mt-3';
+                }
+                return;
+            }
+
+            const duration = timeOutMinutes - timeInMinutes;
+            if (duration < 30 || duration > 120) {
+                if (reservationStatus) {
+                    reservationStatus.textContent = 'Reservation duration must be between 30 minutes and 2 hours.';
+                    reservationStatus.className = 'small text-danger mb-0 mt-3';
+                }
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('action', 'create');
+            formData.append('laboratory', laboratory);
+            formData.append('reservation_date', reservationDate);
+            formData.append('time_in', timeIn);
+            formData.append('time_out', timeOut);
+            formData.append('pc_number', pcNumber);
+            formData.append('purpose', purpose);
+
+            submitReservationBtn.disabled = true;
+            fetch('../../api/reservations.php', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.success) {
+                        if (reservationStatus) {
+                            reservationStatus.textContent = data.message || 'Failed to submit reservation.';
+                            reservationStatus.className = 'small text-danger mb-0 mt-3';
+                        }
+                        return;
+                    }
+
+                    if (reservationStatus) {
+                        reservationStatus.textContent = data.message || 'Reservation submitted successfully.';
+                        reservationStatus.className = 'small text-success mb-0 mt-3';
+                    }
+
+                    if (reservationForm) reservationForm.reset();
+                    if (reservationDateInput) {
+                        reservationDateInput.min = new Date().toISOString().split('T')[0];
+                    }
+                    loadMyReservations();
+                    setTimeout(() => {
+                        if (reservationModal) reservationModal.hide();
+                        if (reservationStatus) reservationStatus.textContent = '';
+                    }, 700);
+                })
+                .catch(error => {
+                    console.error('Reservation submit error:', error);
+                    if (reservationStatus) {
+                        reservationStatus.textContent = 'Error submitting reservation.';
+                        reservationStatus.className = 'small text-danger mb-0 mt-3';
+                    }
+                })
+                .finally(() => {
+                    submitReservationBtn.disabled = false;
                 });
         });
     }

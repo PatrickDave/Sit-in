@@ -8,17 +8,42 @@ if (!isset($_SESSION['admin_id'])) {
     exit();
 }
 
+$conn->query("CREATE TABLE IF NOT EXISTS reservations (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    laboratory VARCHAR(20) NOT NULL,
+    reservation_date DATE NOT NULL,
+    time_in TIME NOT NULL,
+    time_out TIME NOT NULL,
+    pc_number INT NOT NULL,
+    purpose VARCHAR(255) NOT NULL,
+    status VARCHAR(30) NOT NULL DEFAULT 'pending',
+    admin_note VARCHAR(255) DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_reservation_user (user_id),
+    INDEX idx_reservation_status (status),
+    INDEX idx_reservation_date (reservation_date),
+    CONSTRAINT fk_reservations_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+)");
+
 function fetch_reports($conn, $search, $report_date) {
+    $hasReservationIdColumn = $conn->query("SHOW COLUMNS FROM sit_in_history LIKE 'reservation_id'");
+    if ($hasReservationIdColumn && $hasReservationIdColumn->num_rows === 0) {
+        $conn->query("ALTER TABLE sit_in_history ADD COLUMN reservation_id INT NULL AFTER user_id");
+    }
+
     $sql = "SELECT
                 u.student_id AS id_number,
                 CONCAT(u.first_name, ' ', COALESCE(NULLIF(u.middle_name, ''), ''), IF(u.middle_name IS NULL OR u.middle_name = '', '', ' '), u.last_name) AS name,
-                s.purpose,
+                COALESCE(r.purpose, s.purpose) AS purpose,
                 s.laboratory,
                 DATE_FORMAT(s.time_in, '%h:%i:%s %p') AS login_time,
                 IFNULL(DATE_FORMAT(s.time_out, '%h:%i:%s %p'), '--') AS logout_time,
                 DATE_FORMAT(s.time_in, '%Y-%m-%d') AS report_date
             FROM sit_in_history s
-            INNER JOIN users u ON u.id = s.user_id";
+            INNER JOIN users u ON u.id = s.user_id
+            LEFT JOIN reservations r ON r.id = s.reservation_id";
 
     $where = [];
     $params = [];

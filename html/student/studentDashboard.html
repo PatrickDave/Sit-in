@@ -102,6 +102,16 @@
             line-height: 1.4;
         }
 
+        .reservation-empty {
+            border: 1px dashed #c7d2df;
+            border-radius: 12px;
+            background: #f6f9fc;
+            color: var(--text-muted);
+            padding: 1rem;
+            text-align: center;
+            font-size: 0.88rem;
+        }
+
         .rules-container::-webkit-scrollbar {
             width: 7px;
         }
@@ -127,14 +137,14 @@
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
                         <li><a class="dropdown-item" href="studentDashboard.html"><i class="bi bi-house me-2"></i>Home</a></li>
-                        <li><a class="dropdown-item" href="#"><i class="bi bi-bell me-2"></i>Notifications</a></li>
+                        <li><a class="dropdown-item" href="#announcementsSection"><i class="bi bi-bell me-2"></i>Notifications</a></li>
                         <li>
                             <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#editProfileModal">
                                 <i class="bi bi-pencil me-2"></i>Edit Profile
                             </a>
                         </li>
                         <li><a class="dropdown-item" href="#sitinHistorySection"><i class="bi bi-clock-history me-2"></i>History</a></li>
-                        <li><a class="dropdown-item" href="#"><i class="bi bi-calendar-check me-2"></i>Reservation</a></li>
+                        <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#reservationModal"><i class="bi bi-calendar-check me-2"></i>Reservation</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li>
                             <a class="dropdown-item text-danger" href="../../api/logout.php">
@@ -303,6 +313,43 @@
                     <div class="card-header bg-transparent py-4 border-0 px-4 d-flex justify-content-between align-items-center">
                         <div>
                             <h5 class="mb-1 fw-bold">
+                                <i class="bi bi-calendar-check me-2 text-primary"></i>
+                                My Reservations
+                            </h5>
+                            <small class="text-secondary">Submitted sit-in reservation requests</small>
+                        </div>
+                        <button type="button" class="btn btn-primary-custom px-4" data-bs-toggle="modal" data-bs-target="#reservationModal">New Reservation</button>
+                    </div>
+                    <div class="card-body pt-0 px-4 pb-4">
+                        <div class="table-responsive">
+                            <table class="table history-table align-middle mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Student ID</th>
+                                        <th>Laboratory</th>
+                                        <th>PC</th>
+                                        <th>Date</th>
+                                        <th>Time In</th>
+                                        <th>Time Out</th>
+                                        <th>Purpose</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="reservationTableBody"></tbody>
+                            </table>
+                        </div>
+                        <div id="reservationEmptyState" class="reservation-empty mt-3">
+                            No reservations submitted yet.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12">
+                <div class="card main-card border-0 shadow-sm">
+                    <div class="card-header bg-transparent py-4 border-0 px-4 d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="mb-1 fw-bold">
                                 <i class="bi bi-clock-history me-2 text-primary"></i>
                                 History Information
                             </h5>
@@ -424,6 +471,62 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
                     <button type="button" class="btn btn-primary" id="submitFeedbackBtn">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="reservationModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header">
+                    <h5 class="modal-title">Create Reservation</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="reservationForm">
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-uppercase text-muted">Laboratory</label>
+                            <select id="reservationLaboratory" class="form-select" required>
+                                <option value="">Select laboratory</option>
+                                <option value="524">524</option>
+                                <option value="526">526</option>
+                                <option value="530">530</option>
+                                <option value="540">540</option>
+                                <option value="544">544</option>
+                            </select>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold text-uppercase text-muted">Reservation Date</label>
+                                <input type="date" id="reservationDate" class="form-control" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold text-uppercase text-muted">Time-in</label>
+                                <input type="time" id="reservationTimeIn" class="form-control" step="1800" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold text-uppercase text-muted">Time-out</label>
+                                <input type="time" id="reservationTimeOut" class="form-control" step="1800" required>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <label class="form-label small fw-bold text-uppercase text-muted">PC Number</label>
+                            <select id="reservationPcNumber" class="form-select" required>
+                                <option value="">Select PC</option>
+                            </select>
+                            <small class="text-muted">Choose from PC 1 to PC 50. Reservation duration must be 30 minutes to 2 hours only.</small>
+                        </div>
+                        <div class="mt-3">
+                            <label class="form-label small fw-bold text-uppercase text-muted">Purpose</label>
+                            <textarea id="reservationPurpose" class="form-control" rows="3" maxlength="255" placeholder="Enter your sit-in purpose..." required></textarea>
+                        </div>
+                    </form>
+                    <p id="reservationStatus" class="small mb-0 mt-3"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="submitReservationBtn">Submit Reservation</button>
                 </div>
             </div>
         </div>

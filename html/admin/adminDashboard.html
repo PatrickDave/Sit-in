@@ -648,7 +648,9 @@
     }
 
     #studentInfoSearch,
-    #sitinRecordSearch {
+    #sitinRecordSearch,
+    #reservationSearch,
+    #adminReservationSearch {
       min-width: 230px;
       max-width: 320px;
       border-radius: 999px;
@@ -658,7 +660,9 @@
     }
 
     #studentInfoSearch:focus,
-    #sitinRecordSearch:focus {
+    #sitinRecordSearch:focus,
+    #reservationSearch:focus,
+    #adminReservationSearch:focus {
       outline: none;
       border-color: #2563eb;
       box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
@@ -667,6 +671,11 @@
     #sitinRecordSearch {
       min-width: 160px;
       max-width: 210px;
+    }
+
+    #reservationSearch {
+      min-width: 180px;
+      max-width: 240px;
     }
 
     #sitinReportFilter,
@@ -722,6 +731,135 @@
       font-weight: 600;
       color: #64748b;
       margin: 0;
+    }
+
+    .reservation-admin-layout {
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      gap: 1.5rem;
+      align-items: start;
+    }
+
+    .reservation-control-card {
+      background: white;
+      border-radius: 18px;
+      padding: 1.35rem;
+      box-shadow: var(--card-shadow);
+      border: 1px solid #e2e8f0;
+    }
+
+    .reservation-control-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 0.3rem;
+    }
+
+    .reservation-control-note {
+      font-size: 0.82rem;
+      color: #64748b;
+      margin-bottom: 1rem;
+    }
+
+    .lab-selector-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .lab-select-btn {
+      border: 1px solid #dbeafe;
+      background: #eff6ff;
+      color: #1d4ed8;
+      border-radius: 14px;
+      padding: 0.95rem 0.75rem;
+      font-size: 0.92rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .lab-select-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 18px rgba(37, 99, 235, 0.18);
+    }
+
+    .lab-select-btn.active {
+      background: linear-gradient(135deg, #2563eb, #4f46e5);
+      color: #ffffff;
+      border-color: transparent;
+      box-shadow: 0 12px 24px rgba(37, 99, 235, 0.24);
+    }
+
+    .reservation-selection-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 999px;
+      padding: 0.45rem 0.8rem;
+      font-size: 0.8rem;
+      color: #334155;
+      margin-bottom: 1rem;
+    }
+
+    .pc-selector-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 0.5rem;
+      max-height: 420px;
+      overflow-y: auto;
+      padding-right: 0.15rem;
+    }
+
+    .pc-select-btn {
+      border: 1px solid #dbeafe;
+      background: #ffffff;
+      color: #1e3a8a;
+      border-radius: 12px;
+      padding: 0.55rem 0.3rem;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .pc-select-btn:hover {
+      background: #eff6ff;
+      border-color: #93c5fd;
+    }
+
+    .pc-select-btn.active {
+      background: linear-gradient(135deg, #2563eb, #4f46e5);
+      color: #ffffff;
+      border-color: transparent;
+      box-shadow: 0 10px 18px rgba(37, 99, 235, 0.24);
+    }
+
+    .reservation-logs-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+
+    .reservation-logs-search {
+      min-width: 210px;
+      max-width: 260px;
+      border-radius: 999px;
+      border: 1px solid #e2e8f0;
+      padding: 0.55rem 1rem;
+      font-size: 0.9rem;
+    }
+
+    .reservation-logs-search:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
     }
 
     .data-table {
@@ -790,6 +928,7 @@
     .status-badge.approved { background: rgba(16, 185, 129, 0.1); color: #10b981; }
     .status-badge.pending { background: rgba(251, 191, 36, 0.1); color: #d97706; }
     .status-badge.rejected { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+    .status-badge.denied { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
     .status-badge.active { background: #dcfce7; color: #166534; }
     .status-badge.completed { background: rgba(16, 185, 129, 0.1); color: #10b981; }
     .status-badge.not-active { background: rgba(239, 68, 68, 0.12); color: #ef4444; }
@@ -960,6 +1099,7 @@
     @media (max-width: 1200px) {
       .stats-grid { grid-template-columns: repeat(2, 1fr); }
       .charts-grid { grid-template-columns: 1fr; }
+      .reservation-admin-layout { grid-template-columns: 1fr; }
     }
 
     @media (max-width: 992px) {
@@ -1033,7 +1173,10 @@
         </div>
 
         <div class="header-right">
-          <button class="reservation-pill" onclick="reservationNotice()">
+          <button type="button" class="header-icon" onclick="openAnnouncementModal()" title="Announcements" aria-label="Announcements">
+            <i class="fas fa-bullhorn"></i>
+          </button>
+          <button class="reservation-pill" onclick="showAdminReservationPage()">
             Reservation
           </button>
         </div>
@@ -1173,19 +1316,6 @@
             <p id="homeRecentSessionsEmpty" style="margin: 1rem 0 0; color: #64748b; display:none;">No recent sit-in sessions found.</p>
           </div>
 
-          <div class="table-card">
-            <div class="table-header">
-              <h3 class="table-title">Announcements</h3>
-            </div>
-            <div style="display:flex; gap:10px; align-items:flex-start; margin-bottom: 1rem;">
-              <input type="hidden" id="adminAnnouncementId" value="">
-              <textarea id="adminAnnouncementMessage" class="form-control" rows="2" maxlength="1000" placeholder="Write an announcement for students..."></textarea>
-              <button type="button" class="student-info-btn add" onclick="saveAnnouncement()">Save</button>
-              <button type="button" class="student-info-btn reset" onclick="cancelAnnouncementEdit()" style="display:none;" id="adminAnnouncementCancelBtn">Cancel</button>
-            </div>
-            <div id="adminAnnouncementStatus" style="font-size: 13px; color: #64748b; margin-bottom: 0.75rem;"></div>
-            <div id="adminAnnouncementList"></div>
-          </div>
         </div>
 
         <!-- Student Sessions -->
@@ -1230,53 +1360,28 @@
           <div class="table-card">
             <div class="table-header">
               <h3 class="table-title">Pending Requests</h3>
+              <div class="student-info-toolbar">
+                <input type="text" id="reservationSearch" class="form-control" placeholder="Search reservation...">
+              </div>
             </div>
             <table class="data-table">
               <thead>
                 <tr>
-                  <th>Request ID</th>
-                  <th>Student</th>
+                  <th>Student ID</th>
+                  <th>Name</th>
                   <th>Lab</th>
+                  <th>PC</th>
                   <th>Date</th>
-                  <th>Time</th>
+                  <th>Time In</th>
+                  <th>Time Out</th>
                   <th>Purpose</th>
                   <th>Status</th>
                   <th>Actions</th>
                 </tr>
               </thead>
-              <tbody>
-                <tr>
-                  <td>#REQ-1024</td>
-                  <td><div class="customer-cell"><div class="customer-avatar" style="background: linear-gradient(135deg, #667eea, #764ba2);">JD</div><span>Robert Brownie</span></div></td>
-                  <td>Lab 1</td>
-                  <td>Mar 23</td>
-                  <td>08:00 AM</td>
-                  <td>Coding Practice</td>
-                  <td><span class="status-badge pending">Pending</span></td>
-                  <td><i class="fas fa-check" style="color: #10b981; margin-right: 8px; cursor: pointer;"></i><i class="fas fa-times" style="color: #ef4444; cursor: pointer;"></i></td>
-                </tr>
-                <tr>
-                  <td>#REQ-1023</td>
-                  <td><div class="customer-cell"><div class="customer-avatar" style="background: linear-gradient(135deg, #f093fb, #f5576c);">EM</div><span>Christian Exekoy</span></div></td>
-                  <td>Lab 2</td>
-                  <td>Mar 23</td>
-                  <td>10:00 AM</td>
-                  <td>Research</td>
-                  <td><span class="status-badge pending">Pending</span></td>
-                  <td><i class="fas fa-check" style="color: #10b981; margin-right: 8px; cursor: pointer;"></i><i class="fas fa-times" style="color: #ef4444; cursor: pointer;"></i></td>
-                </tr>
-                <tr>
-                  <td>#REQ-1022</td>
-                  <td><div class="customer-cell"><div class="customer-avatar" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">RB</div><span>Emilito Kondisyonis</span></div></td>
-                  <td>Lab 3</td>
-                  <td>Mar 22</td>
-                  <td>02:00 PM</td>
-                  <td>Database Work</td>
-                  <td><span class="status-badge approved">Approved</span></td>
-                  <td><i class="fas fa-eye" style="color: #2563eb; cursor: pointer;"></i></td>
-                </tr>
-              </tbody>
+              <tbody id="reservationTableBody"></tbody>
             </table>
+            <p id="reservationEmpty" style="margin: 1rem 0 0; color: #64748b; display:none;">No reservation requests found.</p>
           </div>
         </div>
 
@@ -1385,6 +1490,91 @@
           </div>
         </div>
 
+        <div id="adminReservation" class="content-section">
+          <h1 class="page-title">Reservation</h1>
+          <p class="page-subtitle">Create reservations for students and monitor reservation records in one workspace.</p>
+
+          <div class="reservation-admin-layout">
+            <div class="reservation-control-card">
+              <div class="reservation-control-title">Create Reservation</div>
+              <div class="reservation-control-note">Use the same reservation flow as the student side, but reserve directly for a student account.</div>
+
+              <div class="mb-3">
+                <label class="form-label">Student ID</label>
+                <input type="text" id="adminReservationStudentId" class="form-control" placeholder="Enter 8-digit student ID">
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Reservation Date</label>
+                <input type="date" id="adminReservationDate" class="form-control">
+              </div>
+
+              <div class="row g-3 mb-3">
+                <div class="col-6">
+                  <label class="form-label">Time In</label>
+                  <input type="time" id="adminReservationTimeIn" class="form-control" step="1800">
+                </div>
+                <div class="col-6">
+                  <label class="form-label">Time Out</label>
+                  <input type="time" id="adminReservationTimeOut" class="form-control" step="1800">
+                </div>
+              </div>
+
+              <div class="mb-2">
+                <div class="reservation-control-title" style="font-size:0.92rem; margin-bottom:0.45rem;">Laboratory</div>
+                <div id="adminReservationLabGrid" class="lab-selector-grid"></div>
+              </div>
+
+              <div class="mb-3">
+                <div class="reservation-control-title" style="font-size:0.92rem; margin-bottom:0.45rem;">PC Number</div>
+                <div id="adminReservationSelection" class="reservation-selection-pill">
+                  <i class="fas fa-desktop"></i>
+                  <span>Lab 524 | PC 1</span>
+                </div>
+                <div id="adminReservationPcGrid" class="pc-selector-grid"></div>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Purpose</label>
+                <textarea id="adminReservationPurpose" class="form-control" rows="3" maxlength="255" placeholder="Enter reservation purpose..."></textarea>
+              </div>
+
+              <div class="d-flex gap-2 align-items-center">
+                <button type="button" class="student-info-btn add" onclick="submitAdminReservation()">Submit Reservation</button>
+                <button type="button" class="student-info-btn reset" onclick="resetAdminReservationForm()">Reset</button>
+              </div>
+              <p id="adminReservationStatus" style="margin: 0.9rem 0 0; font-size: 0.85rem; color: #64748b;"></p>
+            </div>
+
+            <div class="table-card">
+              <div class="table-header">
+                <h3 class="table-title">Reservation Records</h3>
+                <div class="student-info-toolbar">
+                  <input type="text" id="adminReservationSearch" class="form-control" placeholder="Search reservation...">
+                </div>
+              </div>
+
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Student ID</th>
+                    <th>Purpose</th>
+                    <th>Lab</th>
+                    <th>PC</th>
+                    <th>Date</th>
+                    <th>Time In</th>
+                    <th>Time Out</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="adminReservationTableBody"></tbody>
+              </table>
+              <p id="adminReservationEmpty" style="margin: 1rem 0 0; color: #64748b; display:none;">No reservation records found.</p>
+            </div>
+          </div>
+        </div>
+
         <!-- Student Information Modal -->
         <div class="modal fade" id="studentModal" tabindex="-1" aria-hidden="true">
           <div class="modal-dialog modal-lg modal-dialog-centered">
@@ -1416,7 +1606,13 @@
                   </div>
                   <div class="col-md-4">
                     <label class="form-label">Year Level</label>
-                    <input type="number" min="1" max="6" class="form-control" id="studentYearLevel" required>
+                    <select class="form-control" id="studentYearLevel" required>
+                      <option value="">Select Year</option>
+                      <option value="1">1</option>
+                      <option value="2">2</option>
+                      <option value="3">3</option>
+                      <option value="4">4</option>
+                    </select>
                   </div>
                   <div class="col-md-4">
                     <label class="form-label">Remaining Sessions</label>
@@ -1425,7 +1621,18 @@
 
                   <div class="col-md-6">
                     <label class="form-label">Course</label>
-                    <input type="text" class="form-control" id="studentCourse" required>
+                    <select class="form-control" id="studentCourse" required>
+                      <option value="">Select Course</option>
+                      <option value="College of Arts and Sciences">College of Arts and Sciences</option>
+                      <option value="College of Business and Accountancy">College of Business and Accountancy</option>
+                      <option value="College of Computer Studies">College of Computer Studies</option>
+                      <option value="College of Criminal Justice">College of Criminal Justice</option>
+                      <option value="College of Customs Administration">College of Customs Administration</option>
+                      <option value="College of Hospitality Management">College of Hospitality Management</option>
+                      <option value="College of Nursing">College of Nursing</option>
+                      <option value="College of Social Work">College of Social Work</option>
+                      <option value="College of Teacher Education">College of Teacher Education</option>
+                    </select>
                   </div>
                   <div class="col-md-6">
                     <label class="form-label">Email</label>
@@ -1446,6 +1653,27 @@
               <div class="modal-footer">
                 <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
                 <button type="button" class="btn btn-primary" id="saveStudentBtn" onclick="saveStudent()">Save</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal fade" id="announcementModal" tabindex="-1" aria-hidden="true">
+          <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+              <div class="modal-header">
+                <h5 class="modal-title">Announcements</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <div style="display:flex; gap:10px; align-items:flex-start; margin-bottom: 1rem;">
+                  <input type="hidden" id="adminAnnouncementId" value="">
+                  <textarea id="adminAnnouncementMessage" class="form-control" rows="3" maxlength="1000" placeholder="Write an announcement for students..."></textarea>
+                  <button type="button" class="student-info-btn add" onclick="saveAnnouncement()">Save</button>
+                  <button type="button" class="student-info-btn reset" onclick="cancelAnnouncementEdit()" style="display:none;" id="adminAnnouncementCancelBtn">Cancel</button>
+                </div>
+                <div id="adminAnnouncementStatus" style="font-size: 13px; color: #64748b; margin-bottom: 0.75rem;"></div>
+                <div id="adminAnnouncementList"></div>
               </div>
             </div>
           </div>
@@ -1505,8 +1733,14 @@
       }
     }
 
-    function reservationNotice() {
-      alert('Reservation: To be announced.');
+    function showReservationRequests() {
+      const reservationMenuItem = document.querySelectorAll('.menu-item')[2];
+      showPage('requests', reservationMenuItem || null);
+    }
+
+    function showAdminReservationPage() {
+      showPage('adminReservation', null);
+      loadAdminReservations();
     }
 
     function showDashboardHome() {
@@ -1662,6 +1896,20 @@
       postAnnouncement();
     }
 
+    function openAnnouncementModal() {
+      if (!announcementModalInstance) {
+        const modalElement = document.getElementById('announcementModal');
+        if (modalElement) {
+          announcementModalInstance = new bootstrap.Modal(modalElement);
+        }
+      }
+      cancelAnnouncementEdit();
+      loadAnnouncements();
+      if (announcementModalInstance) {
+        announcementModalInstance.show();
+      }
+    }
+
     function cancelAnnouncementEdit() {
       const idInput = document.getElementById('adminAnnouncementId');
       const msgInput = document.getElementById('adminAnnouncementMessage');
@@ -1745,10 +1993,15 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
 
     let studentInfoCache = [];
     let studentModalInstance = null;
+    let announcementModalInstance = null;
     let sitInRecordsCache = [];
+    let reservationCache = [];
     let sitInReportsCache = [];
     let feedbackReportsCache = [];
     let globalStudentResults = [];
+    let adminReservationCache = [];
+    let selectedAdminReservationLab = '524';
+    let selectedAdminReservationPc = '1';
 
     function escapeHtml(value) {
       return String(value ?? '')
@@ -1798,6 +2051,324 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
       } catch (error) {
         console.error(error);
         alert('Error loading student information.');
+      }
+    }
+
+    function renderReservationTable(rows) {
+      const tableBody = document.getElementById('reservationTableBody');
+      const empty = document.getElementById('reservationEmpty');
+      if (!tableBody || !empty) return;
+
+      if (!rows.length) {
+        tableBody.innerHTML = '';
+        empty.style.display = 'block';
+        return;
+      }
+
+      empty.style.display = 'none';
+      tableBody.innerHTML = rows.map((row) => {
+        const initials = buildAvatarInitials(row.name);
+        const statusText = String(row.status || 'pending');
+        const statusClass = statusText.toLowerCase();
+        const isPending = statusClass === 'pending';
+        const actions = isPending
+          ? `
+            <button class="student-info-btn add compact" onclick="updateReservationStatus(${row.id}, 'approved')">Approve</button>
+            <button class="student-info-btn reset compact" onclick="updateReservationStatus(${row.id}, 'denied')">Deny</button>
+          `
+          : '<span style="color:#64748b; font-size:0.82rem;">No actions</span>';
+
+        const displayStatus = statusClass === 'denied'
+          ? 'Denied'
+          : statusText.charAt(0).toUpperCase() + statusText.slice(1);
+
+        return `
+          <tr>
+            <td>${escapeHtml(row.student_id)}</td>
+            <td><div class="customer-cell"><div class="customer-avatar" style="background: linear-gradient(135deg, #4f46e5, #2563eb);">${escapeHtml(initials)}</div><span>${escapeHtml(row.name)}</span></div></td>
+            <td>${escapeHtml(row.laboratory)}</td>
+            <td>PC-${escapeHtml(row.pc_number)}</td>
+            <td>${escapeHtml(row.reservation_date)}</td>
+            <td>${escapeHtml(row.time_in)}</td>
+            <td>${escapeHtml(row.time_out)}</td>
+            <td>${escapeHtml(row.purpose)}</td>
+            <td><span class="status-badge ${statusClass}">${escapeHtml(displayStatus)}</span></td>
+            <td>${actions}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    async function loadReservations(search = '') {
+      try {
+        const response = await fetch(`../../api/reservations.php?action=list&search=${encodeURIComponent(search)}`);
+        const data = await response.json();
+        if (!data.success) {
+          alert(data.message || 'Failed to load reservations.');
+          return;
+        }
+        reservationCache = data.data || [];
+        renderReservationTable(reservationCache);
+      } catch (error) {
+        console.error(error);
+        alert('Error loading reservations.');
+      }
+    }
+
+    function renderAdminReservationLabs() {
+      const container = document.getElementById('adminReservationLabGrid');
+      if (!container) return;
+
+      const labs = ['524', '526', '530', '540', '544'];
+      container.innerHTML = labs.map((lab) => `
+        <button
+          type="button"
+          class="lab-select-btn ${selectedAdminReservationLab === lab ? 'active' : ''}"
+          onclick="setAdminReservationLab('${lab}')"
+        >
+          Lab ${lab}
+        </button>
+      `).join('');
+    }
+
+    function renderAdminReservationPcGrid() {
+      const container = document.getElementById('adminReservationPcGrid');
+      if (!container) return;
+
+      container.innerHTML = Array.from({ length: 50 }, (_, index) => {
+        const pc = String(index + 1);
+        return `
+          <button
+            type="button"
+            class="pc-select-btn ${selectedAdminReservationPc === pc ? 'active' : ''}"
+            onclick="setAdminReservationPc('${pc}')"
+          >
+            PC ${pc}
+          </button>
+        `;
+      }).join('');
+    }
+
+    function updateAdminReservationSelectionLabel() {
+      const label = document.getElementById('adminReservationSelection');
+      if (!label) return;
+      label.innerHTML = `<i class="fas fa-desktop"></i><span>Lab ${escapeHtml(selectedAdminReservationLab)} | PC ${escapeHtml(selectedAdminReservationPc)}</span>`;
+    }
+
+    function setAdminReservationLab(lab) {
+      selectedAdminReservationLab = lab;
+      renderAdminReservationLabs();
+      updateAdminReservationSelectionLabel();
+    }
+
+    function setAdminReservationPc(pc) {
+      selectedAdminReservationPc = pc;
+      renderAdminReservationPcGrid();
+      updateAdminReservationSelectionLabel();
+    }
+
+    function resetAdminReservationForm() {
+      const setValue = (id, value) => {
+        const el = document.getElementById(id);
+        if (el) el.value = value;
+      };
+
+      setValue('adminReservationStudentId', '');
+      setValue('adminReservationDate', '');
+      setValue('adminReservationTimeIn', '');
+      setValue('adminReservationTimeOut', '');
+      setValue('adminReservationPurpose', '');
+      selectedAdminReservationLab = '524';
+      selectedAdminReservationPc = '1';
+      renderAdminReservationLabs();
+      renderAdminReservationPcGrid();
+      updateAdminReservationSelectionLabel();
+
+      const status = document.getElementById('adminReservationStatus');
+      if (status) {
+        status.textContent = '';
+        status.style.color = '#64748b';
+      }
+    }
+
+    function toMinutes(value) {
+      const parts = String(value || '').split(':');
+      if (parts.length < 2) return null;
+      const hours = Number(parts[0]);
+      const minutes = Number(parts[1]);
+      if (!Number.isFinite(hours) || !Number.isFinite(minutes)) return null;
+      return (hours * 60) + minutes;
+    }
+
+    async function submitAdminReservation() {
+      const status = document.getElementById('adminReservationStatus');
+      const studentId = document.getElementById('adminReservationStudentId')?.value.trim() || '';
+      const reservationDate = document.getElementById('adminReservationDate')?.value.trim() || '';
+      const timeIn = document.getElementById('adminReservationTimeIn')?.value.trim() || '';
+      const timeOut = document.getElementById('adminReservationTimeOut')?.value.trim() || '';
+      const purpose = document.getElementById('adminReservationPurpose')?.value.trim() || '';
+
+      if (!studentId || !reservationDate || !timeIn || !timeOut || !purpose || !selectedAdminReservationLab || !selectedAdminReservationPc) {
+        if (status) {
+          status.textContent = 'Please complete all reservation fields.';
+          status.style.color = '#dc2626';
+        }
+        return;
+      }
+
+      const timeInMinutes = toMinutes(timeIn);
+      const timeOutMinutes = toMinutes(timeOut);
+      if (timeInMinutes === null || timeOutMinutes === null || timeOutMinutes <= timeInMinutes) {
+        if (status) {
+          status.textContent = 'Time-out must be later than Time-in.';
+          status.style.color = '#dc2626';
+        }
+        return;
+      }
+
+      const duration = timeOutMinutes - timeInMinutes;
+      if (duration < 30 || duration > 120) {
+        if (status) {
+          status.textContent = 'Reservation duration must be between 30 minutes and 2 hours.';
+          status.style.color = '#dc2626';
+        }
+        return;
+      }
+
+      const payload = new FormData();
+      payload.append('action', 'admin_create');
+      payload.append('student_id', studentId);
+      payload.append('laboratory', selectedAdminReservationLab);
+      payload.append('reservation_date', reservationDate);
+      payload.append('time_in', timeIn);
+      payload.append('time_out', timeOut);
+      payload.append('pc_number', selectedAdminReservationPc);
+      payload.append('purpose', purpose);
+
+      try {
+        const response = await fetch('../../api/reservations.php', {
+          method: 'POST',
+          body: payload
+        });
+        const data = await response.json();
+        if (!data.success) {
+          if (status) {
+            status.textContent = data.message || 'Failed to create reservation.';
+            status.style.color = '#dc2626';
+          }
+          return;
+        }
+
+        if (status) {
+          status.textContent = data.message || 'Reservation submitted successfully.';
+          status.style.color = '#16a34a';
+        }
+
+        resetAdminReservationForm();
+        if (status) {
+          status.textContent = data.message || 'Reservation submitted successfully.';
+          status.style.color = '#16a34a';
+        }
+        await loadAdminReservations();
+        await loadReservations(document.getElementById('reservationSearch')?.value?.trim() || '');
+      } catch (error) {
+        console.error(error);
+        if (status) {
+          status.textContent = 'Error submitting admin reservation.';
+          status.style.color = '#dc2626';
+        }
+      }
+    }
+
+    function renderAdminReservationTable(rows) {
+      const body = document.getElementById('adminReservationTableBody');
+      const empty = document.getElementById('adminReservationEmpty');
+      if (!body || !empty) return;
+
+      if (!rows.length) {
+        body.innerHTML = '';
+        empty.style.display = 'block';
+        return;
+      }
+
+      empty.style.display = 'none';
+      body.innerHTML = rows.map((row) => {
+        const statusText = String(row.status || 'pending');
+        const normalizedStatus = statusText.toLowerCase();
+        const displayStatus = normalizedStatus === 'denied'
+          ? 'Denied'
+          : statusText.charAt(0).toUpperCase() + statusText.slice(1);
+        const statusClass = normalizedStatus === 'rejected' ? 'denied' : normalizedStatus;
+
+        const actions = normalizedStatus === 'pending'
+          ? `
+            <button class="student-info-btn add compact" onclick="updateReservationStatus(${row.id}, 'approved')">Approve</button>
+            <button class="student-info-btn reset compact" onclick="updateReservationStatus(${row.id}, 'denied')">Deny</button>
+          `
+          : '<span style="color:#64748b; font-size:0.82rem;">No actions</span>';
+
+        return `
+          <tr>
+            <td>${escapeHtml(row.student_id)}</td>
+            <td>${escapeHtml(row.purpose)}</td>
+            <td>${escapeHtml(row.laboratory)}</td>
+            <td>PC-${escapeHtml(row.pc_number)}</td>
+            <td>${escapeHtml(row.reservation_date)}</td>
+            <td>${escapeHtml(row.time_in)}</td>
+            <td>${escapeHtml(row.time_out)}</td>
+            <td><span class="status-badge ${statusClass}">${escapeHtml(displayStatus)}</span></td>
+            <td>${actions}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    async function loadAdminReservations() {
+      renderAdminReservationLabs();
+      renderAdminReservationPcGrid();
+      updateAdminReservationSelectionLabel();
+
+      const search = document.getElementById('adminReservationSearch')?.value?.trim() || '';
+
+      try {
+        const response = await fetch(`../../api/reservations.php?action=list&search=${encodeURIComponent(search)}`);
+        const data = await response.json();
+        if (!data.success) {
+          alert(data.message || 'Failed to load reservations.');
+          return;
+        }
+        adminReservationCache = data.data || [];
+        renderAdminReservationTable(adminReservationCache);
+      } catch (error) {
+        console.error(error);
+        alert('Error loading admin reservations.');
+      }
+    }
+
+    async function updateReservationStatus(reservationId, status) {
+        const label = status === 'approved' ? 'approve' : 'deny';
+      if (!confirm(`Do you want to ${label} this reservation?`)) return;
+
+      const payload = new FormData();
+      payload.append('action', 'update_status');
+      payload.append('reservation_id', reservationId);
+      payload.append('status', status);
+
+      try {
+        const response = await fetch('../../api/reservations.php', {
+          method: 'POST',
+          body: payload
+        });
+        const data = await response.json();
+        if (!data.success) {
+          alert(data.message || 'Failed to update reservation status.');
+          return;
+        }
+        await loadReservations(document.getElementById('reservationSearch')?.value?.trim() || '');
+        alert(data.message || 'Reservation updated.');
+      } catch (error) {
+        console.error(error);
+        alert('Error updating reservation.');
       }
     }
 
@@ -2365,6 +2936,20 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
         return;
       }
 
+      if (activeId === 'requests') {
+        const input = document.getElementById('reservationSearch');
+        if (input) input.value = q;
+        loadReservations(q);
+        return;
+      }
+
+      if (activeId === 'adminReservation') {
+        const input = document.getElementById('adminReservationSearch');
+        if (input) input.value = q;
+        loadAdminReservations();
+        return;
+      }
+
       if (activeId === 'sitinReports') {
         const input = document.getElementById('sitinReportFilter');
         if (input) input.value = q;
@@ -2439,6 +3024,36 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
         });
       }
 
+      const reservationSearchInput = document.getElementById('reservationSearch');
+      if (reservationSearchInput) {
+        let reservationTimer = null;
+        reservationSearchInput.addEventListener('input', function() {
+          clearTimeout(reservationTimer);
+          reservationTimer = setTimeout(() => loadReservations(reservationSearchInput.value.trim()), 250);
+        });
+        reservationSearchInput.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            loadReservations(reservationSearchInput.value.trim());
+          }
+        });
+      }
+
+      const adminReservationSearchInput = document.getElementById('adminReservationSearch');
+      if (adminReservationSearchInput) {
+        let reservationLogTimer = null;
+        adminReservationSearchInput.addEventListener('input', function() {
+          clearTimeout(reservationLogTimer);
+          reservationLogTimer = setTimeout(() => loadAdminReservations(), 250);
+        });
+        adminReservationSearchInput.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            loadAdminReservations();
+          }
+        });
+      }
+
       const sitInReportDate = document.getElementById('sitinReportDate');
       if (sitInReportDate) {
         sitInReportDate.addEventListener('change', loadSitInReports);
@@ -2474,7 +3089,14 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
         });
       }
 
+      const adminReservationDateInput = document.getElementById('adminReservationDate');
+      if (adminReservationDateInput) {
+        adminReservationDateInput.min = new Date().toISOString().split('T')[0];
+      }
+
       loadStudentInformation();
+      loadReservations();
+      loadAdminReservations();
       loadSitInRecords();
       loadSitInReports();
       loadFeedbackReports();

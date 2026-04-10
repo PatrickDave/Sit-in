@@ -3,6 +3,26 @@ session_start();
 require_once 'db.php'; 
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $createReservationsSql = "CREATE TABLE IF NOT EXISTS reservations (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL,
+        laboratory VARCHAR(20) NOT NULL,
+        reservation_date DATE NOT NULL,
+        time_in TIME NOT NULL,
+        time_out TIME NOT NULL,
+        pc_number INT NOT NULL,
+        purpose VARCHAR(255) NOT NULL,
+        status VARCHAR(30) NOT NULL DEFAULT 'pending',
+        admin_note VARCHAR(255) DEFAULT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        INDEX idx_reservation_user (user_id),
+        INDEX idx_reservation_status (status),
+        INDEX idx_reservation_date (reservation_date),
+        CONSTRAINT fk_reservations_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    )";
+    $conn->query($createReservationsSql);
+
     $login_id = trim($_POST['loginId'] ?? $_POST['studentId'] ?? '');
     $password = $_POST['password'] ?? '';
     $requested_lab = trim($_POST['sitLab'] ?? '');
@@ -47,6 +67,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $createTableSql = "CREATE TABLE IF NOT EXISTS sit_in_history (
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 user_id INT NOT NULL,
+                reservation_id INT NULL,
                 laboratory VARCHAR(100) NOT NULL,
                 purpose VARCHAR(255) NOT NULL,
                 time_in DATETIME NOT NULL,
@@ -59,6 +80,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             )";
             $conn->query($createTableSql);
 
+            $hasReservationIdColumn = $conn->query("SHOW COLUMNS FROM sit_in_history LIKE 'reservation_id'");
+            if ($hasReservationIdColumn && $hasReservationIdColumn->num_rows === 0) {
+                $conn->query("ALTER TABLE sit_in_history ADD COLUMN reservation_id INT NULL AFTER user_id");
+            }
+
             // Prevent duplicate active sessions for the same student.
             $active_check = $conn->prepare(
                 "SELECT id FROM sit_in_history WHERE user_id = ? AND (LOWER(status) = 'active' OR LOWER(status) = 'ongoing') AND time_out IS NULL LIMIT 1"
@@ -70,6 +96,35 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Only auto-start when the student still has remaining sessions.
             if (!$already_active && (int) $student_user['sessions_remaining'] > 0) {
                 $allowed_labs = ['524', '526', '530', '540', '544'];
+                $linkedReservationId = null;
+
+                // Prefer an approved reservation for today so records/reports use the same purpose as the request.
+                $reservationStmt = $conn->prepare("
+                    SELECT id, laboratory, purpose
+                    FROM reservations
+                    WHERE user_id = ?
+                      AND LOWER(status) = 'approved'
+                      AND reservation_date = CURDATE()
+                    ORDER BY
+                      CASE
+                        WHEN CURTIME() BETWEEN time_in AND time_out THEN 0
+                        ELSE 1
+                      END,
+                      ABS(TIMESTAMPDIFF(MINUTE, CONCAT(reservation_date, ' ', time_in), NOW())),
+                      id DESC
+                    LIMIT 1
+                ");
+                if ($reservationStmt) {
+                    $reservationStmt->bind_param("i", $student_user_id);
+                    $reservationStmt->execute();
+                    $reservationMatch = $reservationStmt->get_result()->fetch_assoc();
+
+                    if ($reservationMatch) {
+                        $linkedReservationId = (int) $reservationMatch['id'];
+                        $requested_lab = (string) $reservationMatch['laboratory'];
+                        $requested_purpose = (string) $reservationMatch['purpose'];
+                    }
+                }
 
                 // Use requested values when available; otherwise generate dynamic defaults.
                 if (!in_array($requested_lab, $allowed_labs, true)) {
@@ -90,10 +145,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 }
 
                 $start_session = $conn->prepare(
-                    "INSERT INTO sit_in_history (user_id, laboratory, purpose, time_in, status)
-                     VALUES (?, ?, ?, NOW(), 'active')"
+                    "INSERT INTO sit_in_history (user_id, reservation_id, laboratory, purpose, time_in, status)
+                     VALUES (?, ?, ?, ?, NOW(), 'active')"
                 );
-                $start_session->bind_param("iss", $student_user_id, $requested_lab, $requested_purpose);
+                $start_session->bind_param("iiss", $student_user_id, $linkedReservationId, $requested_lab, $requested_purpose);
                 $start_session->execute();
             }
 

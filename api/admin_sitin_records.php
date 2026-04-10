@@ -16,6 +16,7 @@ $action = $_GET['action'] ?? $_POST['action'] ?? 'list';
 $createTableSql = "CREATE TABLE IF NOT EXISTS sit_in_history (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
+    reservation_id INT NULL,
     laboratory VARCHAR(100) NOT NULL,
     purpose VARCHAR(255) NOT NULL,
     time_in DATETIME NOT NULL,
@@ -28,6 +29,31 @@ $createTableSql = "CREATE TABLE IF NOT EXISTS sit_in_history (
 )";
 $conn->query($createTableSql);
 
+$createReservationsSql = "CREATE TABLE IF NOT EXISTS reservations (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    laboratory VARCHAR(20) NOT NULL,
+    reservation_date DATE NOT NULL,
+    time_in TIME NOT NULL,
+    time_out TIME NOT NULL,
+    pc_number INT NOT NULL,
+    purpose VARCHAR(255) NOT NULL,
+    status VARCHAR(30) NOT NULL DEFAULT 'pending',
+    admin_note VARCHAR(255) DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_reservation_user (user_id),
+    INDEX idx_reservation_status (status),
+    INDEX idx_reservation_date (reservation_date),
+    CONSTRAINT fk_reservations_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+)";
+$conn->query($createReservationsSql);
+
+$hasReservationIdColumn = $conn->query("SHOW COLUMNS FROM sit_in_history LIKE 'reservation_id'");
+if ($hasReservationIdColumn && $hasReservationIdColumn->num_rows === 0) {
+    $conn->query("ALTER TABLE sit_in_history ADD COLUMN reservation_id INT NULL AFTER user_id");
+}
+
 if ($method === 'GET' && $action === 'list') {
     $search = trim($_GET['search'] ?? '');
 
@@ -36,7 +62,7 @@ if ($method === 'GET' && $action === 'list') {
                 u.id AS user_id,
                 u.student_id,
                 CONCAT(u.first_name, ' ', COALESCE(NULLIF(u.middle_name, ''), ''), IF(u.middle_name IS NULL OR u.middle_name = '', '', ' '), u.last_name) AS name,
-                s.purpose,
+                COALESCE(r.purpose, s.purpose) AS purpose,
                 s.laboratory AS sit_lab,
                 u.sessions_remaining AS session_count,
                 CASE
@@ -44,7 +70,8 @@ if ($method === 'GET' && $action === 'list') {
                     ELSE 'Not Active'
                 END AS status_label
             FROM sit_in_history s
-            INNER JOIN users u ON u.id = s.user_id";
+            INNER JOIN users u ON u.id = s.user_id
+            LEFT JOIN reservations r ON r.id = s.reservation_id";
 
     if ($search !== '') {
         $sql .= " WHERE u.student_id LIKE ? OR u.first_name LIKE ? OR u.middle_name LIKE ? OR u.last_name LIKE ? OR s.purpose LIKE ? OR s.laboratory LIKE ?";

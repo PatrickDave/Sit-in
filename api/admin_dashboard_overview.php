@@ -12,6 +12,7 @@ if (!isset($_SESSION['admin_id'])) {
 $conn->query("CREATE TABLE IF NOT EXISTS sit_in_history (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
+    reservation_id INT NULL,
     laboratory VARCHAR(100) NOT NULL,
     purpose VARCHAR(255) NOT NULL,
     time_in DATETIME NOT NULL,
@@ -22,6 +23,28 @@ $conn->query("CREATE TABLE IF NOT EXISTS sit_in_history (
     INDEX idx_user_status_time (user_id, status, time_in),
     CONSTRAINT fk_sit_in_history_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 )");
+$conn->query("CREATE TABLE IF NOT EXISTS reservations (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    laboratory VARCHAR(20) NOT NULL,
+    reservation_date DATE NOT NULL,
+    time_in TIME NOT NULL,
+    time_out TIME NOT NULL,
+    pc_number INT NOT NULL,
+    purpose VARCHAR(255) NOT NULL,
+    status VARCHAR(30) NOT NULL DEFAULT 'pending',
+    admin_note VARCHAR(255) DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_reservation_user (user_id),
+    INDEX idx_reservation_status (status),
+    INDEX idx_reservation_date (reservation_date),
+    CONSTRAINT fk_reservations_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+)");
+$hasReservationIdColumn = $conn->query("SHOW COLUMNS FROM sit_in_history LIKE 'reservation_id'");
+if ($hasReservationIdColumn && $hasReservationIdColumn->num_rows === 0) {
+    $conn->query("ALTER TABLE sit_in_history ADD COLUMN reservation_id INT NULL AFTER user_id");
+}
 
 $conn->query("CREATE TABLE IF NOT EXISTS feedback_reports (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -113,10 +136,11 @@ $recentStmt = $conn->prepare("
       CONCAT(u.first_name, ' ', COALESCE(NULLIF(u.middle_name, ''), ''), IF(u.middle_name IS NULL OR u.middle_name = '', '', ' '), u.last_name) AS name,
       s.laboratory,
       DATE_FORMAT(s.time_in, '%b %d, %h:%i %p') AS time_in,
-      s.purpose,
+      COALESCE(r.purpose, s.purpose) AS purpose,
       CASE WHEN (LOWER(s.status)='active' OR LOWER(s.status)='ongoing') AND s.time_out IS NULL THEN 'Active' ELSE 'Completed' END AS status
     FROM sit_in_history s
     INNER JOIN users u ON u.id = s.user_id
+    LEFT JOIN reservations r ON r.id = s.reservation_id
     ORDER BY s.time_in DESC
     LIMIT 8
 ");
