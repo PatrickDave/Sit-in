@@ -785,6 +785,18 @@
       box-shadow: 0 8px 18px rgba(37, 99, 235, 0.18);
     }
 
+    .lab-select-btn.available {
+      background: rgba(16, 185, 129, 0.1);
+      color: #166534;
+      border-color: rgba(16, 185, 129, 0.35);
+    }
+
+    .lab-select-btn.occupied {
+      background: rgba(239, 68, 68, 0.12);
+      color: #991b1b;
+      border-color: rgba(239, 68, 68, 0.35);
+    }
+
     .lab-select-btn.active {
       background: linear-gradient(135deg, #2563eb, #4f46e5);
       color: #ffffff;
@@ -836,6 +848,23 @@
       color: #ffffff;
       border-color: transparent;
       box-shadow: 0 10px 18px rgba(37, 99, 235, 0.24);
+    }
+
+    .pc-select-btn.available {
+      background: rgba(16, 185, 129, 0.08);
+      border-color: rgba(16, 185, 129, 0.35);
+      color: #166534;
+    }
+
+    .pc-select-btn.occupied {
+      background: rgba(239, 68, 68, 0.12);
+      border-color: rgba(239, 68, 68, 0.35);
+      color: #991b1b;
+      cursor: not-allowed;
+    }
+
+    .pc-select-btn.occupied:hover {
+      background: rgba(254, 226, 226, 0.8);
     }
 
     .reservation-logs-toolbar {
@@ -2002,6 +2031,8 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
     let adminReservationCache = [];
     let selectedAdminReservationLab = '524';
     let selectedAdminReservationPc = '1';
+    let occupiedAdminReservationPcs = new Set();
+    let adminReservationOccupancyByLab = {};
 
     function escapeHtml(value) {
       return String(value ?? '')
@@ -2120,33 +2151,92 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
       if (!container) return;
 
       const labs = ['524', '526', '530', '540', '544'];
-      container.innerHTML = labs.map((lab) => `
-        <button
-          type="button"
-          class="lab-select-btn ${selectedAdminReservationLab === lab ? 'active' : ''}"
-          onclick="setAdminReservationLab('${lab}')"
-        >
-          Lab ${lab}
-        </button>
-      `).join('');
+      container.innerHTML = labs.map((lab) => {
+        const occupiedCount = (adminReservationOccupancyByLab[lab] || []).length;
+        const labStatus = selectedAdminReservationLab === lab
+          ? 'active'
+          : occupiedCount > 0
+            ? 'occupied'
+            : 'available';
+
+        return `
+          <button
+            type="button"
+            class="lab-select-btn ${labStatus}"
+            onclick="setAdminReservationLab('${lab}')"
+          >
+            <span>Lab ${lab}</span>
+            ${occupiedCount > 0 ? `<small>${occupiedCount} occupied</small>` : ''}
+          </button>
+        `;
+      }).join('');
     }
 
     function renderAdminReservationPcGrid() {
       const container = document.getElementById('adminReservationPcGrid');
       if (!container) return;
 
-      container.innerHTML = Array.from({ length: 50 }, (_, index) => {
-        const pc = String(index + 1);
+      const allPcs = Array.from({ length: 50 }, (_, index) => String(index + 1));
+      if (occupiedAdminReservationPcs.has(selectedAdminReservationPc)) {
+        const firstAvailable = allPcs.find(pc => !occupiedAdminReservationPcs.has(pc));
+        if (firstAvailable) {
+          selectedAdminReservationPc = firstAvailable;
+        }
+      }
+
+      container.innerHTML = allPcs.map((pc) => {
+        const isOccupied = occupiedAdminReservationPcs.has(pc);
+        const isActive = selectedAdminReservationPc === pc && !isOccupied;
+        const classes = [
+          'pc-select-btn',
+          isActive ? 'active' : '',
+          isOccupied ? 'occupied' : 'available'
+        ].filter(Boolean).join(' ');
+
         return `
           <button
             type="button"
-            class="pc-select-btn ${selectedAdminReservationPc === pc ? 'active' : ''}"
-            onclick="setAdminReservationPc('${pc}')"
+            class="${classes}"
+            ${isOccupied ? 'disabled' : `onclick="setAdminReservationPc('${pc}')"`}
           >
             PC ${pc}
           </button>
         `;
       }).join('');
+    }
+
+    async function loadAdminReservationAvailability() {
+      const laboratory = selectedAdminReservationLab;
+      const reservationDate = document.getElementById('adminReservationDate')?.value.trim() || '';
+      const timeIn = document.getElementById('adminReservationTimeIn')?.value.trim() || '';
+      const timeOut = document.getElementById('adminReservationTimeOut')?.value.trim() || '';
+
+      try {
+        const params = new URLSearchParams({
+          action: 'availability',
+          laboratory,
+          reservation_date: reservationDate,
+          time_in: timeIn,
+          time_out: timeOut
+        });
+        const response = await fetch(`../../api/reservations.php?${params.toString()}`);
+        const data = await response.json();
+        if (data.success) {
+          adminReservationOccupancyByLab = data.occupied_by_lab || {};
+          occupiedAdminReservationPcs = new Set(Array.isArray(data.occupied_pcs) ? data.occupied_pcs.map(String) : []);
+        } else {
+          adminReservationOccupancyByLab = {};
+          occupiedAdminReservationPcs = new Set();
+        }
+      } catch (error) {
+        console.error('Failed to load reservation availability:', error);
+        adminReservationOccupancyByLab = {};
+        occupiedAdminReservationPcs = new Set();
+      }
+
+      renderAdminReservationLabs();
+      renderAdminReservationPcGrid();
+      updateAdminReservationSelectionLabel();
     }
 
     function updateAdminReservationSelectionLabel() {
@@ -2159,6 +2249,7 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
       selectedAdminReservationLab = lab;
       renderAdminReservationLabs();
       updateAdminReservationSelectionLabel();
+      loadAdminReservationAvailability();
     }
 
     function setAdminReservationPc(pc) {
@@ -2183,6 +2274,7 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
       renderAdminReservationLabs();
       renderAdminReservationPcGrid();
       updateAdminReservationSelectionLabel();
+      loadAdminReservationAvailability();
 
       const status = document.getElementById('adminReservationStatus');
       if (status) {
@@ -2339,6 +2431,7 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
         }
         adminReservationCache = data.data || [];
         renderAdminReservationTable(adminReservationCache);
+        await loadAdminReservationAvailability();
       } catch (error) {
         console.error(error);
         alert('Error loading admin reservations.');
@@ -3090,8 +3183,23 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
       }
 
       const adminReservationDateInput = document.getElementById('adminReservationDate');
+      const adminReservationTimeInInput = document.getElementById('adminReservationTimeIn');
+      const adminReservationTimeOutInput = document.getElementById('adminReservationTimeOut');
+      let adminReservationAvailabilityTimer = null;
+      const scheduleAdminReservationAvailabilityRefresh = () => {
+        clearTimeout(adminReservationAvailabilityTimer);
+        adminReservationAvailabilityTimer = setTimeout(loadAdminReservationAvailability, 250);
+      };
+
       if (adminReservationDateInput) {
         adminReservationDateInput.min = new Date().toISOString().split('T')[0];
+        adminReservationDateInput.addEventListener('input', scheduleAdminReservationAvailabilityRefresh);
+      }
+      if (adminReservationTimeInInput) {
+        adminReservationTimeInInput.addEventListener('input', scheduleAdminReservationAvailabilityRefresh);
+      }
+      if (adminReservationTimeOutInput) {
+        adminReservationTimeOutInput.addEventListener('input', scheduleAdminReservationAvailabilityRefresh);
       }
 
       loadStudentInformation();

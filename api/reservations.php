@@ -335,6 +335,80 @@ if ($action === 'list') {
     respond(['success' => true, 'data' => $rows]);
 }
 
+if ($action === 'availability') {
+    if (!is_admin()) {
+        respond(['success' => false, 'message' => 'Unauthorized']);
+    }
+
+    $laboratory = trim($_GET['laboratory'] ?? '');
+    $reservationDate = trim($_GET['reservation_date'] ?? '');
+    $timeIn = trim($_GET['time_in'] ?? '');
+    $timeOut = trim($_GET['time_out'] ?? '');
+
+    $allowedLabs = ['524', '526', '530', '540', '544'];
+    if ($laboratory === '' || !in_array($laboratory, $allowedLabs, true)) {
+        respond(['success' => false, 'message' => 'Please select a valid laboratory.']);
+    }
+
+    $occupiedByLab = array_fill_keys($allowedLabs, []);
+    $occupiedPcNumbers = [];
+
+    $activeStmt = $conn->prepare("\n        SELECT COALESCE(r.laboratory, s.laboratory) AS laboratory, COALESCE(r.pc_number, 0) AS pc_number\n        FROM sit_in_history s\n        LEFT JOIN reservations r ON r.id = s.reservation_id\n        WHERE (LOWER(s.status) = 'active' OR LOWER(s.status) = 'ongoing')\n          AND s.time_out IS NULL\n    ");
+    $activeStmt->execute();
+    $activeResult = $activeStmt->get_result();
+    while ($row = $activeResult->fetch_assoc()) {
+        $lab = trim((string) $row['laboratory']);
+        $pc = (int) $row['pc_number'];
+        if ($pc > 0 && in_array($lab, $allowedLabs, true)) {
+            if (!in_array($pc, $occupiedByLab[$lab], true)) {
+                $occupiedByLab[$lab][] = $pc;
+            }
+            if ($lab === $laboratory && !in_array($pc, $occupiedPcNumbers, true)) {
+                $occupiedPcNumbers[] = $pc;
+            }
+        }
+    }
+
+    if ($reservationDate !== '' && $timeIn !== '' && $timeOut !== '') {
+        $timeInTimestamp = strtotime($timeIn);
+        $timeOutTimestamp = strtotime($timeOut);
+        if ($timeInTimestamp !== false && $timeOutTimestamp !== false && $timeOutTimestamp > $timeInTimestamp) {
+            $timeInValue = date('H:i:s', $timeInTimestamp);
+            $timeOutValue = date('H:i:s', $timeOutTimestamp);
+            $approvedStmt = $conn->prepare("\n                SELECT laboratory, pc_number\n                FROM reservations\n                WHERE status = 'approved'\n                  AND reservation_date = ?\n                  AND NOT (time_out <= ? OR time_in >= ?)\n            ");
+            $approvedStmt->bind_param("sss", $reservationDate, $timeInValue, $timeOutValue);
+            $approvedStmt->execute();
+            $approvedResult = $approvedStmt->get_result();
+            while ($row = $approvedResult->fetch_assoc()) {
+                $lab = trim((string) $row['laboratory']);
+                $pc = (int) $row['pc_number'];
+                if ($pc > 0 && in_array($lab, $allowedLabs, true)) {
+                    if (!in_array($pc, $occupiedByLab[$lab], true)) {
+                        $occupiedByLab[$lab][] = $pc;
+                    }
+                    if ($lab === $laboratory && !in_array($pc, $occupiedPcNumbers, true)) {
+                        $occupiedPcNumbers[] = $pc;
+                    }
+                }
+            }
+        }
+    }
+
+    sort($occupiedPcNumbers);
+    foreach ($occupiedByLab as $lab => &$pcs) {
+        sort($pcs);
+    }
+    unset($pcs);
+
+    respond([
+        'success' => true,
+        'occupied_pcs' => array_map('strval', $occupiedPcNumbers),
+        'occupied_by_lab' => array_map(function ($pcs) {
+            return array_map('strval', $pcs);
+        }, $occupiedByLab),
+    ]);
+}
+
 if ($action === 'admin_logs') {
     if (!is_admin()) {
         respond(['success' => false, 'message' => 'Unauthorized']);
