@@ -466,6 +466,69 @@
       margin-bottom: 2rem;
     }
 
+    .leaderboard-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .leaderboard-item {
+      display: flex;
+      align-items: center;
+      padding: 1rem;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .leaderboard-item:last-child {
+      border-bottom: none;
+    }
+
+    .leaderboard-rank {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: white;
+      margin-right: 1rem;
+      font-size: 0.9rem;
+    }
+
+    .leaderboard-rank.rank-1 {
+      background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    }
+
+    .leaderboard-rank.rank-2 {
+      background: linear-gradient(135deg, #d1d5db, #9ca3af);
+    }
+
+    .leaderboard-rank.rank-3 {
+      background: linear-gradient(135deg, #d4a574, #b8860b);
+    }
+
+    .leaderboard-rank.rank-other {
+      background: #2563eb;
+    }
+
+    .leaderboard-info {
+      flex: 1;
+    }
+
+    .leaderboard-name {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #1e293b;
+      margin-bottom: 0.25rem;
+    }
+
+    .leaderboard-stat {
+      font-size: 0.8rem;
+      color: #64748b;
+    }
+
     .chart-card {
       background: white;
       border-radius: 16px;
@@ -865,6 +928,29 @@
 
     .pc-select-btn.occupied:hover {
       background: rgba(254, 226, 226, 0.8);
+    }
+
+    .pc-select-btn.maintenance {
+      background: rgba(245, 158, 11, 0.12);
+      border-color: rgba(245, 158, 11, 0.35);
+      color: #92400e;
+      cursor: not-allowed;
+    }
+
+    .pc-select-btn.maintenance:hover {
+      background: rgba(254, 243, 199, 0.8);
+    }
+
+    .maintenance-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(245, 158, 11, 0.1);
+      color: #b45309;
+      padding: 0.35rem 0.65rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
     }
 
     .reservation-logs-toolbar {
@@ -1324,6 +1410,26 @@
             </div>
           </div>
 
+          <div class="leaderboard-grid">
+            <div class="table-card">
+              <div class="table-header">
+                <h3 class="table-title">Top Students</h3>
+              </div>
+              <div id="topStudentsLeaderboard" style="padding: 1.5rem 0;">
+                <p style="color: #64748b; text-align: center;">Loading...</p>
+              </div>
+            </div>
+
+            <div class="table-card">
+              <div class="table-header">
+                <h3 class="table-title">Top Labs</h3>
+              </div>
+              <div id="topLabsLeaderboard" style="padding: 1.5rem 0;">
+                <p style="color: #64748b; text-align: center;">Loading...</p>
+              </div>
+            </div>
+          </div>
+
           <div class="table-card">
             <div class="table-header">
               <h3 class="table-title">Recent Sit-in Sessions</h3>
@@ -1421,6 +1527,25 @@
 
           <div class="table-card">
             <div class="table-header">
+              <h3 class="table-title">PC Maintenance Status</h3>
+              <div class="student-info-toolbar">
+                <select id="maintenanceLabFilter" class="form-control" style="max-width: 180px; border-radius: 10px;">
+                  <option value="">All Labs</option>
+                  <option value="524">Lab 524</option>
+                  <option value="526">Lab 526</option>
+                  <option value="530">Lab 530</option>
+                  <option value="540">Lab 540</option>
+                  <option value="544">Lab 544</option>
+                </select>
+              </div>
+            </div>
+            <div id="maintenanceGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 0.75rem; padding: 1.5rem; background: #f8fafc; border-radius: 12px; margin-bottom: 1.5rem;">
+              <!-- PC maintenance buttons will be generated here -->
+            </div>
+          </div>
+
+          <div class="table-card">
+            <div class="table-header">
               <h3 class="table-title">Current Sit in</h3>
               <div class="student-info-toolbar">
                 <input type="text" id="sitinRecordSearch" class="form-control" placeholder="Search sit-in record...">
@@ -1451,7 +1576,7 @@
           <p class="page-subtitle">Generate and export sit-in reports by date and filter.</p>
           <div class="table-card">
             <div class="table-header">
-              <h3 class="table-title">Sit-in Reports</h3>
+              <h3 class="table-title">UC Sit-in Reports</h3>
               <div class="student-info-toolbar">
                 <input type="date" id="sitinReportDate" class="form-control">
                 <button type="button" class="student-info-btn add" onclick="loadSitInReports()">Search</button>
@@ -1754,6 +1879,12 @@
       document.getElementById(page).classList.add('active');
       document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
       if (element) element.classList.add('active');
+      
+      // Load specific data when switching pages
+      if (page === 'labs') {
+        loadPCMaintenanceStatus();
+        loadSitInRecords();
+      }
     }
 
     function logout() {
@@ -1837,10 +1968,97 @@
 
         initializeSessionsChart(Array.isArray(overview.monthly_sessions) ? overview.monthly_sessions : []);
         renderHomeRecentSessions(Array.isArray(overview.recent_sessions) ? overview.recent_sessions : []);
+        
+        // Load leaderboard data
+        await loadTopStudentsLeaderboard();
+        await loadTopLabsLeaderboard();
       } catch (error) {
         console.error('Dashboard overview error:', error);
         initializeSessionsChart([]);
         renderHomeRecentSessions([]);
+      }
+    }
+
+    function renderLeaderboardItem(rank, name, stat, statLabel) {
+      const rankClass = rank === 1 ? 'rank-1' : rank === 2 ? 'rank-2' : rank === 3 ? 'rank-3' : 'rank-other';
+      const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : '';
+      
+      return `
+        <div class="leaderboard-item">
+          <div class="leaderboard-rank ${rankClass}">
+            ${medal || rank}
+          </div>
+          <div class="leaderboard-info">
+            <div class="leaderboard-name">${escapeHtml(name)}</div>
+            <div class="leaderboard-stat">${escapeHtml(stat)} ${escapeHtml(statLabel)}</div>
+          </div>
+        </div>
+      `;
+    }
+
+    async function loadTopStudentsLeaderboard() {
+      try {
+        const response = await fetch('../../api/admin_dashboard_overview.php?action=top_students');
+        const data = await response.json();
+        const container = document.getElementById('topStudentsLeaderboard');
+        
+        if (!container) return;
+        
+        if (!data.success || !data.data || data.data.length === 0) {
+          container.innerHTML = '<p style="color: #64748b; text-align: center; padding: 1rem;">No student data available.</p>';
+          return;
+        }
+
+        const students = data.data.slice(0, 5);
+        const html = students.map((student, index) => 
+          renderLeaderboardItem(
+            index + 1,
+            student.name || 'Unknown',
+            student.total_sessions || 0,
+            'sessions'
+          )
+        ).join('');
+
+        container.innerHTML = html;
+      } catch (error) {
+        console.error('Error loading top students:', error);
+        const container = document.getElementById('topStudentsLeaderboard');
+        if (container) {
+          container.innerHTML = '<p style="color: #64748b; text-align: center; padding: 1rem;">Error loading data.</p>';
+        }
+      }
+    }
+
+    async function loadTopLabsLeaderboard() {
+      try {
+        const response = await fetch('../../api/admin_dashboard_overview.php?action=top_labs');
+        const data = await response.json();
+        const container = document.getElementById('topLabsLeaderboard');
+        
+        if (!container) return;
+        
+        if (!data.success || !data.data || data.data.length === 0) {
+          container.innerHTML = '<p style="color: #64748b; text-align: center; padding: 1rem;">No lab data available.</p>';
+          return;
+        }
+
+        const labs = data.data.slice(0, 5);
+        const html = labs.map((lab, index) => 
+          renderLeaderboardItem(
+            index + 1,
+            `Lab ${escapeHtml(lab.laboratory)}`,
+            lab.usage_count || 0,
+            'uses'
+          )
+        ).join('');
+
+        container.innerHTML = html;
+      } catch (error) {
+        console.error('Error loading top labs:', error);
+        const container = document.getElementById('topLabsLeaderboard');
+        if (container) {
+          container.innerHTML = '<p style="color: #64748b; text-align: center; padding: 1rem;">Error loading data.</p>';
+        }
       }
     }
 
@@ -2032,6 +2250,7 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
     let selectedAdminReservationLab = '524';
     let selectedAdminReservationPc = '1';
     let occupiedAdminReservationPcs = new Set();
+    let maintenanceAdminReservationPcs = new Set();
     let adminReservationOccupancyByLab = {};
 
     function escapeHtml(value) {
@@ -2178,7 +2397,7 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
 
       const allPcs = Array.from({ length: 50 }, (_, index) => String(index + 1));
       if (occupiedAdminReservationPcs.has(selectedAdminReservationPc)) {
-        const firstAvailable = allPcs.find(pc => !occupiedAdminReservationPcs.has(pc));
+        const firstAvailable = allPcs.find(pc => !occupiedAdminReservationPcs.has(pc) && !maintenanceAdminReservationPcs.has(pc));
         if (firstAvailable) {
           selectedAdminReservationPc = firstAvailable;
         }
@@ -2186,20 +2405,26 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
 
       container.innerHTML = allPcs.map((pc) => {
         const isOccupied = occupiedAdminReservationPcs.has(pc);
-        const isActive = selectedAdminReservationPc === pc && !isOccupied;
+        const isMaintenance = maintenanceAdminReservationPcs.has(pc);
+        const isActive = selectedAdminReservationPc === pc && !isOccupied && !isMaintenance;
         const classes = [
           'pc-select-btn',
           isActive ? 'active' : '',
+          isMaintenance ? 'maintenance' : '',
           isOccupied ? 'occupied' : 'available'
         ].filter(Boolean).join(' ');
+
+        const maintenanceIcon = isMaintenance ? ' <i class="fas fa-tools"></i>' : '';
+        const disabled = isOccupied || isMaintenance;
 
         return `
           <button
             type="button"
             class="${classes}"
-            ${isOccupied ? 'disabled' : `onclick="setAdminReservationPc('${pc}')"`}
+            ${disabled ? 'disabled' : `onclick="setAdminReservationPc('${pc}')"`}
+            title="${isMaintenance ? 'Under Maintenance' : ''}"
           >
-            PC ${pc}
+            PC ${pc}${maintenanceIcon}
           </button>
         `;
       }).join('');
@@ -2224,14 +2449,17 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
         if (data.success) {
           adminReservationOccupancyByLab = data.occupied_by_lab || {};
           occupiedAdminReservationPcs = new Set(Array.isArray(data.occupied_pcs) ? data.occupied_pcs.map(String) : []);
+          maintenanceAdminReservationPcs = new Set(Array.isArray(data.maintenance_pcs) ? data.maintenance_pcs.map(String) : []);
         } else {
           adminReservationOccupancyByLab = {};
           occupiedAdminReservationPcs = new Set();
+          maintenanceAdminReservationPcs = new Set();
         }
       } catch (error) {
         console.error('Failed to load reservation availability:', error);
         adminReservationOccupancyByLab = {};
         occupiedAdminReservationPcs = new Set();
+        maintenanceAdminReservationPcs = new Set();
       }
 
       renderAdminReservationLabs();
@@ -2692,6 +2920,84 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
     }
     window.openStudentFromGlobalSearch = openStudentFromGlobalSearch;
 
+    async function loadPCMaintenanceStatus() {
+      try {
+        const response = await fetch('../../api/reservations.php?action=get_maintenance_status');
+        const data = await response.json();
+        if (data.success) {
+          maintenanceAdminReservationPcs = new Set(Array.isArray(data.maintenance_pcs) ? data.maintenance_pcs.map(String) : []);
+          renderMaintenanceGrid();
+        }
+      } catch (error) {
+        console.error('Failed to load maintenance status:', error);
+      }
+    }
+
+    function renderMaintenanceGrid() {
+      const container = document.getElementById('maintenanceGrid');
+      if (!container) return;
+
+      const allPcs = Array.from({ length: 50 }, (_, index) => String(index + 1));
+
+      container.innerHTML = allPcs.map((pc) => {
+        const isMaintenance = maintenanceAdminReservationPcs.has(pc);
+        const btnClass = isMaintenance ? 'btn btn-warning btn-sm' : 'btn btn-outline-secondary btn-sm';
+        const title = isMaintenance ? 'Click to mark as available' : 'Click to mark as under maintenance';
+        const icon = isMaintenance ? '<i class="fas fa-tools"></i>' : '<i class="fas fa-wrench"></i>';
+
+        return `
+          <button 
+            type="button" 
+            class="${btnClass}" 
+            title="${title}"
+            onclick="togglePCMaintenance('${pc}')"
+            style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
+          >
+            ${icon} PC${pc}
+          </button>
+        `;
+      }).join('');
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      const maintenanceLabFilter = document.getElementById('maintenanceLabFilter');
+      if (maintenanceLabFilter) {
+        maintenanceLabFilter.addEventListener('change', renderMaintenanceGrid);
+      }
+    });
+
+    async function togglePCMaintenance(pcNumber) {
+      try {
+        const isCurrentlyMaintenance = maintenanceAdminReservationPcs.has(pcNumber);
+        const action = isCurrentlyMaintenance ? 'remove_maintenance' : 'add_maintenance';
+
+        const response = await fetch('../../api/reservations.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: action,
+            pc_number: pcNumber
+          })
+        });
+
+        const data = await response.json();
+        if (data.success) {
+          if (isCurrentlyMaintenance) {
+            maintenanceAdminReservationPcs.delete(pcNumber);
+          } else {
+            maintenanceAdminReservationPcs.add(pcNumber);
+          }
+          renderMaintenanceGrid();
+          loadAdminReservationAvailability(); // Refresh PC grid if on reservation page
+        } else {
+          alert(data.message || 'Failed to update maintenance status');
+        }
+      } catch (error) {
+        console.error('Error toggling maintenance status:', error);
+        alert('Error updating PC maintenance status');
+      }
+    }
+
     async function loadSitInRecords(search = '') {
       try {
         const response = await fetch(`../../api/admin_sitin_records.php?action=list&search=${encodeURIComponent(search)}`);
@@ -2856,7 +3162,7 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
     }
 
     function exportSitInReportsPDF() {
-      const html = buildSitInReportsPrintableHtml('Sit-in Reports (PDF)');
+      const html = buildSitInReportsPrintableHtml('UC Sit-in Reports (PDF)');
       const win = window.open('', '_blank', 'width=1200,height=800');
       if (!win) {
         alert('Please allow popups to export PDF.');

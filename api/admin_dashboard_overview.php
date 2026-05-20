@@ -150,5 +150,49 @@ while ($r = $recentResult->fetch_assoc()) {
     $overview['recent_sessions'][] = $r;
 }
 
+// Handle leaderboard requests
+$action = $_GET['action'] ?? '';
+
+if ($action === 'top_students') {
+    $stmt = $conn->prepare("
+        SELECT
+            CONCAT(u.first_name, ' ', COALESCE(NULLIF(u.middle_name, ''), ''), IF(u.middle_name IS NULL OR u.middle_name = '', '', ' '), u.last_name) AS name,
+            COUNT(s.id) AS total_sessions
+        FROM sit_in_history s
+        INNER JOIN users u ON u.id = s.user_id
+        GROUP BY s.user_id
+        ORDER BY total_sessions DESC
+        LIMIT 5
+    ");
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $topStudents = [];
+    while ($row = $result->fetch_assoc()) {
+        $topStudents[] = $row;
+    }
+    echo json_encode(['success' => true, 'data' => $topStudents]);
+    exit();
+}
+
+if ($action === 'top_labs') {
+    $stmt = $conn->prepare("
+        SELECT
+            laboratory,
+            COUNT(*) AS usage_count
+        FROM sit_in_history
+        GROUP BY laboratory
+        ORDER BY usage_count DESC
+        LIMIT 5
+    ");
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $topLabs = [];
+    while ($row = $result->fetch_assoc()) {
+        $topLabs[] = $row;
+    }
+    echo json_encode(['success' => true, 'data' => $topLabs]);
+    exit();
+}
+
 echo json_encode(['success' => true, 'data' => $overview]);
 ?>

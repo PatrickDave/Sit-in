@@ -52,16 +52,30 @@ if ($hasTimeInColumn && $hasTimeInColumn->num_rows === 0) {
     $conn->query("UPDATE reservations SET time_in = reservation_time WHERE time_in = '00:00:00' OR time_in IS NULL");
 }
 
-$hasTimeOutColumn = $conn->query("SHOW COLUMNS FROM reservations LIKE 'time_out'");
-if ($hasTimeOutColumn && $hasTimeOutColumn->num_rows === 0) {
-    $conn->query("ALTER TABLE reservations ADD COLUMN time_out TIME NOT NULL AFTER time_in");
-    $conn->query("UPDATE reservations SET time_out = ADDTIME(time_in, '02:00:00') WHERE time_out = '00:00:00' OR time_out IS NULL");
+// Create table for PC maintenance status
+$createMaintenanceTableSql = "CREATE TABLE IF NOT EXISTS pc_maintenance (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    pc_number INT NOT NULL UNIQUE,
+    is_under_maintenance BOOLEAN DEFAULT FALSE,
+    reason VARCHAR(255) DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+)";
+$conn->query($createMaintenanceTableSql);
+
+// Initialize all PCs if they don't exist
+for ($i = 1; $i <= 50; $i++) {
+    $checkStmt = $conn->prepare("SELECT id FROM pc_maintenance WHERE pc_number = ?");
+    $checkStmt->bind_param("i", $i);
+    $checkStmt->execute();
+    $result = $checkStmt->get_result();
+    if ($result->num_rows === 0) {
+        $insertStmt = $conn->prepare("INSERT INTO pc_maintenance (pc_number, is_under_maintenance) VALUES (?, FALSE)");
+        $insertStmt->bind_param("i", $i);
+        $insertStmt->execute();
+    }
 }
 
-$hasPcColumn = $conn->query("SHOW COLUMNS FROM reservations LIKE 'pc_number'");
-if ($hasPcColumn && $hasPcColumn->num_rows === 0) {
-    $conn->query("ALTER TABLE reservations ADD COLUMN pc_number INT NOT NULL DEFAULT 1 AFTER time_out");
-}
 
 function respond($payload) {
     echo json_encode($payload);
@@ -400,9 +414,19 @@ if ($action === 'availability') {
     }
     unset($pcs);
 
+    // Get maintenance PCs
+    $maintenanceStmt = $conn->prepare("SELECT pc_number FROM pc_maintenance WHERE is_under_maintenance = TRUE");
+    $maintenanceStmt->execute();
+    $maintenanceResult = $maintenanceStmt->get_result();
+    $maintenancePcNumbers = [];
+    while ($row = $maintenanceResult->fetch_assoc()) {
+        $maintenancePcNumbers[] = (string) $row['pc_number'];
+    }
+
     respond([
         'success' => true,
         'occupied_pcs' => array_map('strval', $occupiedPcNumbers),
+        'maintenance_pcs' => $maintenancePcNumbers,
         'occupied_by_lab' => array_map(function ($pcs) {
             return array_map('strval', $pcs);
         }, $occupiedByLab),
@@ -482,5 +506,65 @@ if ($action === 'admin_logs') {
     respond(['success' => true, 'data' => $rows]);
 }
 
+if ($action === 'get_maintenance_status') {
+    if (!is_admin()) {
+        respond(['success' => false, 'message' => 'Unauthorized']);
+    }
+
+    $stmt = $conn->prepare("SELECT pc_number FROM pc_maintenance WHERE is_under_maintenance = TRUE");
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    $maintenancePcs = [];
+    while ($row = $result->fetch_assoc()) {
+        $maintenancePcs[] = (string) $row['pc_number'];
+    }
+
+    respond(['success' => true, 'maintenance_pcs' => $maintenancePcs]);
+}
+
+if ($action === 'add_maintenance') {
+    if (!is_admin()) {
+        respond(['success' => false, 'message' => 'Unauthorized']);
+    }
+
+    $data = json_decode(file_get_contents('php://input'), true);
+    $pcNumber = (int) ($data['pc_number'] ?? 0);
+
+    if ($pcNumber < 1 || $pcNumber > 50) {
+        respond(['success' => false, 'message' => 'Invalid PC number.']);
+    }
+
+    $stmt = $conn->prepare("UPDATE pc_maintenance SET is_under_maintenance = TRUE WHERE pc_number = ?");
+    $stmt->bind_param("i", $pcNumber);
+    
+    if ($stmt->execute()) {
+        respond(['success' => true, 'message' => "PC $pcNumber marked as under maintenance."]);
+    } else {
+        respond(['success' => false, 'message' => 'Failed to update PC maintenance status.']);
+    }
+}
+
+if ($action === 'remove_maintenance') {
+    if (!is_admin()) {
+        respond(['success' => false, 'message' => 'Unauthorized']);
+    }
+
+    $data = json_decode(file_get_contents('php://input'), true);
+    $pcNumber = (int) ($data['pc_number'] ?? 0);
+
+    if ($pcNumber < 1 || $pcNumber > 50) {
+        respond(['success' => false, 'message' => 'Invalid PC number.']);
+    }
+
+    $stmt = $conn->prepare("UPDATE pc_maintenance SET is_under_maintenance = FALSE WHERE pc_number = ?");
+    $stmt->bind_param("i", $pcNumber);
+    
+    if ($stmt->execute()) {
+        respond(['success' => true, 'message' => "PC $pcNumber is now available."]);
+    } else {
+        respond(['success' => false, 'message' => 'Failed to update PC maintenance status.']);
+    }
+}
+
 respond(['success' => false, 'message' => 'Invalid action.']);
-?>
