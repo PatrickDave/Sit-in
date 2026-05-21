@@ -2,4 +2,4 @@ Infinity Free Live Hosting
 
 Subdomain
 
-Password: WAEWxW9RxC
+Password: GWO4gO6GRVYp
