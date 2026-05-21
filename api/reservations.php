@@ -123,6 +123,15 @@ function is_student() {
     return isset($_SESSION['user_id']);
 }
 
+function normalize_laboratory_code($value) {
+    $raw = trim((string) $value);
+    if ($raw === '') return '';
+    if (preg_match('/(524|526|530|540|544)/', $raw, $matches)) {
+        return $matches[1];
+    }
+    return $raw;
+}
+
 function validate_reservation_payload($laboratory, $reservationDate, $timeIn, $timeOut, $pcNumber, $purpose) {
     global $allowedLabs;
 
@@ -399,12 +408,35 @@ if ($action === 'availability') {
     $occupiedByLab = array_fill_keys($allowedLabs, []);
     $occupiedPcNumbers = [];
 
-    $activeStmt = $conn->prepare("\n        SELECT COALESCE(r.laboratory, s.laboratory) AS laboratory, COALESCE(r.pc_number, 0) AS pc_number\n        FROM sit_in_history s\n        LEFT JOIN reservations r ON r.id = s.reservation_id\n        WHERE (LOWER(s.status) = 'active' OR LOWER(s.status) = 'ongoing')\n          AND s.time_out IS NULL\n    ");
+    $activeStmt = $conn->prepare("\n        SELECT s.user_id, s.time_in, COALESCE(r.laboratory, s.laboratory) AS laboratory, COALESCE(r.pc_number, 0) AS pc_number\n        FROM sit_in_history s\n        LEFT JOIN reservations r ON r.id = s.reservation_id\n        WHERE (LOWER(s.status) = 'active' OR LOWER(s.status) = 'ongoing')\n          AND s.time_out IS NULL\n    ");
     $activeStmt->execute();
     $activeResult = $activeStmt->get_result();
+    $fallbackPcStmt = $conn->prepare("
+        SELECT pc_number
+        FROM reservations
+        WHERE user_id = ?
+          AND status = 'approved'
+          AND laboratory = ?
+          AND reservation_date = ?
+          AND time_in <= ?
+          AND time_out >= ?
+        ORDER BY id DESC
+        LIMIT 1
+    ");
     while ($row = $activeResult->fetch_assoc()) {
-        $lab = trim((string) $row['laboratory']);
+        $lab = normalize_laboratory_code($row['laboratory'] ?? '');
         $pc = (int) $row['pc_number'];
+        if ($pc <= 0 && in_array($lab, $allowedLabs, true) && $fallbackPcStmt) {
+            $activeUserId = (int) ($row['user_id'] ?? 0);
+            $activeDate = date('Y-m-d', strtotime((string) ($row['time_in'] ?? 'now')));
+            $activeTime = date('H:i:s', strtotime((string) ($row['time_in'] ?? 'now')));
+            $fallbackPcStmt->bind_param("issss", $activeUserId, $lab, $activeDate, $activeTime, $activeTime);
+            $fallbackPcStmt->execute();
+            $fallbackPcResult = $fallbackPcStmt->get_result();
+            if ($fallbackPcRow = $fallbackPcResult->fetch_assoc()) {
+                $pc = (int) ($fallbackPcRow['pc_number'] ?? 0);
+            }
+        }
         if ($pc > 0 && in_array($lab, $allowedLabs, true)) {
             if (!in_array($pc, $occupiedByLab[$lab], true)) {
                 $occupiedByLab[$lab][] = $pc;
@@ -426,7 +458,7 @@ if ($action === 'availability') {
             $approvedStmt->execute();
             $approvedResult = $approvedStmt->get_result();
             while ($row = $approvedResult->fetch_assoc()) {
-                $lab = trim((string) $row['laboratory']);
+                $lab = normalize_laboratory_code($row['laboratory'] ?? '');
                 $pc = (int) $row['pc_number'];
                 if ($pc > 0 && in_array($lab, $allowedLabs, true)) {
                     if (!in_array($pc, $occupiedByLab[$lab], true)) {
