@@ -10,7 +10,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && strpos($_SERVER['CONTENT_TYPE'] ?? 
 }
 
 // Get action from GET, POST, or JSON body
-$action = $_GET['action'] ?? $_POST['action'] ?? $jsonBody['action'] ?? 'list';
+$jsonAction = is_array($jsonBody) ? ($jsonBody['action'] ?? null) : null;
+$action = $_GET['action'] ?? $_POST['action'] ?? $jsonAction ?? 'list';
 
 $createReservationsSql = "CREATE TABLE IF NOT EXISTS reservations (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -62,24 +63,49 @@ if ($hasTimeInColumn && $hasTimeInColumn->num_rows === 0) {
 // Create table for PC maintenance status
 $createMaintenanceTableSql = "CREATE TABLE IF NOT EXISTS pc_maintenance (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    pc_number INT NOT NULL UNIQUE,
+    laboratory VARCHAR(20) NOT NULL,
+    pc_number INT NOT NULL,
     is_under_maintenance BOOLEAN DEFAULT FALSE,
     reason VARCHAR(255) DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY uniq_lab_pc (laboratory, pc_number)
 )";
 $conn->query($createMaintenanceTableSql);
 
-// Initialize all PCs if they don't exist
-for ($i = 1; $i <= 50; $i++) {
-    $checkStmt = $conn->prepare("SELECT id FROM pc_maintenance WHERE pc_number = ?");
-    $checkStmt->bind_param("i", $i);
-    $checkStmt->execute();
-    $result = $checkStmt->get_result();
-    if ($result->num_rows === 0) {
-        $insertStmt = $conn->prepare("INSERT INTO pc_maintenance (pc_number, is_under_maintenance) VALUES (?, FALSE)");
-        $insertStmt->bind_param("i", $i);
-        $insertStmt->execute();
+$allowedLabs = ['524', '526', '530', '540', '544'];
+
+// Backward compatibility for older maintenance table schema.
+$hasMaintenanceLabColumn = $conn->query("SHOW COLUMNS FROM pc_maintenance LIKE 'laboratory'");
+if ($hasMaintenanceLabColumn && $hasMaintenanceLabColumn->num_rows === 0) {
+    $conn->query("ALTER TABLE pc_maintenance ADD COLUMN laboratory VARCHAR(20) NOT NULL DEFAULT '524' AFTER id");
+}
+
+$maintenanceIndexResult = $conn->query("SHOW INDEX FROM pc_maintenance WHERE Column_name = 'pc_number' AND Non_unique = 0");
+if ($maintenanceIndexResult) {
+    while ($idx = $maintenanceIndexResult->fetch_assoc()) {
+        $keyName = $idx['Key_name'] ?? '';
+        if ($keyName && $keyName !== 'PRIMARY' && $keyName !== 'uniq_lab_pc') {
+            $safeKey = str_replace('`', '', $keyName);
+            $conn->query("ALTER TABLE pc_maintenance DROP INDEX `$safeKey`");
+        }
+    }
+}
+$hasCompositeMaintenanceIndex = $conn->query("SHOW INDEX FROM pc_maintenance WHERE Key_name = 'uniq_lab_pc'");
+if ($hasCompositeMaintenanceIndex && $hasCompositeMaintenanceIndex->num_rows === 0) {
+    $conn->query("ALTER TABLE pc_maintenance ADD UNIQUE KEY uniq_lab_pc (laboratory, pc_number)");
+}
+
+// Initialize all PCs for each lab if they don't exist
+$insertMaintenanceStmt = $conn->prepare("
+    INSERT INTO pc_maintenance (laboratory, pc_number, is_under_maintenance)
+    VALUES (?, ?, FALSE)
+    ON DUPLICATE KEY UPDATE pc_number = VALUES(pc_number)
+");
+foreach ($allowedLabs as $lab) {
+    for ($i = 1; $i <= 50; $i++) {
+        $insertMaintenanceStmt->bind_param("si", $lab, $i);
+        $insertMaintenanceStmt->execute();
     }
 }
 
@@ -98,7 +124,7 @@ function is_student() {
 }
 
 function validate_reservation_payload($laboratory, $reservationDate, $timeIn, $timeOut, $pcNumber, $purpose) {
-    $allowedLabs = ['524', '526', '530', '540', '544'];
+    global $allowedLabs;
 
     if (!in_array($laboratory, $allowedLabs, true)) {
         respond(['success' => false, 'message' => 'Please select a valid laboratory.']);
@@ -366,7 +392,6 @@ if ($action === 'availability') {
     $timeIn = trim($_GET['time_in'] ?? '');
     $timeOut = trim($_GET['time_out'] ?? '');
 
-    $allowedLabs = ['524', '526', '530', '540', '544'];
     if ($laboratory === '' || !in_array($laboratory, $allowedLabs, true)) {
         respond(['success' => false, 'message' => 'Please select a valid laboratory.']);
     }
@@ -421,8 +446,9 @@ if ($action === 'availability') {
     }
     unset($pcs);
 
-    // Get maintenance PCs
-    $maintenanceStmt = $conn->prepare("SELECT pc_number FROM pc_maintenance WHERE is_under_maintenance = TRUE");
+    // Get maintenance PCs for the selected lab
+    $maintenanceStmt = $conn->prepare("SELECT pc_number FROM pc_maintenance WHERE is_under_maintenance = TRUE AND laboratory = ?");
+    $maintenanceStmt->bind_param("s", $laboratory);
     $maintenanceStmt->execute();
     $maintenanceResult = $maintenanceStmt->get_result();
     $maintenancePcNumbers = [];
@@ -445,7 +471,6 @@ if ($action === 'admin_logs') {
         respond(['success' => false, 'message' => 'Unauthorized']);
     }
 
-    $allowedLabs = ['524', '526', '530', '540', '544'];
     $search = trim($_GET['search'] ?? '');
     $laboratory = trim($_GET['laboratory'] ?? '');
     $pcNumber = (int) ($_GET['pc_number'] ?? 0);
@@ -518,7 +543,13 @@ if ($action === 'get_maintenance_status') {
         respond(['success' => false, 'message' => 'Unauthorized']);
     }
 
-    $stmt = $conn->prepare("SELECT pc_number FROM pc_maintenance WHERE is_under_maintenance = TRUE");
+    $laboratory = trim($_GET['laboratory'] ?? '');
+    if (!in_array($laboratory, $allowedLabs, true)) {
+        respond(['success' => false, 'message' => 'Please select a valid laboratory.']);
+    }
+
+    $stmt = $conn->prepare("SELECT pc_number FROM pc_maintenance WHERE is_under_maintenance = TRUE AND laboratory = ?");
+    $stmt->bind_param("s", $laboratory);
     $stmt->execute();
     $result = $stmt->get_result();
     
@@ -535,14 +566,18 @@ if ($action === 'add_maintenance') {
         respond(['success' => false, 'message' => 'Unauthorized']);
     }
 
+    $laboratory = trim((string) ($jsonBody['laboratory'] ?? ''));
     $pcNumber = (int) ($jsonBody['pc_number'] ?? 0);
 
+    if (!in_array($laboratory, $allowedLabs, true)) {
+        respond(['success' => false, 'message' => 'Please select a valid laboratory.']);
+    }
     if ($pcNumber < 1 || $pcNumber > 50) {
         respond(['success' => false, 'message' => 'Invalid PC number.']);
     }
 
-    $stmt = $conn->prepare("UPDATE pc_maintenance SET is_under_maintenance = TRUE WHERE pc_number = ?");
-    $stmt->bind_param("i", $pcNumber);
+    $stmt = $conn->prepare("UPDATE pc_maintenance SET is_under_maintenance = TRUE WHERE laboratory = ? AND pc_number = ?");
+    $stmt->bind_param("si", $laboratory, $pcNumber);
     
     if ($stmt->execute()) {
         respond(['success' => true, 'message' => "PC $pcNumber marked as under maintenance."]);
@@ -556,14 +591,18 @@ if ($action === 'remove_maintenance') {
         respond(['success' => false, 'message' => 'Unauthorized']);
     }
 
+    $laboratory = trim((string) ($jsonBody['laboratory'] ?? ''));
     $pcNumber = (int) ($jsonBody['pc_number'] ?? 0);
 
+    if (!in_array($laboratory, $allowedLabs, true)) {
+        respond(['success' => false, 'message' => 'Please select a valid laboratory.']);
+    }
     if ($pcNumber < 1 || $pcNumber > 50) {
         respond(['success' => false, 'message' => 'Invalid PC number.']);
     }
 
-    $stmt = $conn->prepare("UPDATE pc_maintenance SET is_under_maintenance = FALSE WHERE pc_number = ?");
-    $stmt->bind_param("i", $pcNumber);
+    $stmt = $conn->prepare("UPDATE pc_maintenance SET is_under_maintenance = FALSE WHERE laboratory = ? AND pc_number = ?");
+    $stmt->bind_param("si", $laboratory, $pcNumber);
     
     if ($stmt->execute()) {
         respond(['success' => true, 'message' => "PC $pcNumber is now available."]);
