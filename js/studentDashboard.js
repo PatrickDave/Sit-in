@@ -35,7 +35,14 @@ document.addEventListener('DOMContentLoaded', function() {
     const reservationDateInput = document.getElementById('reservationDate');
     const reservationTimeInInput = document.getElementById('reservationTimeIn');
     const reservationTimeOutInput = document.getElementById('reservationTimeOut');
+    const reservationLaboratoryInput = document.getElementById('reservationLaboratory');
     const reservationPcNumberInput = document.getElementById('reservationPcNumber');
+    const reservationEnabledSwitch = document.getElementById('reservationEnabledSwitch');
+
+    const RESERVATION_LABS = ['524', '526', '530', '540', '544'];
+    let reservationAvailabilityByLab = {};
+    let maintenancePcSet = new Set();
+    let reservationInputsDisabled = false;
 
     function reservationBadge(status) {
         const normalized = String(status || 'pending').toLowerCase();
@@ -79,6 +86,122 @@ document.addEventListener('DOMContentLoaded', function() {
             options += `<option value="${pc}">PC-${pc}</option>`;
         }
         reservationPcNumberInput.innerHTML = options;
+    }
+
+    function setReservationInputsDisabled(disabled) {
+        reservationInputsDisabled = disabled;
+        const fields = [
+            reservationLaboratoryInput,
+            reservationDateInput,
+            reservationTimeInInput,
+            reservationTimeOutInput,
+            reservationPcNumberInput,
+            document.getElementById('reservationPurpose')
+        ];
+
+        fields.forEach((field) => {
+            if (field) field.disabled = disabled;
+        });
+
+        if (submitReservationBtn) {
+            submitReservationBtn.disabled = disabled;
+        }
+
+        if (reservationStatus) {
+            if (disabled) {
+                reservationStatus.textContent = 'Reservation is disabled. Turn on Reservation Access to continue.';
+                reservationStatus.className = 'small text-secondary mb-0 mt-3';
+            } else {
+                reservationStatus.textContent = '';
+                reservationStatus.className = 'small mb-0 mt-3';
+            }
+        }
+    }
+
+    function normalizePcSet(values) {
+        return new Set((Array.isArray(values) ? values : []).map(String));
+    }
+
+    function renderLaboratoryOptions() {
+        if (!reservationLaboratoryInput) return;
+
+        const selectedLab = reservationLaboratoryInput.value;
+        let options = '<option value="">Select laboratory</option>';
+
+        RESERVATION_LABS.forEach((lab) => {
+            const occupiedSet = normalizePcSet(reservationAvailabilityByLab[lab]);
+            const unavailableSet = new Set([...occupiedSet, ...maintenancePcSet]);
+            const availableCount = Math.max(0, 50 - unavailableSet.size);
+            const label = `Lab ${lab} (${availableCount}/50 available)`;
+            const disabledAttr = availableCount === 0 ? 'disabled' : '';
+            const selectedAttr = selectedLab === lab ? 'selected' : '';
+            options += `<option value="${lab}" ${disabledAttr} ${selectedAttr}>${label}</option>`;
+        });
+
+        reservationLaboratoryInput.innerHTML = options;
+    }
+
+    function renderPcOptionsForLab() {
+        if (!reservationPcNumberInput) return;
+
+        const selectedPc = reservationPcNumberInput.value;
+        const selectedLab = reservationLaboratoryInput?.value || '';
+        const occupiedSet = normalizePcSet(reservationAvailabilityByLab[selectedLab]);
+
+        let options = '<option value="">Select PC</option>';
+        for (let pc = 1; pc <= 50; pc += 1) {
+            const pcKey = String(pc);
+            const isMaintenance = maintenancePcSet.has(pcKey);
+            const isOccupied = occupiedSet.has(pcKey);
+            const isUnavailable = isMaintenance || isOccupied;
+
+            let label = `PC-${pc}`;
+            if (isMaintenance) {
+                label += ' - Under Maintenance';
+            } else if (isOccupied) {
+                label += ' - Occupied';
+            } else {
+                label += ' - Available';
+            }
+
+            const disabledAttr = isUnavailable ? 'disabled' : '';
+            const selectedAttr = (!isUnavailable && selectedPc === pcKey) ? 'selected' : '';
+            options += `<option value="${pc}" ${disabledAttr} ${selectedAttr}>${label}</option>`;
+        }
+
+        reservationPcNumberInput.innerHTML = options;
+    }
+
+    function loadReservationAvailability() {
+        const laboratory = reservationLaboratoryInput?.value?.trim() || RESERVATION_LABS[0];
+        const reservationDate = reservationDateInput?.value?.trim() || '';
+        const timeIn = reservationTimeInInput?.value?.trim() || '';
+        const timeOut = reservationTimeOutInput?.value?.trim() || '';
+
+        const params = new URLSearchParams({
+            action: 'availability',
+            laboratory,
+            reservation_date: reservationDate,
+            time_in: timeIn,
+            time_out: timeOut
+        });
+
+        fetch(`../../api/reservations.php?${params.toString()}`)
+            .then((response) => response.json())
+            .then((data) => {
+                if (!data.success) {
+                    return;
+                }
+
+                reservationAvailabilityByLab = data.occupied_by_lab || {};
+                maintenancePcSet = normalizePcSet(data.maintenance_pcs);
+
+                renderLaboratoryOptions();
+                renderPcOptionsForLab();
+            })
+            .catch((error) => {
+                console.error('Reservation availability fetch error:', error);
+            });
     }
 
     function toMinutes(timeValue) {
@@ -184,6 +307,7 @@ document.addEventListener('DOMContentLoaded', function() {
     loadSitInHistory();
     loadMyReservations();
     populatePcOptions();
+    loadReservationAvailability();
 
     if (reservationDateInput) {
         reservationDateInput.min = new Date().toISOString().split('T')[0];
@@ -195,6 +319,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 reservationStatus.textContent = '';
                 reservationStatus.className = 'small mb-0 mt-3';
             }
+            loadReservationAvailability();
         });
 
         reservationModalElement.addEventListener('hidden.bs.modal', function() {
@@ -203,6 +328,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 reservationDateInput.min = new Date().toISOString().split('T')[0];
             }
             populatePcOptions();
+            loadReservationAvailability();
+            if (reservationEnabledSwitch) {
+                reservationEnabledSwitch.checked = true;
+            }
+            setReservationInputsDisabled(false);
             if (reservationStatus) {
                 reservationStatus.textContent = '';
                 reservationStatus.className = 'small mb-0 mt-3';
@@ -319,6 +449,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (submitReservationBtn) {
         submitReservationBtn.addEventListener('click', function() {
+            if (reservationInputsDisabled) {
+                if (reservationStatus) {
+                    reservationStatus.textContent = 'Enable Reservation Access first.';
+                    reservationStatus.className = 'small text-danger mb-0 mt-3';
+                }
+                return;
+            }
+
             const laboratory = document.getElementById('reservationLaboratory')?.value.trim() || '';
             const reservationDate = document.getElementById('reservationDate')?.value.trim() || '';
             const timeIn = reservationTimeInInput?.value.trim() || '';
@@ -386,6 +524,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (reservationDateInput) {
                         reservationDateInput.min = new Date().toISOString().split('T')[0];
                     }
+                    loadReservationAvailability();
                     loadMyReservations();
                     setTimeout(() => {
                         if (reservationModal) reservationModal.hide();
@@ -404,6 +543,24 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
         });
     }
+
+    if (reservationEnabledSwitch) {
+        reservationEnabledSwitch.addEventListener('change', function() {
+            setReservationInputsDisabled(!reservationEnabledSwitch.checked);
+        });
+    }
+
+    if (reservationLaboratoryInput) {
+        reservationLaboratoryInput.addEventListener('change', function() {
+            renderPcOptionsForLab();
+            loadReservationAvailability();
+        });
+    }
+
+    [reservationDateInput, reservationTimeInInput, reservationTimeOutInput].forEach((input) => {
+        if (!input) return;
+        input.addEventListener('change', loadReservationAvailability);
+    });
 
     // 1. FETCH USER DATA FROM API
     fetch('../../api/studentDashboard.php')

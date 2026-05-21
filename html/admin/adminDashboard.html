@@ -811,6 +811,12 @@
       border: 1px solid #e2e8f0;
     }
 
+    .reservation-right-column {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
     .reservation-control-title {
       font-size: 1rem;
       font-weight: 700;
@@ -939,6 +945,34 @@
 
     .pc-select-btn.maintenance:hover {
       background: rgba(254, 243, 199, 0.8);
+    }
+
+    .pc-maintenance-btn {
+      padding: 0.5rem 0.75rem;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      background: white;
+      color: #475569;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .pc-maintenance-btn:hover {
+      border-color: #cbd5e1;
+      background: #f1f5f9;
+    }
+
+    .pc-maintenance-btn.maintenance {
+      background: #fef3c7;
+      border-color: #fcd34d;
+      color: #92400e;
+    }
+
+    .pc-maintenance-btn.maintenance:hover {
+      background: #fde68a;
+      border-color: #fbbf24;
     }
 
     .maintenance-badge {
@@ -1527,25 +1561,6 @@
 
           <div class="table-card">
             <div class="table-header">
-              <h3 class="table-title">PC Maintenance Status</h3>
-              <div class="student-info-toolbar">
-                <select id="maintenanceLabFilter" class="form-control" style="max-width: 180px; border-radius: 10px;">
-                  <option value="">All Labs</option>
-                  <option value="524">Lab 524</option>
-                  <option value="526">Lab 526</option>
-                  <option value="530">Lab 530</option>
-                  <option value="540">Lab 540</option>
-                  <option value="544">Lab 544</option>
-                </select>
-              </div>
-            </div>
-            <div id="maintenanceGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 0.75rem; padding: 1.5rem; background: #f8fafc; border-radius: 12px; margin-bottom: 1.5rem;">
-              <!-- PC maintenance buttons will be generated here -->
-            </div>
-          </div>
-
-          <div class="table-card">
-            <div class="table-header">
               <h3 class="table-title">Current Sit in</h3>
               <div class="student-info-toolbar">
                 <input type="text" id="sitinRecordSearch" class="form-control" placeholder="Search sit-in record...">
@@ -1700,36 +1715,46 @@
               <p id="adminReservationStatus" style="margin: 0.9rem 0 0; font-size: 0.85rem; color: #64748b;"></p>
             </div>
 
-            <div class="table-card">
-              <div class="table-header">
-                <h3 class="table-title">Reservation Records</h3>
-                <div class="student-info-toolbar">
-                  <input type="text" id="adminReservationSearch" class="form-control" placeholder="Search reservation...">
+            <div class="reservation-right-column">
+              <div class="table-card">
+                <div class="table-header">
+                  <h3 class="table-title">Reservation Records</h3>
+                  <div class="student-info-toolbar">
+                    <input type="text" id="adminReservationSearch" class="form-control" placeholder="Search reservation...">
+                  </div>
                 </div>
+
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Student ID</th>
+                      <th>Purpose</th>
+                      <th>Lab</th>
+                      <th>PC</th>
+                      <th>Date</th>
+                      <th>Time In</th>
+                      <th>Time Out</th>
+                      <th>Status</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="adminReservationTableBody"></tbody>
+                </table>
+                <p id="adminReservationEmpty" style="margin: 1rem 0 0; color: #64748b; display:none;">No reservation records found.</p>
               </div>
 
-              <table class="data-table">
-                <thead>
-                  <tr>
-                    <th>Student ID</th>
-                    <th>Purpose</th>
-                    <th>Lab</th>
-                    <th>PC</th>
-                    <th>Date</th>
-                    <th>Time In</th>
-                    <th>Time Out</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody id="adminReservationTableBody"></tbody>
-              </table>
-              <p id="adminReservationEmpty" style="margin: 1rem 0 0; color: #64748b; display:none;">No reservation records found.</p>
+              <div class="table-card">
+                <div class="table-header">
+                  <h3 class="table-title">PC Maintenance Management</h3>
+                </div>
+                <p style="font-size: 0.85rem; color: #64748b; margin: 1rem 1.5rem 0.75rem;">Toggle PC maintenance status below. Yellow indicates under maintenance.</p>
+                <div id="maintenanceGridReservation" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 0.5rem; background: #f8fafc; border-radius: 12px; padding: 1.5rem; border: 1px solid #e2e8f0; margin: 0 1.5rem 1rem;">
+                  <!-- Maintenance PC buttons will be generated here -->
+                </div>
+              </div>
             </div>
           </div>
         </div>
-
-        <!-- Student Information Modal -->
         <div class="modal fade" id="studentModal" tabindex="-1" aria-hidden="true">
           <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content border-0 shadow">
@@ -1882,8 +1907,10 @@
       
       // Load specific data when switching pages
       if (page === 'labs') {
-        loadPCMaintenanceStatus();
         loadSitInRecords();
+      }
+      if (page === 'adminReservation') {
+        loadPCMaintenanceStatus();
       }
     }
 
@@ -2926,22 +2953,23 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
         const data = await response.json();
         if (data.success) {
           maintenanceAdminReservationPcs = new Set(Array.isArray(data.maintenance_pcs) ? data.maintenance_pcs.map(String) : []);
-          renderMaintenanceGrid();
+          renderMaintenanceGridReservation();
+          renderAdminReservationPcGrid(); // Also update the PC selector grid
         }
       } catch (error) {
         console.error('Failed to load maintenance status:', error);
       }
     }
 
-    function renderMaintenanceGrid() {
-      const container = document.getElementById('maintenanceGrid');
+    function renderMaintenanceGridReservation() {
+      const container = document.getElementById('maintenanceGridReservation');
       if (!container) return;
 
       const allPcs = Array.from({ length: 50 }, (_, index) => String(index + 1));
 
       container.innerHTML = allPcs.map((pc) => {
         const isMaintenance = maintenanceAdminReservationPcs.has(pc);
-        const btnClass = isMaintenance ? 'btn btn-warning btn-sm' : 'btn btn-outline-secondary btn-sm';
+        const btnClass = isMaintenance ? 'pc-maintenance-btn maintenance' : 'pc-maintenance-btn';
         const title = isMaintenance ? 'Click to mark as available' : 'Click to mark as under maintenance';
         const icon = isMaintenance ? '<i class="fas fa-tools"></i>' : '<i class="fas fa-wrench"></i>';
 
@@ -2951,20 +2979,12 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
             class="${btnClass}" 
             title="${title}"
             onclick="togglePCMaintenance('${pc}')"
-            style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
           >
             ${icon} PC${pc}
           </button>
         `;
       }).join('');
     }
-
-    document.addEventListener('DOMContentLoaded', function() {
-      const maintenanceLabFilter = document.getElementById('maintenanceLabFilter');
-      if (maintenanceLabFilter) {
-        maintenanceLabFilter.addEventListener('change', renderMaintenanceGrid);
-      }
-    });
 
     async function togglePCMaintenance(pcNumber) {
       try {
@@ -2987,8 +3007,8 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
           } else {
             maintenanceAdminReservationPcs.add(pcNumber);
           }
-          renderMaintenanceGrid();
-          loadAdminReservationAvailability(); // Refresh PC grid if on reservation page
+          renderMaintenanceGridReservation();
+          renderAdminReservationPcGrid();
         } else {
           alert(data.message || 'Failed to update maintenance status');
         }

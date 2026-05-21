@@ -3,7 +3,14 @@ session_start();
 require_once 'db.php';
 header('Content-Type: application/json');
 
-$action = $_GET['action'] ?? $_POST['action'] ?? 'list';
+// Parse JSON input once
+$jsonBody = null;
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && strpos($_SERVER['CONTENT_TYPE'] ?? '', 'application/json') !== false) {
+    $jsonBody = json_decode(file_get_contents('php://input'), true);
+}
+
+// Get action from GET, POST, or JSON body
+$action = $_GET['action'] ?? $_POST['action'] ?? $jsonBody['action'] ?? 'list';
 
 $createReservationsSql = "CREATE TABLE IF NOT EXISTS reservations (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -350,7 +357,7 @@ if ($action === 'list') {
 }
 
 if ($action === 'availability') {
-    if (!is_admin()) {
+    if (!is_admin() && !is_student()) {
         respond(['success' => false, 'message' => 'Unauthorized']);
     }
 
@@ -528,8 +535,7 @@ if ($action === 'add_maintenance') {
         respond(['success' => false, 'message' => 'Unauthorized']);
     }
 
-    $data = json_decode(file_get_contents('php://input'), true);
-    $pcNumber = (int) ($data['pc_number'] ?? 0);
+    $pcNumber = (int) ($jsonBody['pc_number'] ?? 0);
 
     if ($pcNumber < 1 || $pcNumber > 50) {
         respond(['success' => false, 'message' => 'Invalid PC number.']);
@@ -550,8 +556,7 @@ if ($action === 'remove_maintenance') {
         respond(['success' => false, 'message' => 'Unauthorized']);
     }
 
-    $data = json_decode(file_get_contents('php://input'), true);
-    $pcNumber = (int) ($data['pc_number'] ?? 0);
+    $pcNumber = (int) ($jsonBody['pc_number'] ?? 0);
 
     if ($pcNumber < 1 || $pcNumber > 50) {
         respond(['success' => false, 'message' => 'Invalid PC number.']);
