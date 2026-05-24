@@ -128,6 +128,10 @@
             background: #c8d4e3;
             border-radius: 10px;
         }
+
+        .dashboard-anchor {
+            scroll-margin-top: 96px;
+        }
     </style>
 </head>
 <body>
@@ -144,14 +148,15 @@
                         <span class="d-none d-sm-inline" id="navStudentName">----</span>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
-                        <li><a class="dropdown-item" href="studentDashboard.html"><i class="bi bi-house me-2"></i>Home</a></li>
+                        <li><a class="dropdown-item" href="#dashboardTop"><i class="bi bi-house me-2"></i>Home</a></li>
                         <li><a class="dropdown-item" href="#announcementsSection"><i class="bi bi-bell me-2"></i>Notifications</a></li>
                         <li>
                             <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#editProfileModal">
                                 <i class="bi bi-pencil me-2"></i>Edit Profile
                             </a>
                         </li>
-                        <li><a class="dropdown-item" href="#sitinHistorySection"><i class="bi bi-clock-history me-2"></i>History</a></li>
+                        <li><a class="dropdown-item" href="#summarySection"><i class="bi bi-bar-chart-line me-2"></i>Sit-in Summary</a></li>
+                        <li><a class="dropdown-item" href="#historySection"><i class="bi bi-clock-history me-2"></i>History</a></li>
                         <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#reservationModal"><i class="bi bi-calendar-check me-2"></i>Reservation</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li>
@@ -165,7 +170,7 @@
         </div>
     </nav>
 
-    <div class="container-fluid py-5 px-lg-5">
+    <div class="container-fluid py-5 px-lg-5 dashboard-anchor" id="dashboardTop">
         <div class="row g-4">
             
             <div class="col-lg-3 col-md-4">
@@ -220,7 +225,7 @@
             </div>
 
             <div class="col-lg-4 col-md-8">
-                <div class="card main-card h-100" id="announcementsSection">
+                <div class="card main-card h-100 dashboard-anchor" id="announcementsSection">
                     <div class="card-header bg-transparent py-4 border-0 px-4">
                         <div class="d-flex align-items-center justify-content-between">
                             <h5 class="mb-0 fw-bold"><i class="bi bi-broadcast-pin me-2 text-primary"></i>Announcements</h5>
@@ -317,7 +322,7 @@
 
         <div class="row g-4 mt-1" id="sitinHistorySection">
             <div class="col-12">
-                <div class="card main-card border-0 shadow-sm">
+                <div class="card main-card border-0 shadow-sm dashboard-anchor" id="reservationSection">
                     <div class="card-header bg-transparent py-4 border-0 px-4 d-flex justify-content-between align-items-center">
                         <div>
                             <h5 class="mb-1 fw-bold">
@@ -354,7 +359,78 @@
             </div>
 
             <div class="col-12">
-                <div class="card main-card border-0 shadow-sm">
+                <div class="card main-card border-0 shadow-sm dashboard-anchor" id="summarySection">
+                    <div class="card-header bg-transparent py-4 border-0 px-4 d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="mb-1 fw-bold">
+                                <i class="bi bi-bar-chart-line me-2 text-primary"></i>
+                                Sit-in Summary
+                            </h5>
+                            <small class="text-secondary">Overview of your completed sit-in activity</small>
+                        </div>
+                        <span class="badge rounded-pill text-bg-primary" id="summaryReservationState">Reservation Enabled</span>
+                    </div>
+                    <div class="card-body pt-0 px-4 pb-4">
+                        <div class="row g-3 summary-metrics">
+                            <div class="col-12 col-sm-6 col-xl-3">
+                                <div class="summary-metric-card">
+                                    <span class="summary-metric-label">Total Sit-In Hours</span>
+                                    <strong class="summary-metric-value" id="summaryTotalHours">0h 00m</strong>
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-6 col-xl-3">
+                                <div class="summary-metric-card">
+                                    <span class="summary-metric-label">Number of Sessions</span>
+                                    <strong class="summary-metric-value" id="summarySessionCount">0</strong>
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-6 col-xl-3">
+                                <div class="summary-metric-card">
+                                    <span class="summary-metric-label">Average Session Duration</span>
+                                    <strong class="summary-metric-value" id="summaryAverageDuration">0m</strong>
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-6 col-xl-3">
+                                <div class="summary-metric-card">
+                                    <span class="summary-metric-label">Longest Session</span>
+                                    <strong class="summary-metric-value" id="summaryLongestDuration">0m</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="summary-table-wrap mt-4">
+                            <div class="summary-table-head d-flex justify-content-between align-items-center mb-3">
+                                <div>
+                                    <h6 class="mb-1 fw-bold">Sessions Table</h6>
+                                    <small class="text-secondary">Date, time, duration, and reservation status</small>
+                                </div>
+                                <span class="badge rounded-pill text-bg-success" id="summarySessionBadge">0 Sessions</span>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table history-table align-middle mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Time In</th>
+                                            <th>Time Out</th>
+                                            <th>Duration</th>
+                                            <th>PC No.</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="summaryTableBody"></tbody>
+                                </table>
+                            </div>
+                            <div id="summaryEmptyState" class="history-empty mt-3">
+                                No completed sit-in sessions yet.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12">
+                <div class="card main-card border-0 shadow-sm dashboard-anchor" id="historySection">
                     <div class="card-header bg-transparent py-4 border-0 px-4 d-flex justify-content-between align-items-center">
                         <div>
                             <h5 class="mb-1 fw-bold">

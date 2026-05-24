@@ -70,19 +70,95 @@ a {
 }
 
 .nav-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
   font-size: 0.95rem;
-  color: #ffffff; /* Sets the default color to white */
-  opacity: 0.85;
-  transition: opacity 0.15s ease, text-shadow 0.15s ease;
+  padding: 0.25rem 0.1rem;
+  color: #ffffff;
+  opacity: 0.88;
+  transition: opacity 0.2s ease, text-shadow 0.2s ease, transform 0.2s ease;
   pointer-events: auto;
+}
+
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -0.18rem;
+  width: 100%;
+  height: 2px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.95);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+  opacity: 0;
+}
+
+.nav-link::before {
+  content: "";
+  position: absolute;
+  left: -12%;
+  bottom: -0.28rem;
+  width: 38%;
+  height: 8px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(191, 219, 254, 0.95), rgba(255, 255, 255, 0));
+  opacity: 0;
+  filter: blur(6px);
+  transform: translateX(-160%);
+  transition: opacity 0.2s ease;
+  pointer-events: none;
 }
 
 .nav-link:hover,
 .nav-link--active {
   color: #ffffff;
   opacity: 1;
-  text-decoration: underline;
   text-shadow: 0 0 12px rgba(248, 250, 252, 0.75);
+  transform: translateY(-1px);
+}
+
+.nav-link:active,
+.nav-link.is-clicked {
+  color: #ffffff;
+  opacity: 1;
+  text-shadow: 0 0 14px rgba(248, 250, 252, 0.82);
+  transform: translateY(0) scale(0.97);
+}
+
+.nav-link:hover::after,
+.nav-link--active::after {
+  transform: scaleX(1);
+  opacity: 1;
+}
+
+.nav-link:hover::before,
+.nav-link--active::before,
+.nav-link.is-clicked::before {
+  opacity: 1;
+  animation: navGlowSweep 0.65s ease;
+}
+
+.nav-link:active::after,
+.nav-link.is-clicked::after {
+  transform: scaleX(1);
+  opacity: 1;
+}
+
+@keyframes navGlowSweep {
+  0% {
+    transform: translateX(-160%);
+    opacity: 0;
+  }
+  25% {
+    opacity: 0.95;
+  }
+  100% {
+    transform: translateX(280%);
+    opacity: 0;
+  }
 }
 
 /* Main Layout & Auth Cards */
@@ -143,6 +219,37 @@ a {
 
 .about-hero {
   animation: slideDownFadeIn 0.8s ease-out both;
+}
+
+.community-hero {
+  animation: slideDownFadeIn 0.8s ease-out both;
+}
+
+.community-hero-card {
+  animation: slideDownFadeIn 0.85s ease-out both;
+}
+
+.community-feature-grid {
+  animation: slideDownFadeIn 1s ease-out both;
+}
+
+.community-enter {
+  opacity: 0;
+  transform: translateY(-22px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.community-enter.community-enter-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.community-enter-delay-1 {
+  transition-delay: 0.08s;
+}
+
+.community-enter-delay-2 {
+  transition-delay: 0.18s;
 }
 
 @keyframes slideDownFadeIn {
@@ -232,6 +339,10 @@ a {
   .feature-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .auth-card-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 640px) {
@@ -247,6 +358,95 @@ a {
   grid-template-columns: minmax(0, 1fr);
   gap: 2.5rem;
   justify-items: center;
+}
+
+.auth-layout.auth-enter {
+  animation: slideDownFadeIn 0.8s ease-out both;
+}
+
+.auth-card-shell {
+  width: 100%;
+  max-width: 980px;
+  display: grid;
+  gap: 1.35rem;
+}
+
+.auth-heading {
+  color: #f8fafc;
+}
+
+.auth-heading .eyebrow {
+  margin-bottom: 0.8rem;
+}
+
+.auth-heading h1 {
+  margin-bottom: 0.8rem;
+  font-size: clamp(2rem, 3.8vw, 3rem);
+  line-height: 1.06;
+  color: #ffffff;
+}
+
+.auth-heading p {
+  max-width: 760px;
+  color: #dbeafe;
+  line-height: 1.72;
+}
+
+.auth-card {
+  width: 100%;
+}
+
+.auth-card.card--login {
+  max-width: none;
+}
+
+.auth-card-grid {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.8fr) minmax(0, 1fr);
+  gap: 2rem;
+  align-items: center;
+}
+
+.auth-card-visual {
+  border-radius: 18px;
+  padding: 0;
+  background: transparent;
+  border: none;
+}
+
+.auth-card-visual img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 0;
+}
+
+.auth-card-body {
+  display: grid;
+  gap: 1rem;
+}
+
+.auth-card-title {
+  margin-bottom: 0.35rem;
+  text-align: center;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.auth-card-subtitle {
+  text-align: center;
+  color: #64748b;
+  margin-bottom: 0.45rem;
+  line-height: 1.65;
+}
+
+.auth-link-note {
+  color: #64748b;
+}
+
+.auth-link-note a {
+  font-weight: 600;
 }
 
 .card {
@@ -341,6 +541,38 @@ a {
   box-shadow: 0 0 0 1px rgba(129, 140, 248, 0.9);
 }
 
+.password-field {
+  position: relative;
+  width: 100%;
+  display: block;
+}
+
+.password-field .input {
+  width: 100%;
+  padding-right: 3rem;
+}
+
+.password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 0.85rem;
+  transform: translateY(-50%);
+  width: 1.5rem;
+  height: 1.5rem;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.password-toggle:hover {
+  color: #2563eb;
+}
+
 .form-footer {
   margin-top: 1.5rem;
   display: flex;
@@ -407,6 +639,45 @@ body {
 .btn-primary-custom:hover {
     transform: translateY(-1px);
     box-shadow: 0 18px 40px rgba(59, 130, 246, 0.85);
+}
+
+.summary-metrics {
+    margin-top: 0.25rem;
+}
+
+.summary-metric-card {
+    height: 100%;
+    padding: 1rem 1.1rem;
+    border-radius: 18px;
+    background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+    border: 1px solid rgba(191, 219, 254, 0.95);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.summary-metric-label {
+    display: block;
+    margin-bottom: 0.55rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #64748b;
+}
+
+.summary-metric-value {
+    display: block;
+    font-size: 1.6rem;
+    line-height: 1.1;
+    color: #0f172a;
+}
+
+.summary-table-wrap {
+    border-top: 1px solid rgba(191, 219, 254, 0.8);
+    padding-top: 1.25rem;
+}
+
+.summary-table-head h6 {
+    color: #0f172a;
 }
 
 /* Header for the Rules section */

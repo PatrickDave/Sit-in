@@ -38,6 +38,14 @@ document.addEventListener('DOMContentLoaded', function() {
     const reservationLaboratoryInput = document.getElementById('reservationLaboratory');
     const reservationPcNumberInput = document.getElementById('reservationPcNumber');
     const reservationEnabledSwitch = document.getElementById('reservationEnabledSwitch');
+    const summaryTotalHours = document.getElementById('summaryTotalHours');
+    const summarySessionCount = document.getElementById('summarySessionCount');
+    const summaryAverageDuration = document.getElementById('summaryAverageDuration');
+    const summaryLongestDuration = document.getElementById('summaryLongestDuration');
+    const summaryTableBody = document.getElementById('summaryTableBody');
+    const summaryEmptyState = document.getElementById('summaryEmptyState');
+    const summarySessionBadge = document.getElementById('summarySessionBadge');
+    const summaryReservationState = document.getElementById('summaryReservationState');
 
     const RESERVATION_LABS = ['524', '526', '530', '540', '544'];
     let reservationAvailabilityByLab = {};
@@ -282,6 +290,106 @@ document.addEventListener('DOMContentLoaded', function() {
         }).join('');
     }
 
+    function parseHistoryDateTime(dateValue, timeValue) {
+        if (!dateValue || !timeValue) return null;
+
+        const normalizedTime = String(timeValue).trim().toUpperCase();
+        const match = normalizedTime.match(/^(\d{1,2}):(\d{2})(?::(\d{2}))?\s*(AM|PM)$/);
+        if (!match) return null;
+
+        let hours = Number(match[1]);
+        const minutes = Number(match[2]);
+        const meridiem = match[4];
+
+        if (meridiem === 'PM' && hours !== 12) hours += 12;
+        if (meridiem === 'AM' && hours === 12) hours = 0;
+
+        const date = new Date(`${dateValue}T00:00:00`);
+        if (Number.isNaN(date.getTime())) return null;
+
+        date.setHours(hours, minutes, 0, 0);
+        return date;
+    }
+
+    function formatDuration(totalMinutes) {
+        const safeMinutes = Math.max(0, Number(totalMinutes) || 0);
+        const hours = Math.floor(safeMinutes / 60);
+        const minutes = safeMinutes % 60;
+
+        if (hours > 0) {
+            return `${hours}h ${String(minutes).padStart(2, '0')}m`;
+        }
+
+        return `${minutes}m`;
+    }
+
+    function computeSessionDuration(record) {
+        const start = parseHistoryDateTime(record.date, record.time_in);
+        const end = parseHistoryDateTime(record.date, record.time_out);
+        if (!start || !end) return null;
+
+        let diffMinutes = Math.round((end.getTime() - start.getTime()) / 60000);
+        if (diffMinutes < 0) {
+            diffMinutes += 24 * 60;
+        }
+
+        return diffMinutes >= 0 ? diffMinutes : null;
+    }
+
+    function updateReservationStateBadge(enabled) {
+        if (!summaryReservationState) return;
+
+        if (enabled) {
+            summaryReservationState.textContent = 'Reservation Enabled';
+            summaryReservationState.className = 'badge rounded-pill text-bg-primary';
+            return;
+        }
+
+        summaryReservationState.textContent = 'Reservation Disabled';
+        summaryReservationState.className = 'badge rounded-pill text-bg-secondary';
+    }
+
+    function renderSummary(records) {
+        const summaryRecords = Array.isArray(records) ? records : [];
+        const enrichedRecords = summaryRecords.map((record) => ({
+            ...record,
+            durationMinutes: computeSessionDuration(record)
+        }));
+
+        const totalMinutes = enrichedRecords.reduce((sum, record) => sum + (record.durationMinutes || 0), 0);
+        const sessionCount = enrichedRecords.length;
+        const averageMinutes = sessionCount > 0 ? Math.round(totalMinutes / sessionCount) : 0;
+        const longestMinutes = enrichedRecords.reduce((max, record) => Math.max(max, record.durationMinutes || 0), 0);
+
+        if (summaryTotalHours) summaryTotalHours.textContent = formatDuration(totalMinutes);
+        if (summarySessionCount) summarySessionCount.textContent = String(sessionCount);
+        if (summaryAverageDuration) summaryAverageDuration.textContent = formatDuration(averageMinutes);
+        if (summaryLongestDuration) summaryLongestDuration.textContent = formatDuration(longestMinutes);
+        if (summarySessionBadge) {
+            summarySessionBadge.textContent = `${sessionCount} ${sessionCount === 1 ? 'Session' : 'Sessions'}`;
+        }
+
+        if (!summaryTableBody || !summaryEmptyState) return;
+
+        if (sessionCount === 0) {
+            summaryTableBody.innerHTML = '';
+            summaryEmptyState.style.display = 'block';
+            return;
+        }
+
+        summaryEmptyState.style.display = 'none';
+        summaryTableBody.innerHTML = enrichedRecords.map((record) => `
+            <tr>
+                <td>${escapeHtml(record.date || '--')}</td>
+                <td>${escapeHtml(record.time_in || '--')}</td>
+                <td>${escapeHtml(record.time_out || '--')}</td>
+                <td>${record.durationMinutes === null ? '--' : escapeHtml(formatDuration(record.durationMinutes))}</td>
+                <td>${escapeHtml(record.pc_number ? `PC-${record.pc_number}` : '--')}</td>
+                <td><span class="badge rounded-pill text-bg-success">${escapeHtml(record.status || 'Completed')}</span></td>
+            </tr>
+        `).join('');
+    }
+
     function loadSitInHistory() {
         fetch('../../api/student_sitin_history.php')
             .then(response => {
@@ -294,13 +402,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (!data.success) {
                     console.error('History Error:', data.message || 'Unable to load sit-in history');
                     renderHistoryRows([]);
+                    renderSummary([]);
                     return;
                 }
-                renderHistoryRows(data.data || []);
+                const records = data.data || [];
+                renderHistoryRows(records);
+                renderSummary(records);
             })
             .catch(error => {
                 console.error('Sit-in history fetch error:', error);
                 renderHistoryRows([]);
+                renderSummary([]);
             });
     }
 
@@ -547,6 +659,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (reservationEnabledSwitch) {
         reservationEnabledSwitch.addEventListener('change', function() {
             setReservationInputsDisabled(!reservationEnabledSwitch.checked);
+            updateReservationStateBadge(reservationEnabledSwitch.checked);
         });
     }
 
@@ -561,6 +674,8 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!input) return;
         input.addEventListener('change', loadReservationAvailability);
     });
+
+    updateReservationStateBadge(reservationEnabledSwitch ? reservationEnabledSwitch.checked : true);
 
     // 1. FETCH USER DATA FROM API
     fetch('../../api/studentDashboard.php')
